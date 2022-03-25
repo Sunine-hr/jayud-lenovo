@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCustomerFeaturesForm;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,9 @@ public class CrmCustomerFeaturesServiceImpl extends ServiceImpl<CrmCustomerFeatu
     @Autowired
     private CrmCustomerFeaturesMapper crmCustomerFeaturesMapper;
 
+    @Autowired
+    private AuthClient authClient;
+
     @Override
     public IPage<CrmCustomerFeatures> selectPage(CrmCustomerFeatures crmCustomerFeatures,
                                                  Integer currentPage,
@@ -59,10 +63,12 @@ public class CrmCustomerFeaturesServiceImpl extends ServiceImpl<CrmCustomerFeatu
         CrmCustomerFeatures convert = ConvertUtil.convert(crmCustomerFeaturesForm, CrmCustomerFeatures.class);
 
         if(convert.getId()!=null){
+            authClient.addSysLogFeign(" 编辑了业务要求", convert.getCustId());
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
         }else {
+            authClient.addSysLogFeign(" 新增了业务要求", convert.getCustId());
             convert.setCreateBy(CurrentUserUtil.getUsername());
             convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);

@@ -3,12 +3,15 @@ package com.jayud.crm.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.auth.model.po.SysUser;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
@@ -39,6 +42,8 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
 
     @Autowired
     private CrmCustomerRelationsMapper crmCustomerRelationsMapper;
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCustomerRelations> selectPage(CrmCustomerRelations crmCustomerRelations,
@@ -62,11 +67,13 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
         CrmCustomerRelations convert = ConvertUtil.convert(crmCustomerRelationsForm, CrmCustomerRelations.class);
 
         if(convert.getId()!=null){
+            authClient.addSysLogFeign(" 修改了联系人", crmCustomerRelationsForm.getCustId());
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
             Long id = convert.getId();
         }else {
+            authClient.addSysLogFeign(" 新增了联系人", crmCustomerRelationsForm.getCustId());
             convert.setCreateBy(CurrentUserUtil.getUsername());
             convert.setCreateTime(new Date());
             result= this.saveOrUpdate(convert);
@@ -90,6 +97,11 @@ public class CrmCustomerRelationsServiceImpl extends ServiceImpl<CrmCustomerRela
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(List<Long> ids){
+
+        Long aLong = ids.get(0);
+        CrmCustomerRelations byId = this.getById(aLong);
+        authClient.addSysLogFeign(" 删除了联系人", byId.getCustId());
+
         List<CrmCustomerRelations> CrmCustomerRelationsList = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
             CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();

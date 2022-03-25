@@ -86,7 +86,7 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
             this.crmFileMapper.updateById(crmFileOne);
 
             List<CrmFileForm> crmFileForm = queryCrmFile.getCrmFileForm();
-
+            authClient.addSysLogFeign(" 修改了附件", queryCrmFile.getBusinessId());
             for (int i = 0; i < crmFileForm.size(); i++) {
                 CrmFile crmFile = new CrmFile();
                 crmFile.setCode(FileModuleEnum.CRM_FILE.getCode());
@@ -106,6 +106,7 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
             //新增的
             List<CrmFileForm> crmFileForm = queryCrmFile.getCrmFileForm();
 
+            authClient.addSysLogFeign(" 新增了附件", queryCrmFile.getBusinessId());
             for (int i = 0; i < crmFileForm.size(); i++) {
                 CrmFile crmFile = new CrmFile();
                 crmFile.setCode(FileModuleEnum.CRM_FILE.getCode());
@@ -140,6 +141,9 @@ public class CrmFileServiceImpl extends ServiceImpl<CrmFileMapper, CrmFile> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(List<Long> ids) {
+        Long aLong = ids.get(0);
+        CrmFile byId = this.getById(aLong);
+        authClient.addSysLogFeign(" 删除了附件", byId.getBusinessId());
         List<CrmFile> crmFileList = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
             CrmFile crmFile = new CrmFile();

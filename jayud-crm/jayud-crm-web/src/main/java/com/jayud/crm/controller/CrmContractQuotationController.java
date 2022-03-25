@@ -160,6 +160,8 @@ public class CrmContractQuotationController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        CrmContractQuotation byId = crmContractQuotationService.getById(id);
+        authClient.addSysLogFeign(" 删除了合同报价",Long.parseLong(byId.getCustomerId()));
         crmContractQuotationService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }

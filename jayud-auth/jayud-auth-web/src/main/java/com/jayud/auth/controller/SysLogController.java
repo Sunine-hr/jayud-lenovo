@@ -3,6 +3,8 @@ package com.jayud.auth.controller;
 import com.jayud.auth.model.bo.SysLogForm;
 import com.jayud.auth.model.vo.SysLogVO;
 import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.common.dto.QuerySysLogForm;
+import com.jayud.common.utils.ConvertUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,6 +68,15 @@ public class SysLogController {
     }
 
 
+
+    @ApiOperation("外部调用分页查询数据")
+    @PostMapping("/api/selectSysLogPageFeign")
+    public BaseResult selectSysLogPageFeign(@RequestBody QuerySysLogForm QuerySysLogForm) {
+        HttpServletRequest req = null;
+        SysLogForm convert = ConvertUtil.convert(QuerySysLogForm, SysLogForm.class);
+        return BaseResult.ok(sysLogService.selectPage(convert, convert.getCurrentPage(), convert.getPageSize(), req));
+    }
+
     /**
      * @description 列表查询数据
      * @author jayud
@@ -92,7 +103,13 @@ public class SysLogController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody SysLog sysLog) {
-        sysLogService.save(sysLog);
+        sysLogService.saveOrUpdateSysLog(sysLog);
+        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    }
+    @ApiOperation("公共方法新增日志")
+    @PostMapping("/api/addSysLogFeign")
+    public BaseResult addSysLogFeign(@RequestParam("logContent") String logContent,@RequestParam("businessId") Long businessId) {
+        sysLogService.saveOrUpdateSysLogClient(logContent,businessId);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 

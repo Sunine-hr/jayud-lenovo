@@ -2,11 +2,18 @@ package com.jayud.auth.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.SysLogForm;
+import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.vo.SysLogVO;
+import com.jayud.auth.service.ISysUserService;
+import com.jayud.common.HttpContextUtils;
+import com.jayud.common.enums.SysLogTypeEnum;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -37,6 +44,8 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 
     @Autowired
     private SysLogMapper sysLogMapper;
+    @Autowired
+    private ISysUserService sysUserService;
 
     @Override
     public IPage<SysLogVO> selectPage(SysLogForm sysLogForm,
@@ -52,6 +61,43 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
     @Override
     public List<SysLog> selectList(SysLog sysLog){
         return sysLogMapper.list(sysLog);
+    }
+
+    @Override
+    public void saveOrUpdateSysLog(SysLog sysLog) {
+        SysLog convert = ConvertUtil.convert(sysLog, SysLog.class);
+
+          this.saveOrUpdate(convert);
+    }
+
+    @Override
+    public void saveOrUpdateSysLogClient(String logContent,Long businessId) {
+
+        //拿到用户真实名称
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysUser::getName, CurrentUserUtil.getUsername());
+        SysUser one = sysUserService.getOne(lambdaQueryWrapper);
+
+
+        SysLog sysLog = new SysLog();
+        //内容
+        sysLog.setLogContent(logContent);
+        sysLog.setIp("127.0.0.1");
+        sysLog.setOperateType(SysLogTypeEnum.COMMON.getType());
+        sysLog.setBusinessId(businessId);
+        sysLog.setLogType(1);
+        sysLog.setCostTime(100L);
+        //操作用户名称
+        sysLog.setUsername(CurrentUserUtil.getUsername());
+        //用户真实名称
+        sysLog.setTrueName(one.getUserName());
+
+        sysLog.setCreateBy(CurrentUserUtil.getUsername());
+        sysLog.setCreateTime(new Date());
+
+
+        this.saveOrUpdate(sysLog);
+
     }
 
 

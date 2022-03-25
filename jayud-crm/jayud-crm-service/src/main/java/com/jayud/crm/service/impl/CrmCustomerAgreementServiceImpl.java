@@ -7,6 +7,7 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.enums.FileModuleEnum;
@@ -48,6 +49,8 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
     private ICrmFileService crmFileService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCustomerAgreementVO> selectPage(CrmCustomerAgreement crmCustomerAgreement,
@@ -108,12 +111,14 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
     public void saveOrUpdate(AddCrmCustomerAgreementForm form) {
         CrmCustomerAgreement tmp = ConvertUtil.convert(form, CrmCustomerAgreement.class);
         if (form.getId() == null) {
+            authClient.addSysLogFeign("新增了合作协议", form.getCustId());
             if (this.exitNumber(form.getAgreementCode())) {
                 throw new JayudBizException(400, SysTips.NUM_ALREADY_EXISTS);
             }
 
             tmp.setCheckStateFlag("N0").setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
+            authClient.addSysLogFeign("编辑了合作协议", form.getCustId());
             tmp.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(tmp);

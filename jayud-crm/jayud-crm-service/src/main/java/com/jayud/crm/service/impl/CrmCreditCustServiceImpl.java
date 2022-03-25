@@ -101,6 +101,7 @@ public class CrmCreditCustServiceImpl extends ServiceImpl<CrmCreditCustMapper, C
         List<CrmCreditDepart> tmps = this.crmCreditDepartService.selectList(new CrmCreditDepart().setDepartId(form.getDepartId()).setCreditId(form.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
         CrmCreditDepart creditDepart = tmps.get(0);
         if (form.getId() == null) {
+            authClient.addSysLogFeign("新增了信用额度", form.getCustId());
             Object result = this.authClient.getOrderFeign(CrmDictCode.CRM_CREDIT_CUST_CODE, new Date()).getResult();
             HashMap data = (HashMap) result;
             convert.setFLevel(Integer.parseInt(data.get("fLevel").toString()));
@@ -108,6 +109,7 @@ public class CrmCreditCustServiceImpl extends ServiceImpl<CrmCreditCustMapper, C
             convert.setCheckStateFlag(data.get("checkStateFlag").toString());
             convert.setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
+            authClient.addSysLogFeign("编辑了信用额度", form.getCustId());
             convert.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(convert);

@@ -91,4 +91,16 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         return menuIds;
     }
 
+    @Override
+    public List<SysRoleMenu> getSystemRoleMenuByRoleIdsAndActionCode(List<Long> longs, Long menuId) {
+
+        QueryWrapper<SysRoleMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(SysRoleMenu::getRoleId,longs);
+        queryWrapper.lambda().eq(SysRoleMenu::getMenuId,menuId);
+        queryWrapper.lambda().eq(SysRoleMenu::getIsDeleted,0);
+
+        List<SysRoleMenu> systemRoleActionList = this.baseMapper.selectList(queryWrapper);
+        return systemRoleActionList;
+    }
+
 }

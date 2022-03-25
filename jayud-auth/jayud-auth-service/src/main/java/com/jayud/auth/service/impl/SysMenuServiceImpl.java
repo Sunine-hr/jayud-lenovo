@@ -9,12 +9,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.DeleteForm;
-import com.jayud.auth.model.po.SysDepart;
-import com.jayud.auth.model.po.SysMenu;
+import com.jayud.auth.model.po.*;
 import com.jayud.auth.mapper.SysMenuMapper;
-import com.jayud.auth.model.po.SysRole;
-import com.jayud.auth.model.po.SysUrl;
-import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.service.ISysMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.auth.service.ISysRoleService;
@@ -277,6 +273,26 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public List<SysMenu> selectSysMenuBtnByRoleIds(List<Long> roleIds) {
         return baseMapper.selectSysMenuBtnByRoleIds(roleIds);
+    }
+
+    @Override
+    public List<SysMenu> allCheckMenuTree() {
+        //获取所有菜单
+        List<SysMenu> menus = baseMapper.allMenu();
+        //获取所有审核按钮
+        List<SysMenu> menuList = baseMapper.allCheckMenuTree();
+
+        menus.addAll(menuList);
+        List<SysMenu> menuTree = buildMenuTree(menus, "0");
+        return menuTree;
+    }
+
+    @Override
+    public SysMenu getSysMenuByMenuCode(String actionCode) {
+        QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(SysMenu::getCode,actionCode);
+        queryWrapper.lambda().eq(SysMenu::getIsDeleted,0);
+        return this.getOne(queryWrapper);
     }
 
     @Override

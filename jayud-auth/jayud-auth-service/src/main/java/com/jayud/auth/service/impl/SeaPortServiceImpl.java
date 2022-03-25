@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
 
     @Override
     public IPage<SeaPortVO> findByPage(QuerySeaPortForm form) {
-        Page<SeaPortVO> page = new Page<>(form.getPageNum(), form.getPageSize());
+        Page<SeaPortVO> page = new Page<>(form.getCurrentPage(), form.getPageSize());
         return this.baseMapper.findByPage(page, form);
     }
 
@@ -79,8 +80,8 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
     @Override
     public boolean saveOrUpdateSeaPort(AddSeaPortForm form) {
         SeaPort convert = ConvertUtil.convert(form, SeaPort.class);
-        convert.setCreateTime(LocalDateTime.now());
-        convert.setCreateUser(UserOperator.getToken());
+        convert.setCreateTime(new Date());
+        convert.setCreateBy(UserOperator.getToken());
         convert.setStatus(1);
         return this.saveOrUpdate(convert);
     }
@@ -118,8 +119,8 @@ public class SeaPortServiceImpl extends ServiceImpl<SeaPortMapper, SeaPort> impl
         List<SeaPort> seaPorts = ConvertUtil.convertList(list, SeaPort.class);
         for (SeaPort seaPort : seaPorts) {
             seaPort.setStatus(1);
-            seaPort.setCreateUser("admin");
-            seaPort.setCreateTime(LocalDateTime.now());
+            seaPort.setCreateBy("admin");
+            seaPort.setCreateTime(new Date());
         }
         return this.saveOrUpdateBatch(seaPorts);
     }

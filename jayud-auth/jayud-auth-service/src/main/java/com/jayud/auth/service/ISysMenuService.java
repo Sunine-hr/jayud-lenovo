@@ -108,4 +108,17 @@ public interface ISysMenuService extends IService<SysMenu> {
      * @return
      */
     List<SysMenu> selectSysMenuBtnByRoleIds(List<Long> roleIds);
+
+    /**
+     * 获取所有是审核的菜单树
+     * @return
+     */
+    List<SysMenu> allCheckMenuTree();
+
+    /**
+     * 根据code获取菜单code
+     * @param actionCode
+     * @return
+     */
+    SysMenu getSysMenuByMenuCode(String actionCode);
 }

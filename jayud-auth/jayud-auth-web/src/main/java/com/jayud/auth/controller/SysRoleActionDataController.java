@@ -111,7 +111,7 @@ public class SysRoleActionDataController {
         SysUserVO systemUser = sysUserService.getSystemUserByName(CurrentUserUtil.getUsername());
 
         //获取按钮信息
-        SysMenu sysMenu = sysMenuService.getSysMenuByMenuCode(form.getActionCode());
+        SysMenu sysMenu = sysMenuService.getSysMenuByMenuCode(form.getCode());
 
         //是否为管理员
         int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUser.getName(),"super_admin",systemUser.getTenantCode());

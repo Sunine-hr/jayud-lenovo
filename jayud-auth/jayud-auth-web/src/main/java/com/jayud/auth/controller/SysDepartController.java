@@ -191,6 +191,13 @@ public class SysDepartController {
         return BaseResult.ok(deptTree);
     }
 
+    @ApiOperation("获取接单主体")
+    @PostMapping("/selectOperationSubject")
+    public BaseResult<List<SysDepart>> selectOperationSubject(@RequestBody QuerySysDeptForm form){
+        List<SysDepart> deptTree = sysDepartService.selectOperationSubject(form);
+        return BaseResult.ok(deptTree);
+    }
+
 
     /**
      * 查询组织部门树以及员工

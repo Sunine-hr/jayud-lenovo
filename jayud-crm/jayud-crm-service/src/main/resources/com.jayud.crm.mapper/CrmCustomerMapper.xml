@@ -688,4 +688,24 @@
 
     </select>
 
+    <select id="selectCrmCustomerPage" resultType="com.jayud.crm.model.vo.CrmCustomerVO">
+        select cust_name custName,cust_name_abbr custNameAbbr,fsales_name fsalesName,fsales_id fsalesId,follower_name followerName,cust_code custCode,
+        settlement_method settlementMethod
+        from crm_customer c
+        where c.is_deleted = 0 and c.check_state_flag = 'Y'
+        <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
+            AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
+        </if>
+    </select>
+
+    <select id="selectCrmCustomerList" resultType="com.jayud.crm.model.vo.CrmCustomerVO">
+        select cust_name custName,cust_name_abbr custNameAbbr,fsales_name fsalesName,fsales_id fsalesId,follower_name followerName,cust_code custCode,
+        settlement_method settlementMethod
+        from crm_customer c
+        where c.is_deleted = 0 and c.check_state_flag = 'Y'
+        <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
+            AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
+        </if>
+    </select>
+
 </mapper>

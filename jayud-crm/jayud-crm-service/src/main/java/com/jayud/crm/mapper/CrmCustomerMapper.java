@@ -4,6 +4,7 @@ import com.jayud.crm.model.bo.CrmCustomerForm;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.jayud.crm.model.vo.CrmCustomerVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -103,4 +104,20 @@ public interface CrmCustomerMapper extends BaseMapper<CrmCustomer> {
     * @return: int
     **/
     int cnaleInpublicByIds(@Param("ids") List<Long> ids,@Param("managerUserId") Long managerUserId,@Param("managerUsername")String managerUsername,@Param("username") String username);
+
+    /**
+     *获取客户下拉
+     * @param page
+     * @param crmCustomerForm
+     * @return
+     */
+    IPage selectCrmCustomerPage(@Param("page")Page<CrmCustomerVO> page, @Param("crmCustomerForm")CrmCustomerForm crmCustomerForm);
+
+    /**
+     *获取客户下拉
+     *
+     * @param crmCustomerForm
+     * @return
+     */
+    List<CrmCustomerVO> selectCrmCustomerList(@Param("crmCustomerForm")CrmCustomerForm crmCustomerForm);
 }

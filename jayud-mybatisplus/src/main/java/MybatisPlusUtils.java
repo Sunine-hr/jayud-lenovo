@@ -26,7 +26,7 @@ public class MybatisPlusUtils {
                 "jayud-auth/jayud-auth-web"
         };
         for (String model : models) {
-            shell(model,"air_port");
+            shell(model,"b_unit");
 
         }
     }

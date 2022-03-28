@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -33,10 +34,12 @@ public class AddSeaPortForm extends Model<AddSeaPortForm> {
 
     @ExcelProperty("港口编码")
     @ApiModelProperty(value = "船港口代码")
+    @NotNull(message = "港口编码不为空")
     private String code;
 
     @ExcelProperty("港口英文")
     @ApiModelProperty(value = "船港口名称")
+    @NotNull(message = "港口名称不为空")
     private String name;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")

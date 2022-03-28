@@ -250,6 +250,15 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         return this.getOne(queryWrapper);
     }
 
+    @Override
+    public List<SysDepart> selectOperationSubject(QuerySysDeptForm form) {
+        AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
+        SysUser sysUser = sysUserService.getById(userDetail.getId());
+        String tenantCode = sysUser.getTenantCode();
+        form.setTenantCode(tenantCode);
+        return this.baseMapper.selectOperationSubject(form);
+    }
+
 
     //构建树并且查询员工信息
     private List<SysDepart> buildTreeStaff(List<SysDepart> list, String pid) {

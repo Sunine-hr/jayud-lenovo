@@ -118,6 +118,9 @@ public class OmsOrder extends SysBaseEntity {
     @ApiModelProperty(value = "多租户ID")
     private Long tenantId;
 
+    @ApiModelProperty(value = "操作时间")
+    private LocalDateTime operationTime ;
+
 
 
 

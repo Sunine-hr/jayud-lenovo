@@ -81,4 +81,11 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @return: java.util.LinkedList<java.util.HashMap>
      **/
     List<SysDepart> slectChildrenById(@Param("parentId") Long parentId);
+
+    /**
+     * 获取接单主体
+     * @param form
+     * @return
+     */
+    List<SysDepart> selectOperationSubject(@Param("form")QuerySysDeptForm form);
 }

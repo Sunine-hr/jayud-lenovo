@@ -6,6 +6,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.model.bo.*;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.crm.model.vo.CrmCustomerVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -230,4 +231,16 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
     * @return: void
     **/
     void cnaleInpublicByIds(List<Long> ids,Long managerUserId,String managerUsername);
+
+    /**
+     * 根据条件获取客户信息
+     * @param crmCustomerForm
+     * @param currentPage
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    IPage selectCrmCustomerPage(CrmCustomerForm crmCustomerForm, Integer currentPage, Integer pageSize, HttpServletRequest req);
+
+    List<CrmCustomerVO> selectCrmCustomerList(CrmCustomerForm crmCustomerForm);
 }

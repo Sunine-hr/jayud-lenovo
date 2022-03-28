@@ -171,5 +171,19 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+    <select id="selectOperationSubject" resultType="com.jayud.auth.model.po.SysDepart">
+        select  sd.*,sd.depart_name ,sd.id from sys_depart sd
+        where sd.is_deleted = 0
+        and sd.tenant_code = #{form.tenantCode} and sd.org_category = #{form.orgCategory}
+        <if test="form.departName != null and form.departName != ''">
+            and sd.depart_name like concat('%',#{form.departName},'%')
+        </if>
+        <if test="form.createTimeArr != null and form.createTimeArr.length>0">
+            and sd.create_time <![CDATA[ >= ]]> #{form.createTimeArr[0]}
+            and sd.create_time <![CDATA[ <= ]]> #{form.createTimeArr[1]}
+        </if>
+
+    </select>
+
 
 </mapper>

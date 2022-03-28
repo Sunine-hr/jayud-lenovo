@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 public class PermissionForm {
 
     @ApiModelProperty(value = "权限Code", required = true)
-    private String actionCode;
+    private String code;
 
 
 }

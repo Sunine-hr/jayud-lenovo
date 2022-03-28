@@ -9,6 +9,7 @@ import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.SysDictClient;
 import com.jayud.crm.model.bo.*;
+import com.jayud.crm.model.vo.CrmCustomerVO;
 import com.jayud.crm.service.ICrmCustomerManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -361,5 +362,35 @@ public class CrmCustomerController {
         return crmCustomerService.logicDelByIds(deleteForm);
     }
 
+    /**
+     * @description 分页查询
+     * @author  jayud
+     * @date   2022-03-01
+     * @param: crmCustomer
+     * @param: currentPage
+     * @param: pageSize
+     * @param: req
+     * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomer>>
+     **/
+    @ApiOperation("分页查询数据")
+    @GetMapping("/selectCrmCustomerPage")
+    public BaseResult<ListPageRuslt<CrmCustomerVO>> selectCrmCustomerPage(CrmCustomerForm crmCustomerForm,
+                                                                          @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                                          HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(crmCustomerService.selectCrmCustomerPage(crmCustomerForm,currentPage,pageSize,req)));
+    }
+
+    @ApiOperation("分页查询数据")
+    @GetMapping("/selectCrmCustomerList")
+    public BaseResult<List<CrmCustomerVO>> selectCrmCustomerList(CrmCustomerForm crmCustomerForm) {
+        return BaseResult.ok(crmCustomerService.selectCrmCustomerList(crmCustomerForm));
+    }
+
+    @ApiOperation("获取当前用户部门")
+    @GetMapping("/selectUserDepart")
+    public BaseResult<Long> selectUserDepart(){
+        return BaseResult.ok(CurrentUserUtil.getUserDetail().getDepartId());
+    }
 
 }

@@ -1,11 +1,13 @@
 package com.jayud.oms.order.controller;
 
+import com.jayud.oms.order.model.bo.CheckForm;
+import com.jayud.oms.order.model.bo.InputOrderForm;
+import com.jayud.oms.order.model.bo.OmsOrderForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
 
 import com.jayud.common.utils.ExcelUtils;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.BaseResult;
 import com.jayud.oms.order.service.IOmsOrderService;
@@ -92,25 +94,27 @@ public class OmsOrderController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody OmsOrder omsOrder ){
-        omsOrderService.save(omsOrder);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+    public BaseResult add(@Valid @RequestBody InputOrderForm form ){
+        if(!"pass".equals(form.getOrderForm().check()) && form.getCmd().equals("submit")){
+            return BaseResult.error(444,form.getOrderForm().check());
+        }
+        return omsOrderService.saveOmsOrder(form);
     }
 
 
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-03-23
-     * @param: omsOrder
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody OmsOrder omsOrder ){
-        omsOrderService.updateById(omsOrder);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-03-23
+//     * @param: omsOrder
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody OmsOrder omsOrder ){
+//        omsOrderService.updateById(omsOrder);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
 
@@ -121,13 +125,13 @@ public class OmsOrderController {
      * @param: id
      * @return: com.jayud.common.BaseResult
      **/
-    @ApiOperation("物理删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/phyDel")
-    public BaseResult phyDel(@RequestParam Long id){
-        omsOrderService.phyDelById(id);
-        return BaseResult.ok(SysTips.DEL_SUCCESS);
-    }
+//    @ApiOperation("物理删除")
+//    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
+//    @GetMapping("/phyDel")
+//    public BaseResult phyDel(@RequestParam Long id){
+//        omsOrderService.phyDelById(id);
+//        return BaseResult.ok(SysTips.DEL_SUCCESS);
+//    }
 
     /**
      * @description 逻辑删除
@@ -159,6 +163,16 @@ public class OmsOrderController {
         OmsOrder omsOrder = omsOrderService.getById(id);
         return BaseResult.ok(omsOrder);
     }
+
+    @ApiOperation("根据id修改订单列表数据")
+    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @PostMapping(value = "/updateById")
+    public BaseResult updateById(@RequestBody OmsOrderForm omsOrderForm) {
+
+        return omsOrderService.updateOmsOrderById(omsOrderForm);
+    }
+
+
 
 
     /**
@@ -219,6 +233,27 @@ public class OmsOrderController {
             e.printStackTrace();
             log.warn(e.toString());
         }
+    }
+
+    /**
+     * 审核
+     */
+    @ApiOperation("审核")
+    @PostMapping(value = "/check")
+    public BaseResult check(@RequestBody CheckForm checkForm){
+
+        return omsOrderService.check(checkForm);
+    }
+
+
+    /**
+     * 反核
+     */
+    @ApiOperation("反核")
+    @PostMapping(value = "/unCheck")
+    public BaseResult unCheck(@RequestBody CheckForm checkForm){
+
+        return omsOrderService.unCheck(checkForm);
     }
 
 

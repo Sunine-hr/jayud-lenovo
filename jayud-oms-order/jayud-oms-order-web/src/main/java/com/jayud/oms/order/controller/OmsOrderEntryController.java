@@ -1,5 +1,14 @@
 package com.jayud.oms.order.controller;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.jayud.common.CommonResult;
+import com.jayud.oms.order.model.bo.OmsOrderEntryForm;
+import com.jayud.oms.order.model.bo.OmsOrderEntryTemplateForm;
+import io.swagger.annotations.ApiOperationSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,16 +23,18 @@ import com.jayud.oms.order.model.po.OmsOrderEntry;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -239,6 +250,78 @@ public class OmsOrderEntryController {
             e.printStackTrace();
             log.warn(e.toString());
         }
+    }
+
+
+    /**
+     * 导出商品模板
+     */
+    @ApiOperation(value = "导出商品模板")
+    @GetMapping(value = "/exportCommodityTemplate")
+    public void exportInProductTemplate( HttpServletResponse response) throws IOException {
+//        ExcelUtils.exportSinglePageHeadExcel("商品模板", AddCommodityModelForm.class,response);
+
+        ExcelWriter excelWriter = null;
+        OutputStream outputStream = null;
+        String fileName = "商品模板";
+        try {
+            outputStream = response.getOutputStream();
+            fileName = fileName + ".xlsx";
+            response.setHeader("Content-disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/vnd.ms-excel;charset=UTF-8");// 定义输出类型
+            excelWriter = EasyExcel.write(response.getOutputStream(), OmsOrderEntryTemplateForm.class).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet("商品模板").build();
+            List<OmsOrderEntryTemplateForm> commodityModelForms = new ArrayList<>();
+            excelWriter.write(commodityModelForms, writeSheet);
+        }  catch (Exception e) {
+            outputStream.close();
+            e.printStackTrace();
+        } finally {
+            // 千万别忘记finish 会帮忙关闭流
+            if (excelWriter != null) {
+                excelWriter.finish();
+            }
+
+        }
+    }
+
+    @ApiOperation(value = "上传文件-导入商品信息")
+    @RequestMapping(value = "/importExcelByCustomerGoods", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperationSupport(order = 4)
+    public CommonResult importExcelByCustomerGoods(@RequestParam("file") MultipartFile file){
+        if (file.isEmpty()) {
+            return CommonResult.error(-1, "文件为空！");
+        }
+        // 1.获取上传文件输入流
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //调用用 hutool 方法读取数据 默认调用第一个sheet
+        ExcelReader excelReader = ExcelUtil.getReader(inputStream);
+
+        //配置别名
+        Map<String,String> aliasMap=new HashMap<>();
+        aliasMap.put("商品型号","itemModel");
+        aliasMap.put("商品名称","itemName");
+        aliasMap.put("单位","unit");
+        aliasMap.put("品牌","itemBrand");
+        aliasMap.put("产地","itemOrigin");
+        aliasMap.put("数量","qty");
+        aliasMap.put("海关编码","customsCode");
+        aliasMap.put("商品描述","itemNotes");
+
+        excelReader.setHeaderAlias(aliasMap);
+
+        // 第一个参数是指表头所在行，第二个参数是指从哪一行开始读取
+        List<OmsOrderEntryForm> list= excelReader.read(0, 1, OmsOrderEntryForm.class);
+
+        log.warn("导入的数据"+list);
+
+        return CommonResult.success(list);
     }
 
 

@@ -180,4 +180,10 @@ public interface ICrmCustomerManagerService extends IService<CrmCustomerManager>
      **/
     List<Long> selectCustIdListByUserIds(List<Long> userIds);
 
+    /**
+     * 根据客户id查询销售人员
+     * @param customerId
+     * @return
+     */
+    List<CrmCustomerManager> selectCrmCustomerManagerByCustId(Long customerId);
 }

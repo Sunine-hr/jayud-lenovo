@@ -123,4 +123,6 @@ public interface ISysDepartService extends IService<SysDepart> {
      * @return
      */
     SysDepart getByOrgCode(String depart);
+
+    List<SysDepart> selectOperationSubject(QuerySysDeptForm form);
 }

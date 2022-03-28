@@ -2,6 +2,10 @@ package com.jayud.oms.order.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.common.BaseResult;
+import com.jayud.oms.order.model.bo.CheckForm;
+import com.jayud.oms.order.model.bo.InputOrderForm;
+import com.jayud.oms.order.model.bo.OmsOrderForm;
 import com.jayud.oms.order.model.po.OmsOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -78,5 +82,30 @@ public interface IOmsOrderService extends IService<OmsOrder> {
      **/
     List<LinkedHashMap<String, Object>> queryOmsOrderForExcel(Map<String, Object> paramMap);
 
+    /**
+     * 保存订单
+     * @param form
+     */
+    BaseResult saveOmsOrder(InputOrderForm form);
 
+    /**
+     * 修改订单操作时间和备注
+     * @param omsOrderForm
+     * @return
+     */
+    BaseResult updateOmsOrderById(OmsOrderForm omsOrderForm);
+
+    /**
+     * 审核
+     * @param checkForm
+     * @return
+     */
+    BaseResult check(CheckForm checkForm);
+
+    /**
+     * 反审
+     * @param checkForm
+     * @return
+     */
+    BaseResult unCheck(CheckForm checkForm);
 }

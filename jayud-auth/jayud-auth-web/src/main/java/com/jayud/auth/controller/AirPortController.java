@@ -94,22 +94,23 @@ public class AirPortController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody AirPort airPort ){
+        //判断代码是否存在，判断名称是否存在
+        AirPort airPort1 = airPortService.isCodeExistence(airPort.getCode());
+        AirPort airPort2 = airPortService.isNameExistence(airPort.getName());
         if(airPort.getId() != null){
-            //判断代码是否存在，判断名称是否存在
-            AirPort airPort1 = airPortService.isCodeExistence(airPort.getCode());
-            AirPort airPort2 = airPortService.isNameExistence(airPort.getName());
-            if(airPort1 != null && airPort1.getId().equals(airPort.getId())){
+
+            if(airPort1 != null && !airPort1.getId().equals(airPort.getId())){
                 return BaseResult.error(444,"港口代码已存在");
             }
-            if(airPort2 != null && airPort2.getId().equals(airPort.getId())){
+            if(airPort2 != null && !airPort2.getId().equals(airPort.getId())){
                 return BaseResult.error(444,"港口名称已存在");
             }
         }else{
-            if(airPort.getCode() == null){
-                return BaseResult.error(444,"港口代码不能为空");
+            if(airPort1 != null){
+                return BaseResult.error(444,"港口代码已存在");
             }
-            if(airPort.getName() == null){
-                return BaseResult.error(444,"港口名称不能为空");
+            if(airPort1 != null){
+                return BaseResult.error(444,"港口名称已存在");
             }
         }
         airPortService.saveAirPort(airPort);

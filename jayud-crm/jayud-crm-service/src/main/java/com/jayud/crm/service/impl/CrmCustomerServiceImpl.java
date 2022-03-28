@@ -24,6 +24,7 @@ import com.jayud.crm.model.enums.CustRiskTypeEnum;
 import com.jayud.crm.model.po.CrmCustomerManager;
 import com.jayud.crm.model.po.CrmCustomerRelations;
 import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.model.vo.CrmCustomerVO;
 import com.jayud.crm.service.*;
 import com.jayud.crm.utils.CodeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -566,6 +567,36 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     @Override
     public void cnaleInpublicByIds(List<Long> ids, Long managerUserId, String managerUsername) {
         this.baseMapper.cnaleInpublicByIds(ids, managerUserId, managerUsername, CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public IPage selectCrmCustomerPage(CrmCustomerForm crmCustomerForm, Integer currentPage, Integer pageSize, HttpServletRequest req) {
+        crmCustomerForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        Page<CrmCustomerVO> page = new Page<CrmCustomerVO>(currentPage, pageSize);
+        IPage<CrmCustomerVO> iPage = crmCustomerMapper.selectCrmCustomerPage(page, crmCustomerForm);
+        for (CrmCustomerVO record : iPage.getRecords()) {
+            //设置联系人
+            CrmCustomerRelations crmCustomerRelations = new CrmCustomerRelations();
+            crmCustomerRelations.setCustId(crmCustomerForm.getId());
+            crmCustomerRelations.setIsDefault(true);
+            List<CrmCustomerRelations> relationsList = crmCustomerRelationsService.selectList(crmCustomerRelations);
+            if (CollUtil.isNotEmpty(relationsList)){
+                crmCustomerRelations = relationsList.get(0);
+                record.setCustRelationUsername(crmCustomerRelations.getContactName());
+                record.setCustRelationPostName(crmCustomerRelations.getPostName());
+            }
+
+        }
+        return iPage;
+
+    }
+
+    @Override
+    public List<CrmCustomerVO> selectCrmCustomerList(CrmCustomerForm crmCustomerForm) {
+        crmCustomerForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        List<CrmCustomerVO> crmCustomerVOS = crmCustomerMapper.selectCrmCustomerList(crmCustomerForm);
+
+        return crmCustomerVOS;
     }
 
     /**

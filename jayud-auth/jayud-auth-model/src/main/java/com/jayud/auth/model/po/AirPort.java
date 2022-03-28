@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * AirPort 实体类
  *
@@ -19,9 +21,11 @@ public class AirPort extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "机场code")
+    @NotNull(message = "机场代码不为空")
     private String code;
 
     @ApiModelProperty(value = "机场名称")
+    @NotNull(message = "机场名称不为空")
     private String name;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")

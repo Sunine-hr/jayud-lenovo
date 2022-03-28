@@ -387,6 +387,15 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         return custIdList;
     }
 
+    @Override
+    public List<CrmCustomerManager> selectCrmCustomerManagerByCustId(Long customerId) {
+        QueryWrapper<CrmCustomerManager> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CrmCustomerManager::getCustId,customerId);
+        queryWrapper.lambda().eq(CrmCustomerManager::getIsSale,1);
+        queryWrapper.lambda().eq(CrmCustomerManager::getIsDeleted,0);
+        return this.list(queryWrapper);
+    }
+
 
     /**
     * @description 判断是否保存信息

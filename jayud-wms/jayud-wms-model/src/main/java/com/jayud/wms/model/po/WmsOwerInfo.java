@@ -1,5 +1,6 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -58,6 +59,7 @@ public class WmsOwerInfo extends SysBaseEntity {
     @ApiModelProperty(value = "分配策略id")
     private Long allocationStrategyId;
 
+    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 

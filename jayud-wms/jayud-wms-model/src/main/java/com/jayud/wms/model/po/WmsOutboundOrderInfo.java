@@ -1,5 +1,7 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -117,6 +119,7 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "物料总数")
     private BigDecimal materialAccount;
 
+    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 

@@ -1,5 +1,6 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -10,6 +11,7 @@ import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Material 实体类
@@ -105,4 +107,8 @@ public class Material extends SysBaseEntity {
 
     @ApiModelProperty(value = "上传文件")
     private String description;
+
+    @ApiModelProperty(value = "id集合")
+    @TableField(exist = false)
+    private List<Long> ids;
 }

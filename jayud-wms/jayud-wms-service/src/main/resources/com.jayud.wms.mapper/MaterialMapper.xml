@@ -146,6 +146,13 @@
                 AND is_put_shelf = ${material.isPutShelf}
             </if>
 
+            <if test="material.ids !=null and material.ids.size > 0">
+                and id IN
+                <foreach collection="material.ids" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
         </where>
     </sql>
 

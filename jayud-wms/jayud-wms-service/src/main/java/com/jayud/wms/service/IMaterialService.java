@@ -3,6 +3,8 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QualityMaterialForm;
 import com.jayud.wms.model.po.Material;
@@ -83,4 +85,23 @@ public interface IMaterialService extends IService<Material> {
     List<Material> findMaterialSNOne(QualityMaterialForm qualityMaterialForm);
 
     int  updateAllMaterialList(@Param("material") Material material);
+
+    /**
+     * @description 确认收货
+     * @author  ciro
+     * @date   2022/3/29 13:44
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult confirmReceipt(DeleteForm deleteForm);
+
+    /**
+     * @description 撤销确认收货
+     * @author  ciro
+     * @date   2022/3/29 14:12
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult cancelConfirmReceipt(DeleteForm deleteForm);
+
 }

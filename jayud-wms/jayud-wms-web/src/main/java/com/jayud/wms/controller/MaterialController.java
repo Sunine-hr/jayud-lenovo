@@ -5,6 +5,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.Material;
 import com.jayud.wms.service.IMaterialService;
 import io.swagger.annotations.Api;
@@ -183,6 +184,18 @@ public class MaterialController {
         } catch (Exception e) {
             logger.warn(e.toString());
         }
+    }
+
+    @ApiOperation("确认收货--new")
+    @PostMapping(path = "/confirmReceipt")
+    public BaseResult confirmReceipt(@RequestBody  DeleteForm deleteForm){
+        return materialService.confirmReceipt(deleteForm);
+    }
+
+    @ApiOperation("撤销收货--new")
+    @PostMapping(path = "/cancelConfirmReceipt")
+    public BaseResult cancelConfirmReceipt(@RequestBody  DeleteForm deleteForm){
+        return materialService.confirmReceipt(deleteForm);
     }
 
 }

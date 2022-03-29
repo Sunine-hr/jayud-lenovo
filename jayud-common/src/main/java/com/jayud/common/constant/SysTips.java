@@ -335,6 +335,8 @@ public interface SysTips {
 
     String EXIT_SAMENAME = "存在相同名称!";
 
+    String ALL_COMFIRM_CANCEL_ERR = "已全部确认收货，无法撤销收货！";
+
     // WMS -END
 }
 

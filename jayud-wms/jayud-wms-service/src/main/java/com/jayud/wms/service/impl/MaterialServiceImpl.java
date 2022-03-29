@@ -2,27 +2,31 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QualityMaterialForm;
 import com.jayud.wms.model.po.Material;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.mapper.MaterialMapper;
+import com.jayud.wms.model.po.Receipt;
 import com.jayud.wms.service.IMaterialService;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.wms.service.IReceiptService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 货单物料信息 服务实现类
@@ -33,6 +37,8 @@ import java.util.Map;
 @Service
 public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
 
+    @Autowired
+    private IReceiptService receiptService;
 
     @Autowired
     private MaterialMapper materialMapper;
@@ -150,6 +156,110 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     @Override
     public int updateAllMaterialList(Material material) {
         return this.baseMapper.updateAllMaterialList(material);
+    }
+
+    @Override
+    public BaseResult confirmReceipt(DeleteForm deleteForm) {
+        if (CollUtil.isNotEmpty(deleteForm.getIds())){
+            return BaseResult.error(SysTips.IDS_ISEMPTY);
+        }
+        List<String> errList = new ArrayList<>();
+        Material material = new Material();
+        material.setIds(deleteForm.getIds());
+        List<Material> materialList = selectList(material);
+        List<Material> successList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(materialList)){
+            materialList.forEach(materials -> {
+                if (materials.getStatus().equals(MaterialStatusEnum.THREE)){
+                    errList.add(materials.getMaterialCode());
+                }else {
+                    materials.setStatus(MaterialStatusEnum.THREE.getCode());
+                    successList.add(materials);
+                }
+            });
+        }
+        if (CollUtil.isNotEmpty(successList)){
+            this.updateBatchById(successList);
+            checkIsAllComfirmReceipt(successList.get(0).getOrderId());
+        }
+        if (CollUtil.isNotEmpty(errList)){
+            return BaseResult.error(StringUtils.join(errList, StrUtil.C_COMMA) + " 已确认收货，请勿重复确认！");
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
+    }
+
+    @Override
+    public BaseResult cancelConfirmReceipt(DeleteForm deleteForm) {
+        if (CollUtil.isNotEmpty(deleteForm.getIds())){
+            return BaseResult.error(SysTips.IDS_ISEMPTY);
+        }
+        Material material = new Material();
+        material.setIds(deleteForm.getIds());
+        List<Material> materialList = selectList(material);
+        List<String> errList = new ArrayList<>();
+        List<Material> successList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(materialList)){
+            if (checkIsAllComfirm(materialList.get(0).getOrderId())){
+                return BaseResult.error(SysTips.ALL_COMFIRM_CANCEL_ERR);
+            }
+            materialList.forEach(material1 -> {
+                //未确认收货
+                if (!material1.getStatus().equals(MaterialStatusEnum.THREE)){
+                    errList.add(material1.getMaterialCode());
+                }else {
+                    successList.add(material1);
+                }
+            });
+        }
+        if (CollUtil.isNotEmpty(successList)){
+            this.updateBatchById(successList);
+        }
+        if (CollUtil.isNotEmpty(errList)){
+            return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 未确认收货，请勿撤销收货！");
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
+    }
+
+    /**
+     * @description 判断是否全部确认收货并修改为待上架
+     * @author  ciro
+     * @date   2022/3/29 14:00
+     * @param: orderId   收货单id
+     * @return: void
+     **/
+    private void checkIsAllComfirmReceipt(Long orderId){
+        Material material = new Material();
+        material.setOrderId(orderId);
+        boolean isEnd = true;
+        List<Material> materialList = selectList(material);
+        if (CollUtil.isNotEmpty(materialList)){
+            for (Material material1:materialList){
+                if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
+                    isEnd = false;
+                    break;
+                }
+            }
+        }
+        if (isEnd){
+            Receipt receipt = receiptService.getById(orderId);
+            receipt.setStatus(MaterialStatusEnum.FIVE.getCode());
+            receiptService.updateById(receipt);
+        }
+    }
+
+    /**
+     * @description 判断是否全部确认
+     * @author  ciro
+     * @date   2022/3/29 14:16
+     * @param: orderId
+     * @return: boolean
+     **/
+    private boolean checkIsAllComfirm(Long orderId){
+        Receipt receipt = receiptService.getById(orderId);
+        if (receipt.getStatus().equals(MaterialStatusEnum.FIVE.getCode())){
+            return true;
+        }
+        return false;
     }
 
 

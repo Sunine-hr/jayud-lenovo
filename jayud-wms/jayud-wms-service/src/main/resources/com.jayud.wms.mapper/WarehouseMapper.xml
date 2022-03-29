@@ -138,12 +138,27 @@
     </select>
 
     <select id="queryWarehouseForExcel" parameterType="map" resultType="java.util.LinkedHashMap">
-        SELECT w.code AS "code",w.name AS "name",w.type AS "type",w.contacts AS "contacts",w.phone as "phone",w.email as "email",w.contact_addr as "contact_addr",w.lo as lo ,w.la as la,
-        case when w.is_mixing = 1  then '是'
-        when w.is_mixing = 0  then '否' end as "isMixing",w.create_by as "createBy",
+
+        SELECT
+        w.CODE AS "code",
+        w.NAME AS "name",
+        w.type AS "type",
+        w.contacts AS "contacts",
+        w.phone AS "phone",
+        w.email AS "email",
+        w.contact_addr AS "contact_addr",
+        CASE
+        WHEN w.status = 1 THEN
+        '是'
+        WHEN w.status = 0 THEN
+        '否'
+        END AS "isMixing",
+        w.create_by AS "createBy",
         w.create_time AS "createTime"
-        FROM wms_warehouse w
-        WHERE w.is_deleted = 0
+        FROM
+        wms_warehouse w
+        WHERE
+        w.is_deleted = 0
         <if test="code != null">
             AND w.code like concat('%',#{code},'%')
         </if>

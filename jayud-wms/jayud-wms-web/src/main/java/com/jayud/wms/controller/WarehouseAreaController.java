@@ -160,7 +160,7 @@ public class WarehouseAreaController {
     @PostMapping(path = "/exportWarehouseArea")
     public void exportWarehouseArea(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
-            List<String> headList = Arrays.asList("所属仓库", "库区编码", "库区名称", "库区类型(中文值)", "是否允许混放","创建人","创建时间");
+            List<String> headList = Arrays.asList("所属仓库", "库区编码", "库区名称", "库区类型", "是否启用","创建人","创建时间");
             List<LinkedHashMap<String, Object>> dataList = warehouseAreaService.queryWarehouseAreaForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "仓库库区", response);
         } catch (Exception e) {

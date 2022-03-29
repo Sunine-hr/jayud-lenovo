@@ -178,12 +178,18 @@ public class WarehouseController {
         BaseResult<List<SysDictItem>> wmsTheReservoirType = authClient.selectItemByDictCode("wms_the_reservoir_type");
         //库位类型
         BaseResult<List<SysDictItem>> wmsLocationType = authClient.selectItemByDictCode("wms_location_type");
+        //周转方式
+        BaseResult<List<SysDictItem>> wmsTurnoverWay = authClient.selectItemByDictCode("wms_turnover_way");
+        //周转参数
+        BaseResult<List<SysDictItem>> wmsTurnoverLotNumber = authClient.selectItemByDictCode("wms_turnover_lot_number");
 
         //todo 策略下拉值
         Map<String, Object> map = new HashMap<>();
         map.put("wmsWarehouseType", wmsWarehouseType);
         map.put("wmsTheReservoirType", wmsTheReservoirType);
         map.put("wmsLocationType", wmsLocationType);
+        map.put("wmsTurnoverWay", wmsTurnoverWay);
+        map.put("wmsTurnoverLotNumber", wmsTurnoverLotNumber);
         return BaseResult.ok(map);
     }
 
@@ -204,7 +210,7 @@ public class WarehouseController {
     @PostMapping(path = "/exportWarehouse")
     public void exportWarehouse(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
-            List<String> headList = Arrays.asList("仓库编码", "仓库名称", "仓库类型", "联系人", "手机号", "邮箱", "联系地址", "经度", "纬度", "是否允许混放", "创建人", "创建时间");
+            List<String> headList = Arrays.asList("仓库编码", "仓库名称", "仓库类型", "联系人", "手机号", "邮箱", "联系地址", "是否启用", "创建人", "创建时间");
             List<LinkedHashMap<String, Object>> dataList = warehouseService.queryWarehouseForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "仓库", response);
         } catch (Exception e) {

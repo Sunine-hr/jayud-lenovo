@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
@@ -26,7 +27,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="字典项对象", description="字典项")
+@ApiModel(value = "字典项对象", description = "字典项")
 public class SysDictItem extends SysBaseEntity {
 
 
@@ -53,8 +54,19 @@ public class SysDictItem extends SysBaseEntity {
 //    @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "自定义1")
+    private String customOne;
+    @ApiModelProperty(value = "自定义2")
+    private String customTwo;
+    @ApiModelProperty(value = "自定义3")
+    private String customThree;
+    @ApiModelProperty(value = "自定义4")
+    private String customFour;
+    @ApiModelProperty(value = "自定义5")
+    private String customFive;
 
-
+    @ApiModelProperty(value = "是否能修改")
+    private Boolean isEdit;
 
 
 }

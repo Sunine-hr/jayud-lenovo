@@ -7,7 +7,7 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.DateUtils;
-import com.jayud.common.utils.StringUtils;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.feign.FileClient;
 import com.jayud.crm.model.bo.AddCrmCustomerAgreementForm;
 import com.jayud.crm.model.enums.FileModuleEnum;
@@ -49,6 +49,8 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
     private ICrmFileService crmFileService;
     @Autowired
     private FileClient fileClient;
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCustomerAgreementVO> selectPage(CrmCustomerAgreement crmCustomerAgreement,
@@ -62,7 +64,7 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
         for (CrmCustomerAgreementVO record : pageList.getRecords()) {
             List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CA.getCode())));
             files.forEach(e -> {
-                e.setUploadFileUrl(url + e.getUploadFileUrl());
+                e.setUploadFileUrl(url + e.getUploadFileUrl() + "?name=" + e.getFileName());
             });
             record.setEffectiveTime(record.getBeginDate() + "-" + record.getEndDate());
             record.setFiles(files);
@@ -72,7 +74,17 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
 
     @Override
     public List<CrmCustomerAgreementVO> selectList(CrmCustomerAgreement crmCustomerAgreement) {
-        return crmCustomerAgreementMapper.list(crmCustomerAgreement);
+        List<CrmCustomerAgreementVO> list = crmCustomerAgreementMapper.list(crmCustomerAgreement);
+        Object url = this.fileClient.getBaseUrl().getData();
+        for (CrmCustomerAgreementVO record : list) {
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CA.getCode())));
+            files.forEach(e -> {
+                e.setUploadFileUrl(url + e.getUploadFileUrl() + "?name=" + e.getFileName());
+            });
+            record.setEffectiveTime(record.getBeginDate() + "-" + record.getEndDate());
+            record.setFiles(files);
+        }
+        return list;
     }
 
 
@@ -99,14 +111,18 @@ public class CrmCustomerAgreementServiceImpl extends ServiceImpl<CrmCustomerAgre
     public void saveOrUpdate(AddCrmCustomerAgreementForm form) {
         CrmCustomerAgreement tmp = ConvertUtil.convert(form, CrmCustomerAgreement.class);
         if (form.getId() == null) {
+            authClient.addSysLogFeign("新增了合作协议", form.getCustId());
             if (this.exitNumber(form.getAgreementCode())) {
                 throw new JayudBizException(400, SysTips.NUM_ALREADY_EXISTS);
             }
+
             tmp.setCheckStateFlag("N0").setTenantCode(CurrentUserUtil.getUserTenantCode());
         } else {
+            authClient.addSysLogFeign("编辑了合作协议", form.getCustId());
             tmp.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(tmp);
+        form.setId(tmp.getId());
         //文件处理
         this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.CA.getCode());
     }

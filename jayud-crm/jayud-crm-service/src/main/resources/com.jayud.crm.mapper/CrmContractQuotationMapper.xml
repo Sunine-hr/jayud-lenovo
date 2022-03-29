@@ -76,11 +76,11 @@
             </if>
 
             <if test="crmContractQuotation.customerId != null and crmContractQuotation.customerId != ''">
-                AND customer_id LIKE CONCAT('%',#{crmContractQuotation.customerId},'%')
+                AND customer_id = #{crmContractQuotation.customerId}
             </if>
 
             <if test="crmContractQuotation.customerCode != null and crmContractQuotation.customerCode != ''">
-                AND customer_code LIKE CONCAT('%',#{crmContractQuotation.customerCode},'%')
+                AND customer_code = #{crmContractQuotation.customerCode}
             </if>
 
             <if test="crmContractQuotation.customerName != null and crmContractQuotation.customerName != ''">
@@ -132,7 +132,7 @@
             </if>
 
             <if test="crmContractQuotation.checkStateFlag != null and crmContractQuotation.checkStateFlag != ''">
-                AND check_state_flag LIKE CONCAT('%',#{crmContractQuotation.checkStateFlag},'%')
+                AND check_state_flag = #{crmContractQuotation.checkStateFlag}
             </if>
 
             <if test="crmContractQuotation.tenantCode != null and crmContractQuotation.tenantCode != ''">

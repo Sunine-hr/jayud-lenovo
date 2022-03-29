@@ -1,2 +1,0 @@
-ALTER TABLE `cost_info`
-ADD COLUMN `is_driver_show` tinyint(1) NULL COMMENT '是否展示给司机' AFTER `update_time`;

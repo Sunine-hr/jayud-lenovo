@@ -4,43 +4,50 @@
 
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysLog">
-        <id column="id" property="id" />
-        <result column="log_type" property="logType" />
-        <result column="log_content" property="logContent" />
-        <result column="operate_type" property="operateType" />
-        <result column="userid" property="userid" />
-        <result column="username" property="username" />
-        <result column="ip" property="ip" />
-        <result column="method" property="method" />
-        <result column="request_url" property="requestUrl" />
-        <result column="request_param" property="requestParam" />
-        <result column="request_type" property="requestType" />
-        <result column="cost_time" property="costTime" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
+        <id column="id" property="id"/>
+        <result column="log_type" property="logType"/>
+        <result column="business_id" property="businessId"/>
+        <result column="log_content" property="logContent"/>
+        <result column="operate_type" property="operateType"/>
+        <result column="userid" property="userid"/>
+        <result column="username" property="username"/>
+        <result column="ip" property="ip"/>
+        <result column="method" property="method"/>
+        <result column="request_url" property="requestUrl"/>
+        <result column="request_param" property="requestParam"/>
+        <result column="request_type" property="requestType"/>
+        <result column="cost_time" property="costTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, log_type, log_content, operate_type, userid, username, ip, method, request_url, request_param, request_type, cost_time, create_by, create_time, update_by, update_time
+            id, log_type, business_id, log_content, operate_type, userid, username, ip, method, request_url, request_param, request_type, cost_time, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
     <sql id="tname">sys_log </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        FROM <include refid="tname"/>
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
         <where>
-            is_deleted = 0
+
             <if test="sysLog.logType != null ">
                 AND log_type = ${sysLog.logType}
             </if>
 
+            <if test="sysLog.businessId != null ">
+                AND business_id = ${sysLog.businessId}
+            </if>
+
             <if test="sysLog.logContent != null and sysLog.logContent != ''">
-                AND log_content = #{sysLog.logContent}
+                AND log_content LIKE CONCAT('%',#{sysLog.logContent},'%')
             </if>
 
             <if test="sysLog.operateType != null ">
@@ -48,31 +55,31 @@
             </if>
 
             <if test="sysLog.userid != null and sysLog.userid != ''">
-                AND userid = #{sysLog.userid}
+                AND userid LIKE CONCAT('%',#{sysLog.userid},'%')
             </if>
 
             <if test="sysLog.username != null and sysLog.username != ''">
-                AND username = #{sysLog.username}
+                AND username LIKE CONCAT('%',#{sysLog.username},'%')
             </if>
 
             <if test="sysLog.ip != null and sysLog.ip != ''">
-                AND ip = #{sysLog.ip}
+                AND ip LIKE CONCAT('%',#{sysLog.ip},'%')
             </if>
 
             <if test="sysLog.method != null and sysLog.method != ''">
-                AND method = #{sysLog.method}
+                AND method LIKE CONCAT('%',#{sysLog.method},'%')
             </if>
 
             <if test="sysLog.requestUrl != null and sysLog.requestUrl != ''">
-                AND request_url = #{sysLog.requestUrl}
+                AND request_url LIKE CONCAT('%',#{sysLog.requestUrl},'%')
             </if>
 
             <if test="sysLog.requestParam != null and sysLog.requestParam != ''">
-                AND request_param = #{sysLog.requestParam}
+                AND request_param LIKE CONCAT('%',#{sysLog.requestParam},'%')
             </if>
 
             <if test="sysLog.requestType != null and sysLog.requestType != ''">
-                AND request_type = #{sysLog.requestType}
+                AND request_type LIKE CONCAT('%',#{sysLog.requestType},'%')
             </if>
 
             <if test="sysLog.costTime != null ">
@@ -82,15 +89,61 @@
         </where>
     </sql>
 
-    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysLog">
-        <include refid="selects"/>
+    <select id="pageList" parameterType="com.jayud.auth.model.bo.SysLogForm"
+            resultType="com.jayud.auth.model.vo.SysLogVO">
+
+        SELECT
+        id,
+        log_type,
+        business_id,
+        log_content,
+        operate_type,
+        userid,
+        username,
+        true_name,
+        ip,
+        method,
+        request_url,
+        request_param,
+        request_type,
+        cost_time,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        sys_log
+        <where>
+
+            <if test="sysLog.username != null ">
+                AND username LIKE CONCAT('%',#{sysLog.username}, '%')
+            </if>
+
+            <if test="sysLog.businessId != null ">
+                AND business_id =#{sysLog.businessId}
+            </if>
+
+            <if test="sysLog.trueName != null ">
+                AND true_name LIKE CONCAT('%',#{sysLog.trueName}, '%')
+            </if>
+            <if test="sysLog.operateType != null ">
+                AND operate_type =#{sysLog.operateType}
+            </if>
+            <if test="sysLog.logType != null ">
+                AND log_type=#{sysLog.logType}
+            </if>
+
+            <if test="sysLog.creationTimeOne != null and sysLog.creationTimeTwo != null   ">
+                and create_time between #{sysLog.creationTimeOne} and #{sysLog.creationTimeTwo}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysLog">
         <include refid="selects"/>
     </select>
-
-
 
 
     <delete id="phyDelById">
@@ -99,8 +152,48 @@
 
     <update id="logicDel">
         UPDATE sys_log SET is_deleted = 1 ,update_by = #{username}, update_time = now()
-        WHERE id = ${id} AND is_deleted = 0
+        WHERE id = ${id}
     </update>
 
+
+    <select id="querySysLogForExcel" parameterType="com.jayud.auth.model.bo.SysLogForm"
+            resultType="java.util.LinkedHashMap">
+        SELECT
+        create_time,
+        username,
+        true_name,
+        log_content,
+        request_url,
+        ip
+        FROM
+        sys_log
+        <where>
+
+            <if test="sysLog.username != null ">
+                AND username LIKE CONCAT('%',#{sysLog.username}, '%')
+            </if>
+
+            <if test="sysLog.trueName != null ">
+                AND true_name LIKE CONCAT('%',#{sysLog.trueName}, '%')
+            </if>
+
+            <if test="sysLog.businessId != null ">
+                AND business_id =#{sysLog.businessId}
+            </if>
+
+            <if test="sysLog.operateType != null ">
+                AND operate_type =#{sysLog.operateType}
+            </if>
+            <if test="sysLog.logType != null ">
+                AND log_type=#{sysLog.logType}
+            </if>
+
+            <if test="sysLog.creationTimeOne != null and sysLog.creationTimeTwo != null   ">
+                and create_time between #{sysLog.creationTimeOne} and #{sysLog.creationTimeTwo}
+            </if>
+
+        </where>
+        ORDER BY create_time DESC
+    </select>
 
 </mapper>

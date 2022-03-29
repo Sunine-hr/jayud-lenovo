@@ -1,0 +1,5 @@
+jayud:
+  nacos:
+    server-addr: 192.168.0.231:8848
+    config:
+      namespace: fc5bdf96-1d6b-4ef7-ad26-37877b306745

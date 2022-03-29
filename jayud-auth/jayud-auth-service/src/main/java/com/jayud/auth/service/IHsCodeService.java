@@ -8,6 +8,7 @@ import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.po.HsCode;
 import com.jayud.auth.model.vo.HsCodeFormVO;
 import com.jayud.auth.model.vo.HsCodeVO;
+import com.jayud.common.CommonResult;
 
 import java.util.List;
 
@@ -69,4 +70,11 @@ public interface IHsCodeService extends IService<HsCode> {
      * @return
      */
     HsCodeVO getHsCodeDetailByCodeNo(String codeNo);
+
+    /**
+     * 删除海关编码
+     * @param form
+     * @return
+     */
+    CommonResult deleteByIds(DeleteForm form);
 }

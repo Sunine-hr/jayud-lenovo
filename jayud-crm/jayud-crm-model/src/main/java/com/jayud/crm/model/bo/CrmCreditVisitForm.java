@@ -123,7 +123,7 @@ public class CrmCreditVisitForm extends SysBaseEntity {
         }
         // 只传第二个 计算 到第二个时间之前的所有的
         if(creationTime.get(1)!=null&&creationTime.get(0)==null){
-            this.creationTimeOne = CrmDictCode.CRM_FILE_TYPE ;
+            this.creationTimeOne = CrmDictCode.STARTING_TIME_TYPE ;
             this.creationTimeTwo = creationTime.get(1);
         }
         if(creationTime.get(0)!=null&&creationTime.get(1)!=null){
@@ -132,10 +132,18 @@ public class CrmCreditVisitForm extends SysBaseEntity {
         }
     }
 
+
+
     public static void main(String[] args) {
         String dateStr = "2021-09-03 21:00:00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime parsedDate = LocalDateTime.parse(dateStr, formatter);
-        System.out.println(parsedDate);
+//        System.out.println(parsedDate);
+
+        String s="名字 ";
+        System.out.println("之前："+s.length());
+        String trim = s.trim();
+        System.out.println(trim);
+        System.out.println("之后："+trim.length());
     }
 }

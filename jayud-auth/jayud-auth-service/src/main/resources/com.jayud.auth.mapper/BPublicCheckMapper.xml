@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.BPublicCheck">
         <id column="id" property="id" />
-        <result column="table_name" property="sheetCode" />
+        <result column="sheet_code" property="sheetCode" />
         <result column="check_flag" property="checkFlag" />
         <result column="record_id" property="recordId" />
         <result column="f_level" property="fLevel" />
@@ -18,12 +18,13 @@
         <result column="check_state_flag" property="checkStateFlag" />
         <result column="is_check" property="isCheck" />
         <result column="time_consuming" property="timeConsuming" />
+        <result column="menu_code" property="menuCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
             id, sheet_code, check_flag , record_id, f_level, f_step, remark, f_check_id, f_check_name, create_by, create_time,check_state_flag,
-            is_check,time_consuming
+            is_check,time_consuming,menu_code
     </sql>
 
     <!-- 表名 -->
@@ -210,8 +211,8 @@
         select * from ${checkDatabase}.${checkTable} where id = #{recordId}
     </select>
 
-    <select id="getPublicCheckByRecordId" resultType="map" >
-        select *,max (crt_by_dtm) from b_public_check where id = #{recordId} and check_flag = #{checkFlag} and table_name = #{sheetCode}
+    <select id="getPublicCheckByRecordId" resultType="com.jayud.auth.model.po.BPublicCheck" >
+        select *,max(create_time) from b_public_check where record_id = #{recordId} and check_flag = #{checkFlag} and sheet_code = #{sheetCode}
     </select>
 
     <update id="updateData" >
@@ -221,5 +222,9 @@
     <update id="updateCheckData" >
         update ${checkDatabase}.${checkTable} set f_step = #{newStep}, check_state_flag = #{checkFlag}, update_by = #{name}, update_time = #{now} where id = #{recordId}
     </update>
+
+    <select id="getPublicCheckByRecordIdAndfStep" resultType="com.jayud.auth.model.po.BPublicCheck">
+        select *,max(create_time) from b_public_check where record_id = #{checkForm.recordId} and check_flag = 1 and sheet_code = #{checkForm.sheetCode} and f_step = #{fStep} and menu_code = #{checkForm.menuCode}
+    </select>
 
 </mapper>

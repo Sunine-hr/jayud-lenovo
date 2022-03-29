@@ -1,5 +1,6 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -30,7 +31,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: sysRoleActionCheck
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    IPage<SysRoleActionCheckVO> pageList(@Param("page") Page<SysRoleActionCheckVO> page, @Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    IPage<SysRoleActionCheckVO> pageList(@Param("page") Page<SysRoleActionCheckVO> page, @Param("form") QueryForm form);
 
     /**
      * @description 列表查询数据
@@ -39,7 +40,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: sysRoleActionCheck
      * @return: java.util.List<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    List<SysRoleActionCheck> list(@Param("sysRoleActionCheck") SysRoleActionCheck sysRoleActionCheck);
+    List<SysRoleActionCheck> list(@Param("form") QueryForm form);
 
 
     /**
@@ -59,7 +60,7 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @param: username
      * @return: int
      **/
-    int logicDel(@Param("id") Long id,@Param("username") String username);
+    int logicDel(@Param("ids") List<Long> ids,@Param("username") String username);
 
 
     /**
@@ -70,4 +71,19 @@ public interface SysRoleActionCheckMapper extends BaseMapper<SysRoleActionCheck>
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> querySysRoleActionCheckForExcel(Map<String, Object> paramMap);
+
+    /**
+     * 获取按钮有几个审核级别
+     * @param menuCode
+     * @return
+     */
+    List<SysRoleActionCheckVO> getList(@Param("menuCode")String menuCode);
+
+    /**
+     * 获取该级审核有哪些角色
+     * @param checkLevel
+     * @param menuCode
+     * @return
+     */
+    List<SysRoleActionCheckVO> getListByCheckLevelAndMenuCode(@Param("checkLevel")Integer checkLevel, @Param("menuCode")String menuCode);
 }

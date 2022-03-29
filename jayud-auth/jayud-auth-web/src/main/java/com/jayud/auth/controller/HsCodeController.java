@@ -4,16 +4,19 @@ package com.jayud.auth.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.bo.AddHsCodeForm;
+import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.enums.CorrespondEnum;
 import com.jayud.auth.model.vo.HsCodeFormVO;
 import com.jayud.auth.model.vo.HsCodeVO;
+import com.jayud.auth.service.IBUnitService;
 import com.jayud.auth.service.IHsCodeService;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.CommonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +42,9 @@ public class HsCodeController {
 
     @Autowired
     private IHsCodeService hsCodeService;
+
+    @Autowired
+    private IBUnitService bUnitService;
 
     @ApiOperation(value = "海关编码列表")
     @PostMapping(value = "/findByPage")
@@ -77,6 +83,7 @@ public class HsCodeController {
     @ApiOperation(value = "增加或修改信息")
     @PostMapping(value = "/saveOrUpdateHsCode")
     public CommonResult saveOrUpdateHsCode(@Valid @RequestBody AddHsCodeForm form) {
+
         boolean result = hsCodeService.saveOrUpdateHsCode(form);
         if(result){
             return CommonResult.success();
@@ -99,6 +106,20 @@ public class HsCodeController {
         String codeNo = MapUtil.getStr(map, "codeNo");
         HsCodeVO hsCodeVO = hsCodeService.getHsCodeDetailByCodeNo(codeNo);
         return CommonResult.success(hsCodeVO);
+    }
+
+    @ApiOperation(value = "删除海关编码")
+    @PostMapping(value = "/deleteByIds")
+    public CommonResult deleteByIds(@RequestBody DeleteForm form) {
+        return this.hsCodeService.deleteByIds(form);
+    }
+
+    @ApiOperation(value = "添加或修改商品下拉列表框")
+    @PostMapping(value = "/commodityCombox")
+    public CommonResult commodityCombox() {
+        //获取商品单位下拉
+        List<String> units = bUnitService.getUnits();
+        return CommonResult.success(units);
     }
 
 }

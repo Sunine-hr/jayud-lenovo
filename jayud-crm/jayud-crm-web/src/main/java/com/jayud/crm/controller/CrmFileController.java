@@ -216,4 +216,12 @@ public class CrmFileController {
     }
 
 
+    @ApiOperation("新增附件")
+    @PostMapping(path = "/addFile")
+    public BaseResult addFile(@RequestParam("crmFiles")List<CrmFile> crmFiles,@RequestParam("business")Long business,@RequestParam("code")String code){
+        this.crmFileService.doFileProcessing(crmFiles,business,code);
+        return BaseResult.ok();
+    }
+
+
 }

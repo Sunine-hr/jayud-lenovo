@@ -102,7 +102,9 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 delIds.add(manager.getId());
             }
         }
-        crmCustomerManagerMapper.logicDelByIds(delIds,CurrentUserUtil.getUsername());
+        if (CollUtil.isNotEmpty(delIds)) {
+            crmCustomerManagerMapper.logicDelByIds(delIds, CurrentUserUtil.getUsername());
+        }
     }
 
 
@@ -161,9 +163,21 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                             managerLists.add(manager);
                         }
                     });
-                    if (CollUtil.isNotEmpty(managerLists)){
-                        this.saveBatch(managerLists);
-                    }
+                }else {
+                    CrmCustomerManager manager = new CrmCustomerManager();
+                    manager.setCustId(crmCustomerForm.getId());
+                    manager.setIsCharger(true);
+                    //对接人信息
+                    manager.setManageUserId(crmCustomerForm.getManagerUserId());
+                    manager.setManageUsername(crmCustomerForm.getManagerUsername());
+                    manager.setManageRoles(RoleCodeEnum.SALE_ROLE.getRoleCode());
+                    manager.setManagerRolesName(RoleCodeEnum.SALE_ROLE.getRoleName());
+                    manager.setIsSale(true);
+                    manager.setGenerateDate(LocalDateTime.now());
+                    managerLists.add(manager);
+                }
+                if (CollUtil.isNotEmpty(managerLists)){
+                    this.saveBatch(managerLists);
                 }
             }
         }
@@ -244,7 +258,8 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                 delChargerManager(delList);
             }
             if (CollUtil.isNotEmpty(addList)){
-                cnaleInpublicByIds(addList);
+                SysUser user = authClient.selectByUserId(comCustomerForm.getChangerUserId()).getResult();
+                crmCustomerService.cnaleInpublicByIds(addList,comCustomerForm.getChangerUserId(),user.getUserName());
                 addChargerManager(addList,custMap,comCustomerForm.getChangerUserId(),comCustomerForm.getChangeUserName(),RoleCodeEnum.SALE_ROLE.getRoleCode(), RoleCodeEnum.SALE_ROLE.getRoleName());
                 crmCustomerService.updateManagerMsg(addList,comCustomerForm.getChangerUserId(),comCustomerForm.getChangeUserName());
             }
@@ -359,22 +374,26 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
         crmCustomerManagerMapper.logicDelByCustIds(custIds,CurrentUserUtil.getUsername(),null);
     }
 
-    /**
-     * @description 根据id领取用户
-     * @author  ciro
-     * @date   2022/3/11 16:50
-     * @param: addList
-     * @return: void
-     **/
-    private void cnaleInpublicByIds(List<Long> addList){
-        CrmCustomer crmCustomer = new CrmCustomer();
-        crmCustomer.setIsPublic(false);
-        crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());
-        crmCustomer.setUpdateTime(new Date());
-        LambdaUpdateWrapper<CrmCustomer> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.in(CrmCustomer::getId,addList);
-        crmCustomerService.update(crmCustomer,lambdaUpdateWrapper);
+    @Override
+    public List<Long> selectCustIdListByUserIds(List<Long> userIds) {
+        LambdaQueryWrapper<CrmCustomerManager> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(CrmCustomerManager::getManageUserId,userIds);
+        lambdaQueryWrapper.eq(CrmCustomerManager::getIsDeleted,false);
+        List<CrmCustomerManager> managerList = this.list(lambdaQueryWrapper);
+        List<Long> custIdList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(managerList)){
+            custIdList = managerList.stream().map(x->x.getId()).distinct().collect(Collectors.toList());
+        }
+        return custIdList;
+    }
 
+    @Override
+    public List<CrmCustomerManager> selectCrmCustomerManagerByCustId(Long customerId) {
+        QueryWrapper<CrmCustomerManager> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CrmCustomerManager::getCustId,customerId);
+        queryWrapper.lambda().eq(CrmCustomerManager::getIsSale,1);
+        queryWrapper.lambda().eq(CrmCustomerManager::getIsDeleted,0);
+        return this.list(queryWrapper);
     }
 
 

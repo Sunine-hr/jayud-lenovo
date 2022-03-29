@@ -5,7 +5,7 @@
 
     <insert id="saveLog" parameterType="Object">
         insert into sys_log ( log_type, log_content, operate_type, method, request_url, request_param,
-                              request_type, ip, username,
+                              request_type, ip, username,true_name,
                               cost_time, create_time, create_by)
         values (#{dto.logType, jdbcType=INTEGER},
                 #{dto.logContent, jdbcType=VARCHAR},
@@ -16,6 +16,7 @@
                 #{dto.requestType, jdbcType=VARCHAR},
                 #{dto.ip, jdbcType=VARCHAR},
                 #{dto.username, jdbcType=VARCHAR},
+                #{dto.trueName, jdbcType=VARCHAR},
                 #{dto.costTime, jdbcType=BIGINT},
                 #{dto.createTime, jdbcType=TIMESTAMP},
                 #{dto.createBy, jdbcType=VARCHAR})

@@ -8,7 +8,7 @@
         <result column="code" property="code" />
         <result column="name" property="name" />
         <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
+        <result column="create_by" property="createBy" />
         <result column="status" property="status" />
     </resultMap>
 
@@ -18,7 +18,7 @@
     </sql>
 
     <select id="findByPage" resultType="com.jayud.auth.model.vo.SeaPortVO">
-        select id, code, name, create_time createTime, create_user createUser, status ,country,route,chinese_name chineseName
+        select id, code, name, create_time createTime, create_by createBy, status ,country,route,chinese_name chineseName
         from sea_port sp
         where status = 1
         <if test="form.code !=null and form.code!=''">

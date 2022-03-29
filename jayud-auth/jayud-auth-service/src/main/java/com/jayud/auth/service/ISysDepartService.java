@@ -107,4 +107,22 @@ public interface ISysDepartService extends IService<SysDepart> {
     List<SysDepart> selectDeptTreeStaff(QuerySysDeptForm form);
 
     List<SysDepart> getByOrgCategory(Integer orgCategory);
+
+    /**
+     * @description 根据id查找子节点
+     * @author  ciro
+     * @date   2022/3/21 10:52
+     * @param: id
+     * @return: java.util.List<com.jayud.auth.model.po.SysDepart>
+     **/
+    List<SysDepart> slectChildrenById(Long id);
+
+    /**
+     * 根据机构编码获取获取组织架构信息
+     * @param depart
+     * @return
+     */
+    SysDepart getByOrgCode(String depart);
+
+    List<SysDepart> selectOperationSubject(QuerySysDeptForm form);
 }

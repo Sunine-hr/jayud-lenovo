@@ -68,7 +68,7 @@ public class CrmCustomerAgreementSubServiceImpl extends ServiceImpl<CrmCustomerA
         IPage<CrmCustomerAgreementSubVO> pageList = crmCustomerAgreementSubMapper.pageList(page, crmCustomerAgreementSub);
         Object url = this.fileClient.getBaseUrl().getData();
         for (CrmCustomerAgreementSubVO record : pageList.getRecords()) {
-            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.CQ.getCode())));
+            List<CrmFile> files = this.crmFileService.list(new QueryWrapper<>(new CrmFile().setIsDeleted(false).setBusinessId(record.getId()).setCode(FileModuleEnum.SUB_CA.getCode())));
             files.forEach(e -> {
                 e.setUploadFileUrl(url + e.getUploadFileUrl());
             });
@@ -131,6 +131,7 @@ public class CrmCustomerAgreementSubServiceImpl extends ServiceImpl<CrmCustomerA
             tmp.setUpdateBy(CurrentUserUtil.getUsername());
         }
         this.saveOrUpdate(tmp);
+        form.setId(tmp.getId());
         //文件处理
         this.crmFileService.doFileProcessing(form.getFiles(), form.getId(), FileModuleEnum.SUB_CA.getCode());
     }

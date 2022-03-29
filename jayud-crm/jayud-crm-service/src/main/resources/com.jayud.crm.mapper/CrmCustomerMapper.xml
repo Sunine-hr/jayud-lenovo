@@ -414,6 +414,14 @@
             #{id}
         </foreach>
     </update>
+    <update id="cnaleInpublicByIds">
+        UPDATE crm_customer SET is_public = 0 ,fsales_id = ${managerUserId}, fsales_name = #{managerUsername} ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="queryCrmCustomerForExcel" resultType="java.util.LinkedHashMap">
         SELECT
@@ -678,6 +686,26 @@
                         AND remark LIKE CONCAT('%',#{remark}, '%')
                     </if>
 
+    </select>
+
+    <select id="selectCrmCustomerPage" resultType="com.jayud.crm.model.vo.CrmCustomerVO">
+        select cust_name custName,cust_name_abbr custNameAbbr,fsales_name fsalesName,fsales_id fsalesId,follower_name followerName,cust_code custCode,
+        settlement_method settlementMethod
+        from crm_customer c
+        where c.is_deleted = 0 and c.check_state_flag = 'Y'
+        <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
+            AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
+        </if>
+    </select>
+
+    <select id="selectCrmCustomerList" resultType="com.jayud.crm.model.vo.CrmCustomerVO">
+        select cust_name custName,cust_name_abbr custNameAbbr,fsales_name fsalesName,fsales_id fsalesId,follower_name followerName,cust_code custCode,
+        settlement_method settlementMethod
+        from crm_customer c
+        where c.is_deleted = 0 and c.check_state_flag = 'Y'
+        <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
+            AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
+        </if>
     </select>
 
 </mapper>

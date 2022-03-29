@@ -1,10 +1,15 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.jayud.common.result.ListPageRuslt;
 import com.jayud.common.result.PaginationBuilder;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.crm.model.bo.AddCrmCreditForm;
+import com.jayud.crm.model.po.CrmCreditDepart;
 import com.jayud.crm.model.po.CrmCustomer;
 import com.jayud.crm.model.vo.CrmCreditVO;
+import com.jayud.crm.service.ICrmCreditDepartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +51,8 @@ public class CrmCreditController {
 
     @Autowired
     public ICrmCreditService crmCreditService;
+    @Autowired
+    public ICrmCreditDepartService crmCreditDepartService;
 
 
     /**
@@ -95,11 +102,19 @@ public class CrmCreditController {
     @PostMapping("/saveOrUpdate")
     public BaseResult saveOrUpdate(@Valid @RequestBody AddCrmCreditForm form) {
 
-        if (form.getId()!=null){
+        if (form.getId() != null) {
+            List<CrmCreditVO> tmps = this.crmCreditService.selectList(new CrmCredit().setCreditId(form.getCreditId()).setIsDeleted(false).setTenantCode(CurrentUserUtil.getUserTenantCode()));
             CrmCredit crmCredit = this.crmCreditService.getById(form.getId());
-            if (crmCredit.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney())<0) {
-                return BaseResult.ok(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
+            if (form.getCreditMoney().compareTo(crmCredit.getCreditGrantedMoney()) < 0) {
+                return BaseResult.error(SysTips.INSUFFICIENT_REMAINING_AMOUNT);
             }
+            if (!CollectionUtil.isEmpty(tmps)) {
+                CrmCreditVO crmCreditVO = tmps.get(0);
+                if (!crmCreditVO.getId().equals(form.getId())) {
+                    return BaseResult.error(SysTips.TYPE_ALREADY_EXISTS);
+                }
+            }
+
         }
         crmCreditService.saveOrUpdate(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
@@ -117,6 +132,12 @@ public class CrmCreditController {
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam Long id) {
+        CrmCredit crmCredit = this.crmCreditService.getById(id);
+        //是否存在已分配额度
+        List<CrmCreditDepart> creditDeparts = this.crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(crmCredit.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        if (!CollectionUtil.isEmpty(creditDeparts)) {
+            return BaseResult.error(SysTips.CREDIT_DELETE_ERROR);
+        }
         crmCreditService.logicDel(id);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
@@ -132,9 +153,12 @@ public class CrmCreditController {
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<CrmCredit> queryById(@RequestParam(name = "id", required = true) int id) {
+    public BaseResult<CrmCreditVO> queryById(@RequestParam(name = "id", required = true) int id) {
         CrmCredit crmCredit = crmCreditService.getById(id);
-        return BaseResult.ok(crmCredit);
+        CrmCreditVO convert = ConvertUtil.convert(crmCredit, CrmCreditVO.class);
+        List<CrmCreditDepart> creditDeparts = this.crmCreditDepartService.selectList(new CrmCreditDepart().setCreditId(crmCredit.getCreditId()).setTenantCode(CurrentUserUtil.getUserTenantCode()).setIsDeleted(false));
+        convert.setIsCredit(!CollectionUtil.isEmpty(creditDeparts));
+        return BaseResult.ok(convert);
     }
 
 

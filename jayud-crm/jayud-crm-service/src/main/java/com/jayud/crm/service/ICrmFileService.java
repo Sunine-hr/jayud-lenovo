@@ -84,7 +84,7 @@ public interface ICrmFileService extends IService<CrmFile> {
     /**
      * 文件处理
      * @param files
-     * @param id
+     * @param businessId
      * @param code
      */
     void doFileProcessing(List<CrmFile> files, Long businessId, String code);

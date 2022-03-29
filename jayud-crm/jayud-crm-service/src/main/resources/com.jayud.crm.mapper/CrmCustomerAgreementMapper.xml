@@ -251,43 +251,23 @@
 
     <select id="queryCrmCustomerAgreementForExcel" resultType="java.util.LinkedHashMap">
         SELECT
-            id 'id',
             agreement_code 'agreementCode',
-            cust_id 'custId',
             cust_name 'custName',
             business_type 'businessType',
-            business_value 'businessValue',
-            treaty_type 'treatyType',
             treaty_name 'treatyName',
             begin_date 'beginDate',
             end_date 'endDate',
             validity_period 'validityPeriod',
             is_extended 'isExtended',
             postponed_type 'postponedType',
-            treaty_copy 'treatyCopy',
             treaty_remark 'treatyRemark',
-            user_id 'userId',
             user 'user',
-            depart_id 'departId',
             depart_name 'departName',
-            files_num 'filesNum',
-            is_default 'isDefault',
-            is_files 'isFiles',
-            files_code 'filesCode',
-            files_user 'filesUser',
-            files_dtm 'filesDtm',
-            f_level 'fLevel',
-            f_step 'fStep',
             check_state_flag 'checkStateFlag',
-            flow_instance_id 'flowInstanceId',
-            quotation_id 'quotationId',
-            tenant_code 'tenantCode',
+            quotation_num 'quotationNum',
             remark 'remark',
-            is_deleted 'isDeleted',
             create_by 'createBy',
-            create_time 'createTime',
-            update_by 'updateBy',
-            update_time 'updateTime'
+            create_time 'createTime'
         FROM crm_customer_agreement
         WHERE is_deleted = 0
                     <if test="agreementCode != null and agreementCode != ''">

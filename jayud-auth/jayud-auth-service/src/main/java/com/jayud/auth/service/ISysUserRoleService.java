@@ -2,12 +2,14 @@ package com.jayud.auth.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysRole;
 import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.auth.model.vo.SysUserVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 用户-角色关联表 服务类
@@ -146,4 +148,18 @@ public interface ISysUserRoleService extends IService<SysUserRole> {
      * @return
      */
     int getCountByUserNameAndStep(String username, String userTenantCode, String menuCode, Integer newStep);
+
+    /**
+     * 根据用户id获取角色信息
+     * @param id
+     * @return
+     */
+    List<SysRole> getEnabledRolesByUserId(Long id);
+
+    /**
+     * 根据角色获取用户名拼接字段
+     * @param roles
+     * @return
+     */
+    String getUserNameByRoles(Set<Long> roles);
 }

@@ -49,6 +49,9 @@ public class CrmCreditVisitServiceImpl extends ServiceImpl<CrmCreditVisitMapper,
                                               HttpServletRequest req) {
 
         Page<CrmCreditVisitForm> page = new Page<CrmCreditVisitForm>(currentPage, pageSize);
+        if(crmCreditVisitForm.getCustName()!=null){
+            crmCreditVisitForm.setCustName(crmCreditVisitForm.getCustName().trim());
+        }
         IPage<CrmCreditVisitVO> pageList = crmCreditVisitMapper.pageList(page, crmCreditVisitForm);
         return pageList;
     }

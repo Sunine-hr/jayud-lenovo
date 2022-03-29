@@ -79,4 +79,11 @@ public interface IPublicCheckService extends IService<BPublicCheck> {
      * @return
      */
     BaseResult unCheck(CheckForm checkForm);
+
+    /**
+     * 获取审核信息
+     * @param checkForm
+     * @return
+     */
+    List<BPublicCheckVO> getList(CheckForm checkForm);
 }

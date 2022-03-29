@@ -11,16 +11,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.auth.feign.CrmClient;
 import com.jayud.auth.mapper.SystemSqlConfigMapper;
 import com.jayud.auth.model.bo.QueryCommonConfigForm;
 import com.jayud.auth.model.bo.QuerySystemSqlConfigForm;
 import com.jayud.auth.model.bo.SystemSqlConfigForm;
+import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysTenantRole;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.po.SystemSqlConfig;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.model.vo.SystemSqlConfigVO;
 import com.jayud.auth.model.vo.TableColumnVO;
+import com.jayud.auth.service.ISysDepartService;
 import com.jayud.auth.service.ISysTenantRoleService;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.auth.service.ISystemSqlConfigService;
@@ -28,10 +31,12 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.UserOperator;
 import com.jayud.common.constant.SqlCodeConstant;
+import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.enums.ResultEnum;
 import com.jayud.common.exception.Asserts;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,6 +66,13 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
     private ISysUserService sysUserService;
     @Autowired
     private ISysTenantRoleService sysTenantRoleService;
+
+    @Autowired
+    private ISysDepartService sysDepartService;
+
+
+    @Autowired
+    private CrmClient crmClient;
 
     @Override
     public IPage<SystemSqlConfigVO> findByPage(QuerySystemSqlConfigForm form) {
@@ -199,7 +212,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             Asserts.fail(ResultEnum.UNKNOWN_ERROR, "SQL代码，没有配置SQL语句。");
         }
         //2.WHERE条件语句
-        String where = "";//WHERE语句
+        String where = " ";//WHERE语句
         if(StrUtil.isNotEmpty(sqlParams)){
             String[] split = sqlParams.split("[|]");
             StringBuffer stringBuffer = new StringBuffer();
@@ -228,21 +241,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             }
             where = stringBuffer.toString();
         }
-        if (systemSqlConfigVO.getSqlCode().equals(SqlCodeConstant.CRM_CUST_SQL_CODE)){
-            BaseResult<SysTenantRole> tenantRoleBaseResult = sysTenantRoleService.selectByTenatCode(CurrentUserUtil.getUserTenantCode());
-            boolean isShow = true;
-            if (tenantRoleBaseResult.isSuccess()){
-                SysTenantRole sysTenantRole = tenantRoleBaseResult.getResult();
-                if (!sysTenantRole.getIsShowCrmPublic()){
-                    isShow = false;
-                }
-            }else {
-                isShow = false;
-            }
-            if (!isShow){
-                where += " AND c.is_public = 0 ";
-            }
-        }
+
 
 //        String sqlDataStr = systemSqlConfigVO.getSqlDataStr();//数据权限查询
 //        if(StrUtil.isNotEmpty(sqlDataStr) && !systemUser.getUserName().equals("admin")){
@@ -274,6 +273,47 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
         paraMap.put("where", where);
         //ORDER BY语句
         paraMap.put("order", order);
+
+
+        List<Long> custIdList = new ArrayList<>();
+        if (systemSqlConfigVO.getSqlCode().equals(SqlCodeConstant.CRM_CUST_SQL_CODE)){
+            AuthUserDetail authUserDetail = CurrentUserUtil.getUserDetail();
+            BaseResult<SysTenantRole> tenantRoleBaseResult = sysTenantRoleService.selectByTenatCode(CurrentUserUtil.getUserTenantCode());
+            boolean isShow = true;
+            if (tenantRoleBaseResult.isSuccess()){
+                SysTenantRole sysTenantRole = tenantRoleBaseResult.getResult();
+                if (!sysTenantRole.getIsShowCrmPublic()){
+                    isShow = false;
+                }
+            }else {
+                isShow = false;
+            }
+            if (!isShow){
+                where += " AND c.is_public = 0 ";
+            }
+            if (authUserDetail.getIsDepartCharge()){
+                List<SysDepart> departList = sysDepartService.slectChildrenById(authUserDetail.getDepartId());
+                List<Long> departIdList = departList.stream().map(x->x.getId()).collect(Collectors.toList());
+                SysUser sysUser = new SysUser();
+                sysUser.setDepartIdList(departIdList);
+                List<SysUserVO> userList = sysUserService.selectList(sysUser);
+                List<Long> userIdList = userList.stream().map(x->x.getId()).collect(Collectors.toList());
+                custIdList = crmClient.selectCustIdListByUserIds(userIdList).getResult();
+            }
+            String finalSqlStr = "";
+            finalSqlStr = "  SELECT DISTINCT alls.cids allId,alls.* FROM ("+sqlStr+" " +where +"";
+//                    " AND ccm.manage_user_id = "+authUserDetail.getId();
+            if (CollUtil.isNotEmpty(custIdList)){
+                finalSqlStr = finalSqlStr+"  UNION ALL "+sqlStr +" " + where + " AND c.id IN ("+ StringUtils.join(custIdList,StrUtil.C_COMMA)+")";
+            }
+            finalSqlStr+=" ) alls ";
+            System.out.println(sqlStr);
+            //SQL语句
+            paraMap.put("sqlStr", finalSqlStr);
+            //WHERE语句
+            paraMap.put("where", "");
+        }
+
         //定义分页参数
         Page<Map<String, Object>> page = new Page(form.getPageNum(),form.getPageSize());
         //定义排序规则        注释掉，不在这里排序，后台用sql拼装排序

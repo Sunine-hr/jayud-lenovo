@@ -60,4 +60,5 @@ public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
      * @return: int
      **/
     int logicDel(@Param("id") Long id,@Param("username") String username);
+
 }

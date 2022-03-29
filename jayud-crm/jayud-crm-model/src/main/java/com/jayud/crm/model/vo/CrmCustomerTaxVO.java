@@ -48,12 +48,12 @@ public class CrmCustomerTaxVO extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
-    @ApiModelProperty(value = "状态(1 true:已失效,0 false:已生效)")
+    @ApiModelProperty(value = "状态(1 true:已生效,0 false: 已失效)")
     private String statusDesc;
 
     public void setIsDefault(Boolean isDefault) {
         this.isDefault = isDefault;
-        this.statusDesc = this.isDefault == false ? "已生效" : "已失效";
+        this.statusDesc = this.isDefault == false ? "已失效" : "已生效";
     }
 
 

@@ -1,10 +1,14 @@
 package com.jayud.auth.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.po.BNoRule;
+import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.jayud.auth.model.vo.BPublicCheckVO;
+import com.jayud.auth.model.vo.SysRoleActionCheckVO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.*;
 import com.jayud.common.BaseResult;
@@ -21,10 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 审核记录表 服务实现类
@@ -48,6 +49,9 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
 
     @Autowired
     private ISysUserService sysUserService;
+
+    @Autowired
+    private ISysRoleActionCheckService sysRoleActionCheckService;
 
     @Override
     public IPage<BPublicCheckVO> selectPage(BPublicCheck bPublicCheck,
@@ -154,6 +158,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             bPublicCheck.setSheetCode(checkForm.getSheetCode());
             bPublicCheck.setCheckFlag(1);
             bPublicCheck.setRecordId(checkForm.getRecordId());
+            bPublicCheck.setMenuCode(checkForm.getMenuCode());
             bPublicCheck.setFLevel(sLevel);
             bPublicCheck.setFStep(newStep);
             bPublicCheck.setIsCheck(checkForm.getCheck());
@@ -181,6 +186,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             bPublicCheck.setSheetCode(checkForm.getSheetCode());
             bPublicCheck.setCheckFlag(1);
             bPublicCheck.setRecordId(checkForm.getRecordId());
+            bPublicCheck.setMenuCode(checkForm.getMenuCode());
             bPublicCheck.setFLevel(sLevel);
             bPublicCheck.setFStep(newStep);
             bPublicCheck.setRemark(checkForm.getCheckRemark());
@@ -249,8 +255,8 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             if(check<=0){
                 return BaseResult.error(444,"没有反审核按钮权限");
             }
-            //判断该用户是否有该级审核权限
-            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode(),newStep);
+            //判断该用户是否有该级反审核权限
+            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode(),sStep);
             if(checkCount <= 0){
                 return BaseResult.error(444,"没有该级别反审核权限");
             }
@@ -281,12 +287,13 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         bPublicCheck.setSheetCode(checkForm.getSheetCode());
         bPublicCheck.setCheckFlag(0);
         bPublicCheck.setRecordId(checkForm.getRecordId());
+        bPublicCheck.setMenuCode(checkForm.getMenuCode());
         bPublicCheck.setFLevel(sLevel);
-        bPublicCheck.setFStep(newStep);
+        bPublicCheck.setFStep(sStep);
         if(0 != sStep){
             bPublicCheck.setTimeConsuming(null);
         }else {
-            BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),1);
+            BPublicCheck byRecordId = this.baseMapper.getPublicCheckByRecordId(checkForm.getSheetCode(),checkForm.getRecordId(),0);
             bPublicCheck.setTimeConsuming(this.getTimeDifference(byRecordId.getCreateTime(),new Date()));
         }
         bPublicCheck.setCheckStateFlag(checkFlag);
@@ -301,6 +308,49 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         }
         log.warn("反审核成功");
         return BaseResult.ok("反审核成功");
+    }
+
+    @Override
+    public List<BPublicCheckVO> getList(CheckForm checkForm) {
+        //获取该按钮的审核有哪些角色，哪些用户
+        List<SysRoleActionCheckVO> sysRoleActionChecks = sysRoleActionCheckService.getList(checkForm);
+        if(CollectionUtil.isEmpty(sysRoleActionChecks)){
+            return null;
+        }
+        List<BPublicCheckVO> bPublicCheckVOS = new ArrayList<>();
+        for (SysRoleActionCheckVO sysRoleActionCheckVO : sysRoleActionChecks) {
+            List<SysRoleActionCheckVO> checkVOList = sysRoleActionCheckService.getListByCheckLevelAndMenuCode(sysRoleActionCheckVO.getCheckLevel(),checkForm.getMenuCode());
+            Set<Long> roles = new HashSet<>();
+            Set<String> roleNames = new HashSet<>();
+            for (SysRoleActionCheckVO roleActionCheckVO : checkVOList) {
+                roles.add(roleActionCheckVO.getRoleId());
+                roleNames.add(roleActionCheckVO.getRoleName());
+            }
+            BPublicCheckVO bPublicCheckVO = new BPublicCheckVO();
+            String userName = sysUserRoleService.getUserNameByRoles(roles);
+            bPublicCheckVO.setUserName(userName);
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String roleName : roleNames) {
+                stringBuffer.append(roleName).append(",");
+            }
+            bPublicCheckVO.setRoleName(stringBuffer.substring(0,stringBuffer.length()-1));
+            bPublicCheckVO.setFStep(sysRoleActionCheckVO.getCheckLevel());
+            bPublicCheckVOS.add(bPublicCheckVO);
+        }
+
+        //获取最新的审核记录
+        for (BPublicCheckVO bPublicCheckVO : bPublicCheckVOS) {
+            BPublicCheck bPublicCheck = bPublicCheckMapper.getPublicCheckByRecordIdAndfStep(checkForm,bPublicCheckVO.getFStep());
+            if(null == bPublicCheck){
+                continue;
+            }
+            bPublicCheckVO.setCheckStateFlag(bPublicCheck.getCheckStateFlag());
+            bPublicCheckVO.setFCheckName(bPublicCheck.getFCheckName());
+            bPublicCheckVO.setRemark(bPublicCheck.getRemark());
+            bPublicCheckVO.setTimeConsuming(bPublicCheck.getTimeConsuming());
+        }
+
+        return bPublicCheckVOS;
     }
 
     private String getTimeDifference(Date begin,Date end){

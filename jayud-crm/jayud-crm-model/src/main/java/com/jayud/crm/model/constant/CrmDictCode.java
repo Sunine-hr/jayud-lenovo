@@ -98,6 +98,11 @@ public interface CrmDictCode {
      */
     String QUOTATION_NUM_CODE="Quotation";
 
+    /**
+     * 授信客户额度code
+     */
+    String CRM_CREDIT_CUST_CODE="SX10001";
+
 
     /**
      *  客户管理-地址类型

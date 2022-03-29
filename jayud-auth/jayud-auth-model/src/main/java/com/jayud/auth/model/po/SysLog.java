@@ -20,7 +20,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  * SysLog 实体类
  *
  * @author jayud
- * @since 2022-02-24
+ * @since 2022-03-22
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -31,10 +31,13 @@ public class SysLog extends SysBaseEntity {
     @ApiModelProperty(value = "日志类型（1登录日志，2操作日志）")
     private Integer logType;
 
+    @ApiModelProperty(value = "业务id")
+    private Long businessId;
+
     @ApiModelProperty(value = "日志内容")
     private String logContent;
 
-    @ApiModelProperty(value = "操作类型")
+    @ApiModelProperty(value = "操作类型(0:系统,1:客户)")
     private Integer operateType;
 
     @ApiModelProperty(value = "操作用户账号")
@@ -42,6 +45,9 @@ public class SysLog extends SysBaseEntity {
 
     @ApiModelProperty(value = "操作用户名称")
     private String username;
+
+    @ApiModelProperty(value = "用户真实姓名")
+    private String trueName;
 
     @ApiModelProperty(value = "IP")
     private String ip;

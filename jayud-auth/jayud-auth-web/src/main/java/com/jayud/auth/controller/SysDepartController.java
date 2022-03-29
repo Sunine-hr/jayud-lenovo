@@ -171,6 +171,15 @@ public class SysDepartController {
     @ApiOperation(value = "保存组织or部门")
     @PostMapping(value = "/save")
     public BaseResult saveSysDepart(@Valid @RequestBody SysDepart depart){
+        SysDepart sysDepart = sysDepartService.getByOrgCode(depart.getOrgCode());
+        if(sysDepart != null){
+            if(null == depart.getId()){
+                return BaseResult.error(444,"机构编码已存在");
+            }
+            if(null != depart.getId() && !depart.getId().equals(sysDepart.getId())){
+                return BaseResult.error(444,"机构编码已存在");
+            }
+        }
         sysDepartService.saveSysDepart(depart);
         return BaseResult.ok("保存成功");
     }
@@ -179,6 +188,13 @@ public class SysDepartController {
     @PostMapping("/selectSuperiorOrganization")
     public BaseResult<List<SysDepart>> selectSuperiorOrganization(@RequestBody QuerySysDeptForm form){
         List<SysDepart> deptTree = sysDepartService.selectSuperiorOrganization(form);
+        return BaseResult.ok(deptTree);
+    }
+
+    @ApiOperation("获取接单主体")
+    @PostMapping("/selectOperationSubject")
+    public BaseResult<List<SysDepart>> selectOperationSubject(@RequestBody QuerySysDeptForm form){
+        List<SysDepart> deptTree = sysDepartService.selectOperationSubject(form);
         return BaseResult.ok(deptTree);
     }
 

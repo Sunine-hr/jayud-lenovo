@@ -32,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, code, name, type, contacts, phone, email, contact_addr, status, lo, la, is_mixing, mixing_strategy_id, mixing_strategy, stocking_strategy_id, allocation_strategy_id, allocation_strategy, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, code, name, type, contacts, phone, email, contact_addr, status, lo, la, is_mixing, mixing_strategy_id, mixing_strategy, stocking_strategy_id, allocation_strategy_id, allocation_strategy, turnover_mode,turnover_attribute,tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->

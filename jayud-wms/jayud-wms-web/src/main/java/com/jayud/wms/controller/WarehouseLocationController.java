@@ -67,7 +67,6 @@ public class WarehouseLocationController {
      * @param warehouseLocation 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryWarehouseLocationForm.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<WarehouseLocationVO>>> selectPage(QueryWarehouseLocationForm warehouseLocation,

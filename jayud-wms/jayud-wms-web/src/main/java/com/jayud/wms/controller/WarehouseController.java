@@ -3,6 +3,7 @@ package com.jayud.wms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
@@ -10,6 +11,7 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.QueryWarehouseForm;
 import com.jayud.wms.model.bo.WarehouseForm;
@@ -58,6 +60,9 @@ public class WarehouseController {
     @Autowired
     private SysUserOwerPermissionService sysUserOwerPermissionService;
 
+    @Autowired
+    private AuthClient authClient;
+
 
     /**
      * 分页查询数据
@@ -65,7 +70,6 @@ public class WarehouseController {
      * @param queryWarehouseForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryWarehouseForm.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<Warehouse>>> selectPage(QueryWarehouseForm queryWarehouseForm,
@@ -81,7 +85,6 @@ public class WarehouseController {
      * @param warehouse 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryWarehouseForm.class)
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<Warehouse>> selectList(QueryWarehouseForm warehouse,
@@ -168,19 +171,19 @@ public class WarehouseController {
     @ApiOperation("下拉值")
     @GetMapping(value = "/getByData")
     public BaseResult getByData() {
-        List<LinkedHashMap<String, Object>> warehouseType = authService.queryDictByDictType("warehouseType");
-        List<LinkedHashMap<String, Object>> warehouseAreaType = authService.queryDictByDictType("warehouseAreaType");
-        List<LinkedHashMap<String, Object>> warehouseLocationType = authService.queryDictByDictType("warehouseLocationType");
-        List<Warehouse> warehouses = warehouseService.getWarehouse();
-        Map<String, String> warehouseIdMap = sysUserOwerPermissionService.getOwerIdByUserId(CurrentUserUtil.getUserId().toString()).stream().collect(Collectors.toMap(e -> e, e -> e));
 
-        warehouses = warehouses.stream().filter(e -> warehouseIdMap.get(e.getId()) != null).collect(Collectors.toList());
+        //仓库类型
+        BaseResult<List<SysDictItem>> wmsWarehouseType = authClient.selectItemByDictCode("wms_warehouse_type");
+        //库区类型
+        BaseResult<List<SysDictItem>> wmsTheReservoirType = authClient.selectItemByDictCode("wms_the_reservoir_type");
+        //库位类型
+        BaseResult<List<SysDictItem>> wmsLocationType = authClient.selectItemByDictCode("wms_location_type");
+
         //todo 策略下拉值
         Map<String, Object> map = new HashMap<>();
-        map.put("warehouseType", warehouseType);
-        map.put("warehouseAreaType", warehouseAreaType);
-        map.put("warehouseLocationType", warehouseLocationType);
-        map.put("warehouses", warehouses);
+        map.put("wmsWarehouseType", wmsWarehouseType);
+        map.put("wmsTheReservoirType", wmsTheReservoirType);
+        map.put("wmsLocationType", wmsLocationType);
         return BaseResult.ok(map);
     }
 

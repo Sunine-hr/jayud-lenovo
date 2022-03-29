@@ -57,7 +57,6 @@ public class WarehouseAreaController {
      * @param warehouseArea   查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryWarehouseAreaForm.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<WarehouseAreaVO>>> selectPage(QueryWarehouseAreaForm warehouseArea,

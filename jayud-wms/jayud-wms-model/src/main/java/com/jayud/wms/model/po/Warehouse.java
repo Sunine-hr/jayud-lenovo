@@ -1,5 +1,6 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jayud.common.entity.SysBaseEntity;
@@ -70,6 +71,12 @@ public class Warehouse extends SysBaseEntity {
 
     @ApiModelProperty(value = "分配策略(字典获取)")
     private String allocationStrategy;
+
+    @ApiModelProperty(value = "周转方式(1先进先出,2后进先出)")
+    private Integer turnoverMode;
+
+    @ApiModelProperty(value = "周转批属性(1批次号,2生产日期,3字段1,4字段2,4字段3)")
+    private Integer turnoverAttribute;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;

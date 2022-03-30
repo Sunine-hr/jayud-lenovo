@@ -35,7 +35,7 @@ public class SysRoleVO extends SysBaseEntity {
     private String statusDesc;
 
     @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
+    private String code;
 
     @ApiModelProperty(value = "备注")
     private String remark;

@@ -8,7 +8,7 @@
         <result column="role_name" property="roleName" />
         <result column="role_code" property="roleCode" />
         <result column="status" property="status" />
-        <result column="tenant_code" property="tenantCode" />
+        <result column="code" property="code" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
         <result column="create_by" property="createBy" />
@@ -23,7 +23,7 @@
         <result column="role_name" property="roleName" />
         <result column="role_code" property="roleCode" />
         <result column="status" property="status" />
-        <result column="tenant_code" property="tenantCode" />
+        <result column="code" property="code" />
         <result column="remark" property="remark" />
         <result column="is_deleted" property="isDeleted" />
         <result column="create_by" property="createBy" />
@@ -34,7 +34,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, role_name, role_code, status, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, role_name, role_code, status, code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -57,8 +57,8 @@
                 AND status = ${sysRole.status}
             </if>
 
-            <if test="sysRole.tenantCode != null and sysRole.tenantCode != ''">
-                AND tenant_code = #{sysRole.tenantCode}
+            <if test="sysRole.code != null and sysRole.code != ''">
+                AND code = #{sysRole.code}
             </if>
 
             <if test="sysRole.remark != null and sysRole.remark != ''">
@@ -79,7 +79,7 @@
     <select id="selectSysRoleByUserId" resultType="com.jayud.auth.model.po.SysRole">
         select sr.* from  sys_role sr
         join sys_user_role sur on sr.id = sur.role_id and sur.is_deleted = 0
-        join sys_user su on sur.user_id = su.id and sr.tenant_code = su.tenant_code and su.is_deleted = 0
+        join sys_user su on sur.user_id = su.id and sr.code = su.code and su.is_deleted = 0
         where 1=1
         and sr.is_deleted = 0
         and su.id = #{userId}
@@ -91,7 +91,7 @@
             sr.role_name roleName,
             sr.`status` `status`,
             sr.remark remark,
-            sr.tenant_code tenant_code
+            sr.code code
         FROM
             sys_role sr
                 LEFT JOIN sys_user_role sur ON sur.role_id = sr.id

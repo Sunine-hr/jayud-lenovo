@@ -198,6 +198,7 @@ public class CrmCustomerController {
 
         authClient.addSysLogFeign("删除了客户", id);
         CrmCustomer crmCustomer = this.crmCustomerService.getById(id);
+        //供应商传1 客户传2
         if(isSupplier.equals(1) && crmCustomer.getIsSupplier() && crmCustomer.getIsCust()){
             crmCustomer.setIsSupplier(false);
             crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());

@@ -117,7 +117,7 @@ public class SysRoleActionDataController {
         }
 
         //是否为管理员
-        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUser.getName(),"super_admin",systemUser.getTenantCode());
+        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUser.getName(),"super_admin",systemUser.getCode());
         if(count<=0){
             //获取登录用户所属角色
             List<SysRole> enabledRolesByUserId = sysUserRoleService.getEnabledRolesByUserId(systemUser.getId());

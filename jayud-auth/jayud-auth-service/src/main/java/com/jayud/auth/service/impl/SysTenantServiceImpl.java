@@ -208,7 +208,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         sysRole.setRoleName("超级管理员");
         sysRole.setRoleCode("super_admin");
         sysRole.setStatus(1);
-        sysRole.setTenantCode(tenantCode);
+        sysRole.setCode(tenantCode);
         sysRole.setRemark("超级管理员");
         sysRoleService.save(sysRole);
         return sysRole;
@@ -255,7 +255,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         sysUser.setPassword(PasswordUtil.encodeOauthPassword("666888"));
         sysUser.setUserName("超级管理员");
         sysUser.setUserType("1");
-        sysUser.setTenantCode(tenantCode);
+        sysUser.setCode(tenantCode);
         sysUserService.save(sysUser);
         return sysUser;
     }

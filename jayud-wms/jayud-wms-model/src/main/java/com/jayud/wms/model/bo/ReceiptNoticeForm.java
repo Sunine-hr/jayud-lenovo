@@ -112,8 +112,8 @@ public class ReceiptNoticeForm extends SysBaseEntity {
     @ApiModelProperty(value = "物料信息")
     private List<NoticeMaterialForm> noticeMaterialForms;
 
-    @ApiModelProperty(value = "物料sn信息")
-    private List<NoticeSnMaterialForm> noticeSnMaterialForms;
+//    @ApiModelProperty(value = "物料sn信息")
+//    private List<NoticeSnMaterialForm> noticeSnMaterialForms;
 
     @ApiModelProperty(value = "物料编号")
     private String materialCode;

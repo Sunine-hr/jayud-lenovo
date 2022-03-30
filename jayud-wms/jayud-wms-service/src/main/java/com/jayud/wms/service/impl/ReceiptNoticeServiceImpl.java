@@ -166,8 +166,8 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         noticeMaterialService.saveOrUpdateBatch(noticeMaterials);
 
         //存储物料SN信息表
-        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
-        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
+//        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
+//        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
 
         return receiptNotice;//返回收货通知单
     }
@@ -390,8 +390,8 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         form.setOrderSourceCode(2);//
 
         List<NoticeSnMaterialForm> noticeSnMaterialForms = new ArrayList<>();
-        form.setNoticeSnMaterialForms(noticeSnMaterialForms);
-         createOrderFeign(form);
+//        form.setNoticeSnMaterialForms(noticeSnMaterialForms);
+        createOrderFeign(form);
         return BaseResult.ok();
     }
 
@@ -454,8 +454,8 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         noticeMaterialService.saveOrUpdateBatch(noticeMaterials);
 
         //存储物料SN信息表
-        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
-        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
+//        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
+//        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
 
         return BaseResult.ok();
     }

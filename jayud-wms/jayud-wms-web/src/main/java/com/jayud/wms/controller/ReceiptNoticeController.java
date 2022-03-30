@@ -62,7 +62,7 @@ public class ReceiptNoticeController {
      * @param receiptNoticeForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryReceiptNoticeForm.class)
+
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<ReceiptNoticeVO>> selectPage(@RequestBody QueryReceiptNoticeForm receiptNoticeForm, HttpServletRequest req) {
@@ -171,7 +171,7 @@ public class ReceiptNoticeController {
      * @param response          响应对象
      * @param receiptNoticeForm 参数receiptNoticeForm
      */
-    @SysDataPermission(clazz = QueryReceiptNoticeForm.class)
+
     @ApiOperation("根据查询条件导出收货通知单信息")
     @PostMapping(path = "/exportReceiptNoticeLocation")
     public void exportReceiptNoticeLocation(HttpServletResponse response, @RequestBody QueryReceiptNoticeForm receiptNoticeForm, HttpServletRequest req) {

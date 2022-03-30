@@ -163,7 +163,7 @@ public class SysTenantController {
     public BaseResult initTenantData(Long tenantId,String tenantCode){
         SysTenantForm sysTenantForm = new SysTenantForm();
         sysTenantForm.setId(tenantId);
-        sysTenantForm.setTenantCode(tenantCode);
+        sysTenantForm.setCode(tenantCode);
         sysTenantService.initCreateTenant(sysTenantForm);
         return BaseResult.ok();
     }

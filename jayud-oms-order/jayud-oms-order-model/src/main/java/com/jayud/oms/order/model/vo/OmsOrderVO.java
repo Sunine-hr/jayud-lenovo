@@ -1,7 +1,5 @@
-package com.jayud.oms.order.model.bo;
+package com.jayud.oms.order.model.vo;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -21,7 +19,7 @@ import java.util.List;
  * @since 2022-03-23
  */
 @Data
-public class OmsOrderForm extends SysBaseEntity {
+public class OmsOrderVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "订单编号")
@@ -82,11 +80,9 @@ public class OmsOrderForm extends SysBaseEntity {
     private Integer stateFlag;
 
     @ApiModelProperty(value = "审核级别")
-    @JsonProperty("fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "当前级别")
-    @JsonProperty("fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")
@@ -96,23 +92,19 @@ public class OmsOrderForm extends SysBaseEntity {
     private Long flowInstanceId;
 
     @ApiModelProperty(value = "提交审核人")
-    @JsonProperty("fMultiLevel0")
     private String fMultiLevel0;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "提交时间")
-    @JsonProperty("fDateTime0")
     private LocalDateTime fDateTime0;
 
     @ApiModelProperty(value = "最后审核人")
-    @JsonProperty("fMultiLevel1")
     private String fMultiLevel1;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "最后审核时间")
-    @JsonProperty("fDateTime1")
     private LocalDateTime fDateTime1;
 
     @ApiModelProperty(value = "业务要求")

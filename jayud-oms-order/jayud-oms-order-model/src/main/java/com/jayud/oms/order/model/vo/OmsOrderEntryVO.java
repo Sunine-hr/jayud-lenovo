@@ -1,20 +1,18 @@
-package com.jayud.oms.order.model.po;
+package com.jayud.oms.order.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * OmsOrderEntry 实体类
@@ -23,9 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
  * @since 2022-03-23
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value="订单管理-订单明细表对象", description="订单管理-订单明细表")
-public class OmsOrderEntry extends SysBaseEntity {
+public class OmsOrderEntryVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "工作单类型")

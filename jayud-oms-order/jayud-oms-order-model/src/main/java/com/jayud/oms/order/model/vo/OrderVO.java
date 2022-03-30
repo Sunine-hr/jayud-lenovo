@@ -1,5 +1,6 @@
-package com.jayud.oms.order.model.bo;
+package com.jayud.oms.order.model.vo;
 
+import com.jayud.oms.order.model.bo.CrmFileForm;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -7,46 +8,49 @@ import java.util.List;
 
 
 @Data
-public class InputOrderForm {
+public class OrderVO {
 
     @ApiModelProperty(value = "主订单", required = true)
-    private OmsOrderForm orderForm;
+    private OmsOrderVO orderForm;
 
     @ApiModelProperty(value = "报关单")
-    private InputOrderCustomsForm orderCustomsForm;
+    private OrderCustomsVO orderCustomsForm;
 
     @ApiModelProperty(value = "中港")
-    private InputOrderTransportForm orderTransportForm;
+    private OrderTransportVO orderTransportForm;
 
     @ApiModelProperty(value = "空运")
-    private InputAirOrderForm airOrderForm;
+    private AirOrderVO airOrderForm;
 
     @ApiModelProperty(value = "服务单")
-    private InputOrderServiceForm orderServiceForm;
+    private OrderServiceVO orderServiceForm;
 
     @ApiModelProperty(value = "海运")
-    private InputSeaOrderForm seaOrderForm;
+    private SeaOrderVO seaOrderForm;
 
     @ApiModelProperty(value = "内陆")
-    private InputOrderInlandTransportForm orderInlandTransportForm;
+    private OrderInlandTransportVO orderInlandTransportForm;
 
     @ApiModelProperty(value = "拖车")
-    private List<InputTrailerOrderFrom> trailerOrderFrom;
+    private List<TrailerOrderVO> trailerOrderFrom;
 
     @ApiModelProperty(value = "入库")
-    private InputStorageInputOrderForm storageInputOrderForm;
+    private StorageInputOrderVO storageInputOrderForm;
 
     @ApiModelProperty(value = "出库")
-    private InputStorageOutOrderForm storageOutOrderForm;
+    private StorageOutOrderVO storageOutOrderForm;
 
     @ApiModelProperty(value = "快进快出")
-    private InputStorageOrderForm storageFastOrderForm;
+    private StorageOrderVO storageFastOrderForm;
 
     @ApiModelProperty(value = "附件列表")
     private List<CrmFileForm> crmFileForms;
 
     @ApiModelProperty(value = "商品明细")
-    private List<InputOmsOrderEntryForm> omsOrderEntryForms;
+    private List<OmsOrderEntryVO> omsOrderEntryForms;
+
+    @ApiModelProperty(value = "操作记录")
+    private List<OmsOrderFollowVO> omsOrderFollowVOS;
 
     @ApiModelProperty(value = "操作指令:cmd=preSubmit or submit", required = true)
     private String cmd;

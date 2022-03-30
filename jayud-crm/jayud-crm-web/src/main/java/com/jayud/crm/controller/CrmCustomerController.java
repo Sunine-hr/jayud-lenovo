@@ -106,6 +106,49 @@ public class CrmCustomerController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerForm crmCustomerForm) {
+
+        //判断客户名称、社会信用代码不重复
+        if(crmCustomerForm.getIsSupplier()){
+            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerBySupplierName(crmCustomerForm.getCustName());
+            CrmCustomer crmCustomerServiceCustomerByUnCreditCode = this.crmCustomerService.getCustomerBySupplierUnCreditCode(crmCustomerForm.getUnCreditCode());
+            if(null != crmCustomer){
+                if(null == crmCustomerForm.getId()){
+                    return BaseResult.error(444,"客户名称已存在");
+                }
+                if(!crmCustomerForm.getId().equals(crmCustomer.getId())){
+                    return BaseResult.error(444,"客户名称已存在");
+                }
+            }
+            if(null != crmCustomerServiceCustomerByUnCreditCode){
+                if(null == crmCustomerForm.getId()){
+                    return BaseResult.error(444,"统一信用代码已存在");
+                }
+                if(!crmCustomerForm.getId().equals(crmCustomerServiceCustomerByUnCreditCode.getId())){
+                    return BaseResult.error(444,"统一信用代码已存在");
+                }
+            }
+        }else {
+            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerByCustomerName(crmCustomerForm.getCustName());
+            CrmCustomer crmCustomerServiceCustomerByUnCreditCode = this.crmCustomerService.getCustomerByUnCreditCode(crmCustomerForm.getUnCreditCode());
+            if(null != crmCustomer){
+                if(null == crmCustomerForm.getId()){
+                    return BaseResult.error(444,"供应商名称已存在");
+                }
+                if(!crmCustomerForm.getId().equals(crmCustomer.getId())){
+                    return BaseResult.error(444,"供应商名称已存在");
+                }
+            }
+            if(null != crmCustomerServiceCustomerByUnCreditCode){
+                if(null == crmCustomerForm.getId()){
+                    return BaseResult.error(444,"统一信用代码已存在");
+                }
+                if(!crmCustomerForm.getId().equals(crmCustomerServiceCustomerByUnCreditCode.getId())){
+                    return BaseResult.error(444,"统一信用代码已存在");
+                }
+            }
+        }
+
+
         authClient.addSysLogFeign("新增了客户", crmCustomerForm.getId());
         return crmCustomerService.saveCrmCustomer(crmCustomerForm);
     }
@@ -151,9 +194,29 @@ public class CrmCustomerController {
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id) {
+    public BaseResult logicDel(@RequestParam("id") Long id,@RequestParam("isSupplier") Integer isSupplier) {
 
         authClient.addSysLogFeign("删除了客户", id);
+        CrmCustomer crmCustomer = this.crmCustomerService.getById(id);
+        if(isSupplier.equals(1) && crmCustomer.getIsSupplier() && crmCustomer.getIsCust()){
+            crmCustomer.setIsSupplier(false);
+            crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());
+            crmCustomer.setUpdateTime(new Date());
+            boolean result = this.crmCustomerService.saveOrUpdate(crmCustomer);
+            if(result){
+                return BaseResult.ok();
+            }
+        }
+        if(isSupplier.equals(2) && crmCustomer.getIsSupplier() && crmCustomer.getIsCust()){
+            crmCustomer.setIsCust(false);
+            crmCustomer.setUpdateBy(CurrentUserUtil.getUsername());
+            crmCustomer.setUpdateTime(new Date());
+            boolean result = this.crmCustomerService.saveOrUpdate(crmCustomer);
+            if(result){
+                return BaseResult.ok();
+            }
+        }
+
         List<Long> ids = new ArrayList<>();
         ids.add(id);
         DeleteForm deleteForm = new DeleteForm();
@@ -346,7 +409,7 @@ public class CrmCustomerController {
     @ApiOperation("转为客户")
     @PostMapping("changeToCust")
     public BaseResult changeToCust(@RequestBody ComCustomerForm comCustomerForm) {
-        return crmCustomerService.changeToSupplier(comCustomerForm.getCrmCustomerList());
+        return crmCustomerService.changeToCust(comCustomerForm.getCrmCustomerList());
     }
 
 

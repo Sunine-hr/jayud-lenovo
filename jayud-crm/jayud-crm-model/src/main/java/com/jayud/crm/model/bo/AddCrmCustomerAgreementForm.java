@@ -165,7 +165,7 @@ public class AddCrmCustomerAgreementForm extends SysBaseEntity {
         if (StringUtils.isEmpty(user)){throw new JayudBizException(400,"销售员不能为空"); }
         if (departId==null){throw new JayudBizException(400,"法人主体id不能为空"); }
         if (StringUtils.isEmpty(departName)){throw new JayudBizException(400,"法人主体名称不能为空"); }
-        if (StringUtils.isEmpty(quotationNum)){throw new JayudBizException(400,"关联报价单号不能为空"); }
+//        if (StringUtils.isEmpty(quotationNum)){throw new JayudBizException(400,"关联报价单号不能为空"); }
     }
 
 }

@@ -62,7 +62,7 @@
                 LEFT JOIN sys_tenant st ON stts.tenant_id = st.id AND st.is_deleted = 0
         WHERE
             su.is_deleted = 0
-          AND st.tenant_code = #{tenantCode}
+          AND st.code = #{tenantCode}
 
     </select>
 

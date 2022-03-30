@@ -49,6 +49,9 @@ public class ComCustomerForm {
     @ApiModelProperty(value = "重复转供应商对象")
     List<CrmCustomer> exitSupplierList;
 
+    @ApiModelProperty(value = "重复转客户对象")
+    List<CrmCustomer> exitCustList;
+
     @ApiModelProperty(value = "业务类型")
     private Map<String,String> businessTypesData;
 }

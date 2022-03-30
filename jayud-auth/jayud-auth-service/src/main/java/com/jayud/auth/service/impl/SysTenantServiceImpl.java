@@ -115,9 +115,9 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Transactional(rollbackFor = Exception.class)
     public void initCreateTenant(SysTenantForm sysTenantForm) {
         addTenantToSystem(sysTenantForm);
-        SysRole sysRole = addTenantToRole(sysTenantForm.getTenantCode());
-        addTenantRoleToMenu(sysTenantForm.getTenantCode(),sysRole.getId());
-        SysUser sysUser = addTenantUser(sysTenantForm.getTenantCode());
+        SysRole sysRole = addTenantToRole(sysTenantForm.getCode());
+        addTenantRoleToMenu(sysTenantForm.getCode(),sysRole.getId());
+        SysUser sysUser = addTenantUser(sysTenantForm.getCode());
         addTenantUserToRole(sysUser.getId(),sysRole.getId());
     }
 
@@ -126,14 +126,14 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         SysTenant sysTenant = this.getById(id);
         SysTenantForm sysTenantForm = new SysTenantForm();
         BeanUtils.copyProperties(sysTenant,sysTenantForm);
-        sysTenantForm.setSysUrlList(sysUrlService.getSystemByTenantCode(sysTenant.getTenantCode()));
+        sysTenantForm.setSysUrlList(sysUrlService.getSystemByTenantCode(sysTenant.getCode()));
         return sysTenantForm;
     }
 
     @Override
     public SysTenant selectByTenantCode(String tenantCode) {
         LambdaQueryWrapper<SysTenant> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(SysTenant::getTenantCode,tenantCode);
+        lambdaQueryWrapper.eq(SysTenant::getCode,tenantCode);
         SysTenant sysTenant = this.getOne(lambdaQueryWrapper);
         return sysTenant;
     }
@@ -154,7 +154,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
      **/
     private boolean checkSameCode(boolean isAdd,SysTenantForm sysTenantForm){
         SysTenant checks = new SysTenant();
-        checks.setTenantCode(sysTenantForm.getTenantCode());
+        checks.setCode(sysTenantForm.getCode());
         List<SysTenant> tenantList = selectList(checks);
         if (isAdd){
             if (CollUtil.isNotEmpty(tenantList)){

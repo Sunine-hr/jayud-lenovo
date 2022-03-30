@@ -1,15 +1,12 @@
 package com.jayud.auth.model.po;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
-import java.math.BigDecimal;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -17,7 +14,6 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * SysTenant 实体类
@@ -33,7 +29,7 @@ public class SysTenant extends SysBaseEntity {
 
     @NotBlank(message = "租户编码不能为空！")
     @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
+    private String code;
 
     @NotBlank(message = "租户名称不能为空！")
     @ApiModelProperty(value = "租户名称")

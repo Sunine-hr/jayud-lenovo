@@ -78,7 +78,8 @@ public class OAuth2AuthorizationConfig extends AuthorizationServerConfigurerAdap
 		clientDetailsServiceConfigurer.inMemory().withClient("browser").authorizedGrantTypes(REFRESH_TOKEN, "password").scopes("ui").and()
 				.withClient("jayud-system-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER).and()
 				.withClient("jayud-crm-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER).and()
-				.withClient("jayud-oms-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER)
+				.withClient("jayud-oms-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER).and()
+				.withClient("jayud-oms-order-web").secret(SECRET).authorizedGrantTypes(CLIENT_CREDENTIALS, REFRESH_TOKEN).scopes(SERVER)
 				.accessTokenValiditySeconds(60*60);
 
 		clientDetailsServiceConfigurer.withClientDetails(clientDetailsService());

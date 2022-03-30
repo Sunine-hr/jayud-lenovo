@@ -45,4 +45,13 @@ public enum ReceiptNoticeStatusEnum {
         }
         return -1;
     }
+
+    public static String getIntegerDesc(Integer code) {
+        for (ReceiptNoticeStatusEnum value : values()) {
+            if (Objects.equals(code, value.getCode())) {
+                return value.getDesc();
+            }
+        }
+        return "";
+    }
 }

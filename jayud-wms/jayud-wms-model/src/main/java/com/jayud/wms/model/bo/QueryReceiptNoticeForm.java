@@ -10,6 +10,8 @@ import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -86,7 +88,11 @@ public class QueryReceiptNoticeForm extends SysBaseEntity {
         }
         this.arrivalTime = arrivalTime;
     }
+    //货主id
+    private List<String> owerIdList;
 
+    //仓库id
+    private List<String> warehouseIdList;
 
     @ApiModelProperty(value = "主订单号")
     private String mainOrderNumber;
@@ -97,7 +103,7 @@ public class QueryReceiptNoticeForm extends SysBaseEntity {
     private String carBarnd;
 
     @ApiModelProperty(value = "车型")
-    private String carMmodel;
+    private String carModel;
 
     @ApiModelProperty(value = "司机")
     private String carDriver;
@@ -105,4 +111,31 @@ public class QueryReceiptNoticeForm extends SysBaseEntity {
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
 
+
+//
+//    public void setCreationTime(List<String> creationTime) {
+//        this.creationTime = creationTime;
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Date date = new Date();
+//        String format = sdf.format(date);
+//        // 只传第一个 计算设置时间到 当前时间
+//        if(creationTime.get(0)!=null&&creationTime.get(1)==null){
+//            this.creationTimeOne = creationTime.get(0);
+////            if(creationTime.get(1)!=null){
+////                this.creationTimeTwo = creationTime.get(1);
+////            }else {
+//            this.creationTimeTwo = format ;
+////            }
+//        }
+//        // 只传第二个 计算 到第二个时间之前的所有的
+//        if(creationTime.get(1)!=null&&creationTime.get(0)==null){
+//            this.creationTimeOne = CrmDictCode.CRM_FILE_TYPE;
+//            this.creationTimeTwo = creationTime.get(1);
+//        }
+//
+//        if(creationTime.get(0)!=null&&creationTime.get(1)!=null){
+//            this.creationTimeOne = creationTime.get(0);
+//            this.creationTimeTwo = creationTime.get(1);
+//        }
+//    }
 }

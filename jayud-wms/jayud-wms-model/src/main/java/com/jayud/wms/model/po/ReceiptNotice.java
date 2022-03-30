@@ -121,7 +121,7 @@ public class ReceiptNotice extends SysBaseEntity {
     private String carBarnd;
 
     @ApiModelProperty(value = "车型")
-    private String carMmodel;
+    private String carModel;
 
     @ApiModelProperty(value = "司机")
     private String carDriver;

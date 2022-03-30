@@ -37,7 +37,7 @@
         <result column="main_order_number" property="mainOrderNumber" />
         <result column="unit" property="unit" />
         <result column="car_barnd" property="carBarnd" />
-        <result column="car_model" property="carMmodel" />
+        <result column="car_model" property="carModel" />
         <result column="car_driver" property="carDriver" />
         <result column="car_relation" property="carRelation" />
 

@@ -123,12 +123,13 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         if (form.getId() == null) {
             receiptNotice.setReceiptNoticeNum(authClient.getOrder("receipt_notice", new Date()).getResult())
                     .setStatus(1).setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
-            //创建订单流程配置
-            this.orderProcessService.generationProcess(receiptNotice.getReceiptNoticeNum(), form.getWarehouseId(), 1);
-            OrderTrack orderTrack = new OrderTrack().setOrderNo(receiptNotice.getReceiptNoticeNum()).setType(1)
-                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.CREATE.getDesc());
-            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
-            this.orderTrackService.save(orderTrack);
+            //创建订单流程配置  待定
+//            this.orderProcessService.generationProcess(receiptNotice.getReceiptNoticeNum(), form.getWarehouseId(), 1);
+            //运行轨迹
+//            OrderTrack orderTrack = new OrderTrack().setOrderNo(receiptNotice.getReceiptNoticeNum()).setType(1)
+//                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.CREATE.getDesc());
+//            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+//            this.orderTrackService.save(orderTrack);
             this.save(receiptNotice);
         } else {
             System.out.println("进入到了方法！");
@@ -339,17 +340,17 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
             this.noticeMaterialService.updateById(noticeMaterial);
         });
 
-        //查询物料sn编码单
-        List<NoticeSnMaterial> snMaterials = this.noticeSnMaterialService.getByCondition(new NoticeSnMaterial().setReceiptNoticeId(id).setIsDeleted(false));
-        //删除物料sn编码单
-        snMaterials.stream().forEach(v -> {
-            NoticeSnMaterial noticeSnMaterial = new NoticeSnMaterial();
-            noticeSnMaterial.setId(v.getId());
-            noticeSnMaterial.setIsDeleted(true);
-            noticeSnMaterial.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(new Date());
-            //删除物料单sn
-            noticeSnMaterialService.updateById(noticeSnMaterial);
-        });
+//        //查询物料sn编码单
+//        List<NoticeSnMaterial> snMaterials = this.noticeSnMaterialService.getByCondition(new NoticeSnMaterial().setReceiptNoticeId(id).setIsDeleted(false));
+//        //删除物料sn编码单
+//        snMaterials.stream().forEach(v -> {
+//            NoticeSnMaterial noticeSnMaterial = new NoticeSnMaterial();
+//            noticeSnMaterial.setId(v.getId());
+//            noticeSnMaterial.setIsDeleted(true);
+//            noticeSnMaterial.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(new Date());
+//            //删除物料单sn
+//            noticeSnMaterialService.updateById(noticeSnMaterial);
+//        });
         return true;
     }
 

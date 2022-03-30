@@ -9,10 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 组织机构表 Mapper 接口
@@ -75,4 +72,20 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @return
      */
     String selectParentIds(@Param("id") Long id);
+
+    /**
+     * @description 根据父节点id查询子节点
+     * @author  ciro
+     * @date   2022/3/21 10:45
+     * @param: parentId
+     * @return: java.util.LinkedList<java.util.HashMap>
+     **/
+    List<SysDepart> slectChildrenById(@Param("parentId") Long parentId);
+
+    /**
+     * 获取接单主体
+     * @param form
+     * @return
+     */
+    List<SysDepart> selectOperationSubject(@Param("form")QuerySysDeptForm form);
 }

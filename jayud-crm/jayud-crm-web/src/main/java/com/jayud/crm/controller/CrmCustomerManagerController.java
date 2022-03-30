@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCustomerManagerForm;
 import com.jayud.crm.model.bo.DeleteForm;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,8 @@ public class CrmCustomerManagerController {
     @Autowired
     public ICrmCustomerManagerService crmCustomerManagerService;
 
-
+    @Autowired
+    private AuthClient authClient;
     /**
      * @description 分页查询
      * @author  jayud
@@ -92,6 +94,7 @@ public class CrmCustomerManagerController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerManagerForm crmCustomerManagerForm ){
+        authClient.addSysLogFeign("新增了我司对接人", crmCustomerManagerForm.getCustId());
         return crmCustomerManagerService.saveManager(crmCustomerManagerForm);
     }
 
@@ -106,6 +109,7 @@ public class CrmCustomerManagerController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody CrmCustomerManagerForm crmCustomerManagerForm ){
+        authClient.addSysLogFeign("编辑了我司对接人", crmCustomerManagerForm.getCustId());
         return crmCustomerManagerService.saveManager(crmCustomerManagerForm);
     }
 
@@ -198,5 +202,17 @@ public class CrmCustomerManagerController {
         }
     }
 
+    @ApiOperation("根据用户id查询客户id")
+    @PostMapping(path = "/selectCustIdListByUserIds")
+    public BaseResult<List<Long>> selectCustIdListByUserIds(@RequestParam(name="userIds",required=true) List<Long> userIds){
+        return BaseResult.ok(crmCustomerManagerService.selectCustIdListByUserIds(userIds));
+    }
+
+
+    @ApiOperation("根据客户id查询销售人员")
+    @PostMapping(path = "/selectCrmCustomerManagerByCustId")
+    public BaseResult<List<CrmCustomerManager>> selectCustIdListByUserIds(@RequestParam(name="customerId",required=true) Long customerId){
+        return BaseResult.ok(crmCustomerManagerService.selectCrmCustomerManagerByCustId(customerId));
+    }
 
 }

@@ -38,7 +38,7 @@ public class SeaPortVO {
     private LocalDateTime createTime;
 
     @ApiModelProperty(value = "创建人")
-    private String createUser;
+    private String createBy;
 
     @ApiModelProperty(value = "状态(0无效 1有效)")
     private Integer status;

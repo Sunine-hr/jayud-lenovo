@@ -48,6 +48,12 @@ public class BPublicCheckVO extends SysBaseEntity {
     @ApiModelProperty(value = "当前审核状态")
     private String checkStateFlag;
 
+    @ApiModelProperty(value = "角色名称")
+    private String roleName;
+
+    @ApiModelProperty(value = "用户名称")
+    private String userName;
+
     @ApiModelProperty(value = "备注")
     private String remark;
 

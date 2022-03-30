@@ -3,13 +3,18 @@ package com.jayud.auth.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jayud.auth.model.bo.PermissionForm;
 import com.jayud.auth.model.dto.AddSysRole;
 import com.jayud.auth.model.po.SysDict;
+import com.jayud.auth.model.po.SysMenu;
 import com.jayud.auth.model.vo.SysRoleVO;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysMenuService;
 import com.jayud.auth.service.ISysRoleMenuService;
 import com.jayud.auth.service.ISysUserRoleService;
+import com.jayud.common.CommonResult;
+import com.jayud.common.UserOperator;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -289,11 +294,38 @@ public class SysRoleController {
         Long rolesId = MapUtil.getLong(map, "rolesId");
         List<Long> menuIds = MapUtil.get(map, "menuIds", new TypeReference<List<Long>>() {
         });
-        if (rolesId == null || CollectionUtil.isEmpty(menuIds)) {
+        Set<Long> parentMenuIds = MapUtil.get(map, "parentMenuIds", new TypeReference<Set<Long>>() {
+        });
+        if (rolesId == null) {
             return BaseResult.error(SysTips.ERROR_MSG);
         }
-        sysRoleService.setRolePermissions(rolesId, menuIds);
-        return BaseResult.ok();
+        if (CollectionUtil.isEmpty(menuIds)) {
+            this.sysRoleMenuService.deleteByRoleId(rolesId);
+            return BaseResult.ok();
+        }
+        //获取菜单租户id
+        SysMenu pTenant = this.sysMenuService.getOne(new QueryWrapper<>(new SysMenu().setCode("p_tenant").setIsDeleted(false)));
+        SysRole role = this.sysRoleService.getById(rolesId);
+
+        parentMenuIds.addAll(menuIds);
+        List<Long> tmps = new ArrayList<>();
+        tmps.addAll(parentMenuIds);
+        tmps.addAll(menuIds);
+        String msg = SysTips.SUCCESS_MSG;
+        String key = "10001-super_admin";
+        if (pTenant != null) {
+            if (!key.equals(CurrentUserUtil.getUserTenantCode() + "-" + role.getRoleCode())) {
+                if (tmps.contains(pTenant.getId())) {
+                    msg = "该用户不是超级管理员,已把租户菜单过滤掉";
+                    tmps.removeAll(Arrays.asList(pTenant.getId()));
+                }
+                if (menuIds.size() <= 1) {
+                    return BaseResult.ok(msg);
+                }
+            }
+        }
+        sysRoleService.setRolePermissions(rolesId, tmps);
+        return BaseResult.ok(msg);
     }
 
     /**
@@ -357,4 +389,5 @@ public class SysRoleController {
     public BaseResult<List<SysRole>> getRoleByTenantCode(@RequestParam("tenantCode") String tenantCode) {
         return BaseResult.ok(sysRoleService.getRoleByTenantCode(tenantCode));
     }
+
 }

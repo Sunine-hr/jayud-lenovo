@@ -60,8 +60,8 @@ public class WarehouseProcessConfServiceImpl extends ServiceImpl<WarehouseProces
 
     @Override
     public void initConfig(Long warehouseId) {
-        List<SysDictItem> inProConfs = authClient.selectItemByDictCode("inProConf").getResult();
-        List<SysDictItem> outProConfs =  authClient.selectItemByDictCode("outProConf").getResult();
+        List<SysDictItem> inProConfs = authClient.selectItemByDictCode("wms_inProConf").getResult();
+        List<SysDictItem> outProConfs =  authClient.selectItemByDictCode("wms_inProConf").getResult();
         if (CollectionUtil.isEmpty(inProConfs)) {
             throw new ServiceException("初始化流程失败,请在字典配置流程模板");
         }

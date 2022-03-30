@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.BUnitMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.BUnit">
+        <id column="id" property="id" />
+        <result column="unit_code" property="unitCode" />
+        <result column="unit_name_ch" property="unitNameCh" />
+        <result column="unit_name_en" property="unitNameEn" />
+        <result column="remark" property="remark" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, unit_code, unit_name_ch, unit_name_en, remark, create_by, create_time, update_by, update_time, is_deleted
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">b_unit </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="bUnit.unitCode != null and bUnit.unitCode != ''">
+                AND unit_code LIKE CONCAT('%',#{bUnit.unitCode},'%')
+            </if>
+
+            <if test="bUnit.unitNameCh != null and bUnit.unitNameCh != ''">
+                AND unit_name_ch LIKE CONCAT('%',#{bUnit.unitNameCh},'%')
+            </if>
+
+            <if test="bUnit.unitNameEn != null and bUnit.unitNameEn != ''">
+                AND unit_name_en LIKE CONCAT('%',#{bUnit.unitNameEn},'%')
+            </if>
+
+            <if test="bUnit.remark != null and bUnit.remark != ''">
+                AND remark LIKE CONCAT('%',#{bUnit.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.BUnit">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.BUnit">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  b_unit WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE b_unit SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryBUnitForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            unit_code 'unitCode',
+            unit_name_ch 'unitNameCh',
+            unit_name_en 'unitNameEn',
+            remark 'remark',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_deleted 'isDeleted'
+        FROM b_unit
+        WHERE is_deleted = 0
+                    <if test="unitCode != null and unitCode != ''">
+                        AND unit_code LIKE CONCAT('%',#{unitCode}, '%')
+                    </if>
+                    <if test="unitNameCh != null and unitNameCh != ''">
+                        AND unit_name_ch LIKE CONCAT('%',#{unitNameCh}, '%')
+                    </if>
+                    <if test="unitNameEn != null and unitNameEn != ''">
+                        AND unit_name_en LIKE CONCAT('%',#{unitNameEn}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+    <select id="getUnits" resultType="string">
+        select unit_name_ch from b_unit where is_deleted = 0
+    </select>
+
+</mapper>

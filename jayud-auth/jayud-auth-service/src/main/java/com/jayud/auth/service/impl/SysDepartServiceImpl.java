@@ -76,7 +76,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         sysUserQueryWrapper.lambda().eq(SysUser::getDepartId, id);
         sysUserQueryWrapper.lambda().eq(SysUser::getIsDeleted, 0);
         List<SysUser> list = sysUserService.list(sysUserQueryWrapper);
-        if (CollUtil.isEmpty(list)) {
+        if (CollUtil.isNotEmpty(list)) {
             throw new IllegalArgumentException("组织存在员工，不能删除");
         }
         //存在子级，不能删除
@@ -84,7 +84,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         sysDepartQueryWrapper.lambda().eq(SysDepart::getParentId, id);
         sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
         List<SysDepart> list1 = sysDepartMapper.selectList(sysDepartQueryWrapper);
-        if (CollUtil.isEmpty(list1)) {
+        if (CollUtil.isNotEmpty(list1)) {
             throw new IllegalArgumentException("组织存在子级，不能删除");
         }
         sysDepartMapper.logicDel(id, CurrentUserUtil.getUsername());
@@ -109,38 +109,38 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         SysDepart sysDepart = this.getById(id);
         if (ObjectUtil.isEmpty(sysDepart)) {
             //新增
-            QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
-            queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
-            queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
-            SysDepart one = this.getOne(queryWrapper);
-            if (ObjectUtil.isNotEmpty(one)) {
-                throw new IllegalArgumentException("机构编码已存在");
-            }
+//            QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+//            queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
+//            queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+//            SysDepart one = this.getOne(queryWrapper);
+//            if (ObjectUtil.isNotEmpty(one)) {
+//                throw new IllegalArgumentException("机构编码已存在");
+//            }
             depart.setCreateBy(CurrentUserUtil.getUsername());
             depart.setCreateTime(new Date());
         } else {
             //修改
-            QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().ne(SysDepart::getId, id);
-            queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
-            queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
-            queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
-            SysDepart one = this.getOne(queryWrapper);
-            if (ObjectUtil.isNotEmpty(one)) {
-                throw new IllegalArgumentException("机构编码已存在");
-            }
+//            QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.lambda().ne(SysDepart::getId, id);
+//            queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+//            queryWrapper.lambda().eq(SysDepart::getOrgCode, depart.getOrgCode());
+//            queryWrapper.lambda().groupBy(SysDepart::getOrgCode);
+//            SysDepart one = this.getOne(queryWrapper);
+//            if (ObjectUtil.isNotEmpty(one)) {
+//                throw new IllegalArgumentException("机构编码已存在");
+//            }
             depart.setUpdateBy(CurrentUserUtil.getUsername());
             depart.setUpdateTime(new Date());
         }
         //获取当前用户租户编码
         String orgCategory = depart.getOrgCategory();
-        if (ObjectUtil.isNotEmpty(orgCategory)) {
+        if (orgCategory.equals("1")) {
             String userTenantCode = CurrentUserUtil.getUserTenantCode();
             QueryWrapper<SysDepart> sysDepartQueryWrapper = new QueryWrapper<>();
             sysDepartQueryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
             sysDepartQueryWrapper.lambda().eq(SysDepart::getTenantCode, userTenantCode);
-            sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, orgCategory);
+            sysDepartQueryWrapper.lambda().eq(SysDepart::getOrgCategory, 1);
             sysDepartQueryWrapper.lambda().groupBy(SysDepart::getOrgCode);
             SysDepart one = this.getOne(sysDepartQueryWrapper);
             if (ObjectUtil.isNotEmpty(one)) {
@@ -235,6 +235,28 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     @Override
     public List<SysDepart> getByOrgCategory(Integer orgCategory) {
         return this.list(new QueryWrapper<>(new SysDepart().setIsDeleted(false).setOrgCategory(orgCategory.toString())));
+    }
+
+    @Override
+    public List<SysDepart> slectChildrenById(Long id) {
+        return sysDepartMapper.slectChildrenById(id);
+    }
+
+    @Override
+    public SysDepart getByOrgCode(String depart) {
+        QueryWrapper<SysDepart> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysDepart::getIsDeleted, 0);
+        queryWrapper.lambda().eq(SysDepart::getOrgCode, depart);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public List<SysDepart> selectOperationSubject(QuerySysDeptForm form) {
+        AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
+        SysUser sysUser = sysUserService.getById(userDetail.getId());
+        String tenantCode = sysUser.getTenantCode();
+        form.setTenantCode(tenantCode);
+        return this.baseMapper.selectOperationSubject(form);
     }
 
 

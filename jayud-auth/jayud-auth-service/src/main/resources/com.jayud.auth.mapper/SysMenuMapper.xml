@@ -159,4 +159,16 @@
         ORDER BY sm.sort asc
     </select>
 
+    <select id="allCheckMenuTree" resultType="com.jayud.auth.model.po.SysMenu">
+        select sm.* from sys_menu sm
+        where sm.is_button = 1 and sm.is_approve = 1
+        and sm.is_deleted = 0
+    </select>
+
+    <select id="allMenu" resultType="com.jayud.auth.model.po.SysMenu">
+        select sm.* from sys_menu sm
+        where sm.is_button = 0
+        and sm.is_deleted = 0
+    </select>
+
 </mapper>

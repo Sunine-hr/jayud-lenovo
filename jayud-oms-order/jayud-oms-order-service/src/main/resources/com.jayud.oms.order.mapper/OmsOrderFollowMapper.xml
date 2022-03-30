@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.order.mapper.OmsOrderFollowMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.order.model.po.OmsOrderFollow">
+        <id column="id" property="id" />
+        <result column="oms_order_id" property="omsOrderId" />
+        <result column="s_type" property="sType" />
+        <result column="follow_context" property="followContext" />
+        <result column="follow_time" property="followTime" />
+        <result column="if_onl" property="ifOnl" />
+        <result column="remark" property="remark" />
+        <result column="org_id" property="orgId" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="deleted_user_id" property="deletedUserId" />
+        <result column="delete_user_name" property="deleteUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, oms_order_id, s_type, follow_context, follow_time, if_onl, remark, org_id, tenant_id, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">oms_order_follow </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="omsOrderFollow.omsOrderId != null ">
+                AND oms_order_id = ${omsOrderFollow.omsOrderId}
+            </if>
+
+            <if test="omsOrderFollow.sType != null and omsOrderFollow.sType != ''">
+                AND s_type LIKE CONCAT('%',#{omsOrderFollow.sType},'%')
+            </if>
+
+            <if test="omsOrderFollow.followContext != null and omsOrderFollow.followContext != ''">
+                AND follow_context LIKE CONCAT('%',#{omsOrderFollow.followContext},'%')
+            </if>
+
+            <if test="omsOrderFollow.followTime != null and omsOrderFollow.followTime != ''">
+                AND follow_time LIKE CONCAT('%',#{omsOrderFollow.followTime},'%')
+            </if>
+
+            <if test="omsOrderFollow.ifOnl != null ">
+                AND if_onl = ${omsOrderFollow.ifOnl}
+            </if>
+
+            <if test="omsOrderFollow.remark != null ">
+                AND remark = ${omsOrderFollow.remark}
+            </if>
+
+            <if test="omsOrderFollow.orgId != null ">
+                AND org_id = ${omsOrderFollow.orgId}
+            </if>
+
+            <if test="omsOrderFollow.tenantId != null ">
+                AND tenant_id = ${omsOrderFollow.tenantId}
+            </if>
+
+            <if test="omsOrderFollow.deletedUserId != null ">
+                AND deleted_user_id = ${omsOrderFollow.deletedUserId}
+            </if>
+
+            <if test="omsOrderFollow.deleteUserName != null ">
+                AND delete_user_name = ${omsOrderFollow.deleteUserName}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.oms.order.model.po.OmsOrderFollow">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.oms.order.model.po.OmsOrderFollow">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  oms_order_follow WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE oms_order_follow SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryOmsOrderFollowForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            oms_order_id 'omsOrderId',
+            s_type 'sType',
+            follow_context 'followContext',
+            follow_time 'followTime',
+            if_onl 'ifOnl',
+            remark 'remark',
+            org_id 'orgId',
+            tenant_id 'tenantId',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_deleted 'isDeleted',
+            deleted_user_id 'deletedUserId',
+            delete_user_name 'deleteUserName'
+        FROM oms_order_follow
+        WHERE is_deleted = 0
+                    <if test="omsOrderId != null ">
+                        AND oms_order_id = #{omsOrderId}
+                    </if>
+                    <if test="sType != null and sType != ''">
+                        AND s_type LIKE CONCAT('%',#{sType}, '%')
+                    </if>
+                    <if test="followContext != null and followContext != ''">
+                        AND follow_context LIKE CONCAT('%',#{followContext}, '%')
+                    </if>
+                    <if test="followTime != null and followTime != ''">
+                        AND follow_time LIKE CONCAT('%',#{followTime}, '%')
+                    </if>
+                    <if test="ifOnl != null ">
+                        AND if_onl = #{ifOnl}
+                    </if>
+                    <if test="remark != null ">
+                        AND remark = #{remark}
+                    </if>
+                    <if test="orgId != null ">
+                        AND org_id = #{orgId}
+                    </if>
+                    <if test="tenantId != null ">
+                        AND tenant_id = #{tenantId}
+                    </if>
+                    <if test="deletedUserId != null ">
+                        AND deleted_user_id = #{deletedUserId}
+                    </if>
+                    <if test="deleteUserName != null ">
+                        AND delete_user_name = #{deleteUserName}
+                    </if>
+
+    </select>
+
+</mapper>

@@ -1,5 +1,6 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.po.SysRole;
 import com.jayud.auth.model.po.SysUserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -90,4 +91,11 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
      * @return
      */
     int getCountByUserNameAndStep(@Param("username")String username, @Param("userTenantCode")String userTenantCode, @Param("menuCode")String menuCode, @Param("newStep")Integer newStep);
+
+    /**
+     * 根据用户id获取角色信息
+     * @param id
+     * @return
+     */
+    List<SysRole> getEnabledRolesByUserId(@Param("id")Long id);
 }

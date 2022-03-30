@@ -9,9 +9,11 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCustomerAddressForm;
 import com.jayud.crm.model.po.CrmCreditVisit;
 import com.jayud.crm.model.po.CrmCustomerRisk;
+import com.jayud.crm.model.po.CrmFile;
 import com.jayud.crm.model.vo.CrmCustomerAddressVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class CrmCustomerAddressServiceImpl extends ServiceImpl<CrmCustomerAddres
 
     @Autowired
     private CrmCustomerAddressMapper crmCustomerAddressMapper;
+
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCustomerAddressVO> selectPage(CrmCustomerAddress crmCustomerAddress,
@@ -68,10 +73,12 @@ public class CrmCustomerAddressServiceImpl extends ServiceImpl<CrmCustomerAddres
         Boolean result = null;
         CrmCustomerAddress convert = ConvertUtil.convert(crmCustomerAddressForm, CrmCustomerAddress.class);
         if(convert.getId()!=null){
+            authClient.addSysLogFeign(" 修改了联系地址", convert.getCustId());
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.updateById(convert);
         }else {
+            authClient.addSysLogFeign(" 新增了联系地址", convert.getCustId());
             convert.setUpdateBy(CurrentUserUtil.getUsername());
             convert.setUpdateTime(new Date());
             result = this.saveOrUpdate(convert);
@@ -94,6 +101,9 @@ public class CrmCustomerAddressServiceImpl extends ServiceImpl<CrmCustomerAddres
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDel(List<Long> ids){
+        Long aLong = ids.get(0);
+        CrmCustomerAddress byId = this.getById(aLong);
+        authClient.addSysLogFeign(" 删除了联系地址", byId.getCustId());
         List<CrmCustomerAddress> crmCustomerAddressList = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
             CrmCustomerAddress crmCustomerAddress = new CrmCustomerAddress();

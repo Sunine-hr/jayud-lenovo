@@ -1,5 +1,6 @@
 package com.jayud.auth.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -7,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -45,8 +47,17 @@ public class SysUser extends SysBaseEntity {
     @ApiModelProperty(value = "性别(0-默认未知,1-男,2-女)")
     private Integer sex;
 
-    @ApiModelProperty(value = "联系方式")
+    @ApiModelProperty(value = "电话号码")
     private String phone;
+
+    @ApiModelProperty(value = "手机号码")
+    private String cellPhoneNumber;
+
+    @ApiModelProperty(value = "钉钉")
+    private String nailingNumber;
+
+    @ApiModelProperty(value = "微信号码")
+    private String wechatNumber;
 
     @ApiModelProperty(value = "邮箱")
     private String email;
@@ -104,5 +115,7 @@ public class SysUser extends SysBaseEntity {
      */
     private   static final String   TACITLY_APPROVE_PASSWORD="123456";
 
-
+    @ApiModelProperty(value = "所属部门id集合")
+    @TableField(exist = false)
+    private List<Long> departIdList;
 }

@@ -1,5 +1,8 @@
 package com.jayud.crm.controller;
 
+import com.jayud.common.aop.annotations.SysLog;
+import com.jayud.common.enums.SysLogTypeEnum;
+import com.jayud.common.service.BaseCommonService;
 import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCreditVisitForm;
 import com.jayud.crm.model.bo.DeleteForm;
@@ -13,6 +16,8 @@ import com.jayud.common.BaseResult;
 import com.jayud.crm.service.ICrmCreditVisitService;
 import com.jayud.crm.model.po.CrmCreditVisit;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import io.swagger.annotations.Api;
@@ -21,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -36,7 +42,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/crmCreditVisit")
 public class CrmCreditVisitController {
-
 
     @Autowired
     public ICrmCreditVisitService crmCreditVisitService;
@@ -54,6 +59,7 @@ public class CrmCreditVisitController {
      * @param: req
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage < com.jayud.crm.model.po.CrmCreditVisit>>
      **/
+    @SysLog("查询了走访记录")
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<CrmCreditVisitVO>> selectPage(@RequestBody CrmCreditVisitForm crmCreditVisitForm,
@@ -88,6 +94,7 @@ public class CrmCreditVisitController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCreditVisitForm crmCreditVisitForm) {
+
         return crmCreditVisitService.saveOrUpdateCrmCreditVisit(crmCreditVisitForm);
     }
 
@@ -162,6 +169,17 @@ public class CrmCreditVisitController {
             listId.add(l);
         }
         crmCreditVisitIdOne.setVisitNameList(listId);
+
+        //拿到创建时间
+        List<String> visitDateTime = new ArrayList<>();
+
+        visitDateTime.add(dateString(crmCreditVisitIdOne.getVisitDate()));
+        visitDateTime.add(dateString(crmCreditVisitIdOne.getEndDate()));
+
+        crmCreditVisitIdOne.setCreationVisitTime(visitDateTime);
+
+        crmCreditVisitIdOne.setVisitDate(null);
+        crmCreditVisitIdOne.setEndDate(null);
         return BaseResult.ok(crmCreditVisitIdOne);
     }
 
@@ -172,4 +190,11 @@ public class CrmCreditVisitController {
         return BaseResult.ok(baseResult);
     }
 
+
+    public String dateString(LocalDateTime dateOne) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        LocalDateTime time = LocalDateTime.now();
+        String localTime = df.format(dateOne);
+        return localTime;
+    }
 }

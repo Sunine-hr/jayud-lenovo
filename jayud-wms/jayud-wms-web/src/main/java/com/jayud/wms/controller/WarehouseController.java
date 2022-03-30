@@ -3,6 +3,7 @@ package com.jayud.wms.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
@@ -10,6 +11,7 @@ import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.QueryWarehouseForm;
 import com.jayud.wms.model.bo.WarehouseForm;
@@ -58,6 +60,9 @@ public class WarehouseController {
     @Autowired
     private SysUserOwerPermissionService sysUserOwerPermissionService;
 
+    @Autowired
+    private AuthClient authClient;
+
 
     /**
      * 分页查询数据
@@ -65,7 +70,6 @@ public class WarehouseController {
      * @param queryWarehouseForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryWarehouseForm.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<Warehouse>>> selectPage(QueryWarehouseForm queryWarehouseForm,
@@ -81,7 +85,6 @@ public class WarehouseController {
      * @param warehouse 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryWarehouseForm.class)
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<Warehouse>> selectList(QueryWarehouseForm warehouse,
@@ -168,19 +171,25 @@ public class WarehouseController {
     @ApiOperation("下拉值")
     @GetMapping(value = "/getByData")
     public BaseResult getByData() {
-        List<LinkedHashMap<String, Object>> warehouseType = authService.queryDictByDictType("warehouseType");
-        List<LinkedHashMap<String, Object>> warehouseAreaType = authService.queryDictByDictType("warehouseAreaType");
-        List<LinkedHashMap<String, Object>> warehouseLocationType = authService.queryDictByDictType("warehouseLocationType");
-        List<Warehouse> warehouses = warehouseService.getWarehouse();
-        Map<String, String> warehouseIdMap = sysUserOwerPermissionService.getOwerIdByUserId(CurrentUserUtil.getUserId().toString()).stream().collect(Collectors.toMap(e -> e, e -> e));
 
-        warehouses = warehouses.stream().filter(e -> warehouseIdMap.get(e.getId()) != null).collect(Collectors.toList());
+        //仓库类型
+        BaseResult<List<SysDictItem>> wmsWarehouseType = authClient.selectItemByDictCode("wms_warehouse_type");
+        //库区类型
+        BaseResult<List<SysDictItem>> wmsTheReservoirType = authClient.selectItemByDictCode("wms_the_reservoir_type");
+        //库位类型
+        BaseResult<List<SysDictItem>> wmsLocationType = authClient.selectItemByDictCode("wms_location_type");
+        //周转方式
+        BaseResult<List<SysDictItem>> wmsTurnoverWay = authClient.selectItemByDictCode("wms_turnover_way");
+        //周转参数
+        BaseResult<List<SysDictItem>> wmsTurnoverLotNumber = authClient.selectItemByDictCode("wms_turnover_lot_number");
+
         //todo 策略下拉值
         Map<String, Object> map = new HashMap<>();
-        map.put("warehouseType", warehouseType);
-        map.put("warehouseAreaType", warehouseAreaType);
-        map.put("warehouseLocationType", warehouseLocationType);
-        map.put("warehouses", warehouses);
+        map.put("wmsWarehouseType", wmsWarehouseType);
+        map.put("wmsTheReservoirType", wmsTheReservoirType);
+        map.put("wmsLocationType", wmsLocationType);
+        map.put("wmsTurnoverWay", wmsTurnoverWay);
+        map.put("wmsTurnoverLotNumber", wmsTurnoverLotNumber);
         return BaseResult.ok(map);
     }
 
@@ -201,7 +210,7 @@ public class WarehouseController {
     @PostMapping(path = "/exportWarehouse")
     public void exportWarehouse(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
-            List<String> headList = Arrays.asList("仓库编码", "仓库名称", "仓库类型", "联系人", "手机号", "邮箱", "联系地址", "经度", "纬度", "是否允许混放", "创建人", "创建时间");
+            List<String> headList = Arrays.asList("仓库编码", "仓库名称", "仓库类型", "联系人", "手机号", "邮箱", "联系地址", "是否启用", "创建人", "创建时间");
             List<LinkedHashMap<String, Object>> dataList = warehouseService.queryWarehouseForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "仓库", response);
         } catch (Exception e) {

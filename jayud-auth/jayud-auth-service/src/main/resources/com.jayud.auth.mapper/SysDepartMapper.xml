@@ -144,6 +144,23 @@
         select getDepartParentList(#{id}) pids
     </select>
 
+    <select id="slectChildrenById" resultType="com.jayud.auth.model.po.SysDepart">
+        SELECT
+            *
+        FROM
+            (
+                SELECT
+                    *,
+                    IF
+                        ( find_in_set( t1.parentId, @p ) > 0, @p := concat( @p, ',', id ), 0 ) AS childId
+                FROM
+                    ( SELECT id, parent_id parentId,depart_name departName,org_category orgCategory,org_code orgCode,tenant_code tenantCode FROM sys_depart t WHERE t.is_deleted = 0 ORDER BY id ) t1,
+                    ( SELECT @p := ${parentId} ) t2
+            ) t3
+        WHERE
+            childId != 0
+    </select>
+
 
     <delete id="phyDelById">
         DELETE FROM  sys_depart WHERE id = ${id}
@@ -153,6 +170,20 @@
         UPDATE sys_depart SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE id = ${id} AND is_deleted = 0
     </update>
+
+    <select id="selectOperationSubject" resultType="com.jayud.auth.model.po.SysDepart">
+        select  sd.*,sd.depart_name ,sd.id from sys_depart sd
+        where sd.is_deleted = 0
+        and sd.tenant_code = #{form.tenantCode} and sd.org_category = #{form.orgCategory}
+        <if test="form.departName != null and form.departName != ''">
+            and sd.depart_name like concat('%',#{form.departName},'%')
+        </if>
+        <if test="form.createTimeArr != null and form.createTimeArr.length>0">
+            and sd.create_time <![CDATA[ >= ]]> #{form.createTimeArr[0]}
+            and sd.create_time <![CDATA[ <= ]]> #{form.createTimeArr[1]}
+        </if>
+
+    </select>
 
 
 </mapper>

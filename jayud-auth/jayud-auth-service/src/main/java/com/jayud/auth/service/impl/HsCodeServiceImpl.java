@@ -18,6 +18,7 @@ import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.IHsCodeElementsService;
 import com.jayud.auth.service.IHsCodeService;
 import com.jayud.auth.service.ISysUserService;
+import com.jayud.common.CommonResult;
 import com.jayud.common.utils.ConvertUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -187,5 +188,27 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
         hsCodeVO.setHsCodeElementsVOS(hsCodeElementsVO);
 
         return hsCodeVO;
+    }
+
+    @Override
+    public CommonResult deleteByIds(DeleteForm form) {
+        SysUserVO systemUserByName = systemUserService.getSystemUserByName(CurrentUserUtil.getUsername());
+
+        List<HsCode> hsCodes = new ArrayList<>();
+        for (Long id : form.getIds()) {
+            HsCode hsCode = new HsCode();
+            hsCode.setId(id.intValue());
+            hsCode.setVoided(1);
+            hsCode.setVoidedBy(systemUserByName.getId().intValue());
+            hsCode.setVoidedByDtm(LocalDateTime.now());
+            hsCode.setVoidedByName(systemUserByName.getName());
+            hsCodes.add(hsCode);
+        }
+        boolean b = this.updateBatchById(hsCodes);
+        if(b){
+            log.warn("海关编码删除成功："+hsCodes);
+            return CommonResult.success();
+        }
+        return CommonResult.error(444,"海关编码删除失败");
     }
 }

@@ -16,12 +16,20 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="custom_one" property="customOne"/>
+        <result column="custom_two" property="customTwo"/>
+        <result column="custom_three" property="customThree"/>
+        <result column="custom_four" property="customFour"/>
+        <result column="custom_five" property="customFive"/>
+        <result column="is_edit" property="isEdit"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, dict_id, item_text, item_value, sort_order, status, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, dict_id, item_text, item_value, sort_order, status, remark, is_deleted, create_by, create_time, update_by, update_time,
+                custom_one,	custom_two,	custom_three,custom_four,custom_five,is_edit
     </sql>
+
 
     <!-- 表名 -->
     <sql id="tname">sys_dict_item </sql>

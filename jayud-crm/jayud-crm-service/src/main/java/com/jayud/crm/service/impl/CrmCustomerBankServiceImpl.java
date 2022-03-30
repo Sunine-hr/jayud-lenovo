@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.crm.feign.AuthClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -34,12 +35,14 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
 
     @Autowired
     private CrmCustomerBankMapper crmCustomerBankMapper;
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage<CrmCustomerBank> selectPage(CrmCustomerBank crmCustomerBank,
-                                        Integer currentPage,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                             Integer currentPage,
+                                             Integer pageSize,
+                                             HttpServletRequest req){
 
         Page<CrmCustomerBank> page=new Page<CrmCustomerBank>(currentPage,pageSize);
         IPage<CrmCustomerBank> pageList= crmCustomerBankMapper.pageList(page, crmCustomerBank);
@@ -68,6 +71,9 @@ public class CrmCustomerBankServiceImpl extends ServiceImpl<CrmCustomerBankMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void logicDelByIds(List<Long> ids) {
+        Long aLong = ids.get(0);
+        CrmCustomerBank byId = this.getById(aLong);
+        authClient.addSysLogFeign(" 删除了银行账号", byId.getCustId());
         LambdaQueryWrapper<CrmCustomerBank> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(CrmCustomerBank::getId,ids);
         List<CrmCustomerBank> bankList = this.list(lambdaQueryWrapper);

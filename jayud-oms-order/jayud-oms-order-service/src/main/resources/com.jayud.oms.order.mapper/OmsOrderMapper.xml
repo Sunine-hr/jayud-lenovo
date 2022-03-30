@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.oms.order.mapper.OmsOrderMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.oms.order.model.po.OmsOrder">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="ref_no" property="refNo" />
+        <result column="order_date" property="orderDate" />
+        <result column="biz_type" property="bizType" />
+        <result column="cust_id" property="custId" />
+        <result column="cust_no" property="custNo" />
+        <result column="cust_name" property="custName" />
+        <result column="cust_buyer" property="custBuyer" />
+        <result column="cust_mail" property="custMail" />
+        <result column="org_name" property="orgName" />
+        <result column="org_part" property="orgPart" />
+        <result column="org_sales_id" property="orgSalesId" />
+        <result column="org_sales_name" property="orgSalesName" />
+        <result column="contract_id" property="contractId" />
+        <result column="contract_no" property="contractNo" />
+        <result column="account_type" property="accountType" />
+        <result column="state_flag" property="stateFlag" />
+        <result column="f_level" property="fLevel" />
+        <result column="f_step" property="fStep" />
+        <result column="check_state_flag" property="checkStateFlag" />
+        <result column="flow_instance_id" property="flowInstanceId" />
+        <result column="f_multi_level0" property="fMultiLevel0" />
+        <result column="f_date_time0" property="fDateTime0" />
+        <result column="f_multi_level1" property="fMultiLevel1" />
+        <result column="f_date_time1" property="fDateTime1" />
+        <result column="biz_remark" property="bizRemark" />
+        <result column="remark" property="remark" />
+        <result column="org_id" property="orgId" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="deleted_user_id" property="deletedUserId" />
+        <result column="delete_user_name" property="deleteUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_no, ref_no, order_date, biz_type, cust_id, cust_no, cust_name, cust_buyer, cust_mail, org_name, org_part, org_sales_id, org_sales_name, contract_id, contract_no, account_type, state_flag, f_level, f_step, check_state_flag, flow_instance_id, f_multi_level0, f_date_time0, f_multi_level1, f_date_time1, biz_remark, remark, org_id, tenant_id, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">oms_order </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="omsOrder.orderNo != null and omsOrder.orderNo != ''">
+                AND order_no LIKE CONCAT('%',#{omsOrder.orderNo},'%')
+            </if>
+
+            <if test="omsOrder.refNo != null and omsOrder.refNo != ''">
+                AND ref_no LIKE CONCAT('%',#{omsOrder.refNo},'%')
+            </if>
+
+            <if test="omsOrder.orderDate != null ">
+                AND order_date = ${omsOrder.orderDate}
+            </if>
+
+            <if test="omsOrder.bizType != null and omsOrder.bizType != ''">
+                AND biz_type LIKE CONCAT('%',#{omsOrder.bizType},'%')
+            </if>
+
+            <if test="omsOrder.custId != null ">
+                AND cust_id = ${omsOrder.custId}
+            </if>
+
+            <if test="omsOrder.custNo != null and omsOrder.custNo != ''">
+                AND cust_no LIKE CONCAT('%',#{omsOrder.custNo},'%')
+            </if>
+
+            <if test="omsOrder.custName != null and omsOrder.custName != ''">
+                AND cust_name LIKE CONCAT('%',#{omsOrder.custName},'%')
+            </if>
+
+            <if test="omsOrder.custBuyer != null and omsOrder.custBuyer != ''">
+                AND cust_buyer LIKE CONCAT('%',#{omsOrder.custBuyer},'%')
+            </if>
+
+            <if test="omsOrder.custMail != null and omsOrder.custMail != ''">
+                AND cust_mail LIKE CONCAT('%',#{omsOrder.custMail},'%')
+            </if>
+
+            <if test="omsOrder.orgName != null and omsOrder.orgName != ''">
+                AND org_name LIKE CONCAT('%',#{omsOrder.orgName},'%')
+            </if>
+
+            <if test="omsOrder.orgPart != null and omsOrder.orgPart != ''">
+                AND org_part LIKE CONCAT('%',#{omsOrder.orgPart},'%')
+            </if>
+
+            <if test="omsOrder.orgSalesId != null ">
+                AND org_sales_id = ${omsOrder.orgSalesId}
+            </if>
+
+            <if test="omsOrder.orgSalesName != null and omsOrder.orgSalesName != ''">
+                AND org_sales_name LIKE CONCAT('%',#{omsOrder.orgSalesName},'%')
+            </if>
+
+            <if test="omsOrder.contractId != null ">
+                AND contract_id = ${omsOrder.contractId}
+            </if>
+
+            <if test="omsOrder.contractNo != null and omsOrder.contractNo != ''">
+                AND contract_no LIKE CONCAT('%',#{omsOrder.contractNo},'%')
+            </if>
+
+            <if test="omsOrder.accountType != null and omsOrder.accountType != ''">
+                AND account_type LIKE CONCAT('%',#{omsOrder.accountType},'%')
+            </if>
+
+            <if test="omsOrder.stateFlag != null ">
+                AND state_flag = ${omsOrder.stateFlag}
+            </if>
+
+            <if test="omsOrder.fLevel != null ">
+                AND f_level = ${omsOrder.fLevel}
+            </if>
+
+            <if test="omsOrder.fStep != null ">
+                AND f_step = ${omsOrder.fStep}
+            </if>
+
+            <if test="omsOrder.checkStateFlag != null and omsOrder.checkStateFlag != ''">
+                AND check_state_flag LIKE CONCAT('%',#{omsOrder.checkStateFlag},'%')
+            </if>
+
+            <if test="omsOrder.flowInstanceId != null ">
+                AND flow_instance_id = ${omsOrder.flowInstanceId}
+            </if>
+
+            <if test="omsOrder.fMultiLevel0 != null and omsOrder.fMultiLevel0 != ''">
+                AND f_multi_level0 LIKE CONCAT('%',#{omsOrder.fMultiLevel0},'%')
+            </if>
+
+            <if test="omsOrder.fDateTime0 != null ">
+                AND f_date_time0 = ${omsOrder.fDateTime0}
+            </if>
+
+            <if test="omsOrder.fMultiLevel1 != null and omsOrder.fMultiLevel1 != ''">
+                AND f_multi_level1 LIKE CONCAT('%',#{omsOrder.fMultiLevel1},'%')
+            </if>
+
+            <if test="omsOrder.fDateTime1 != null ">
+                AND f_date_time1 = ${omsOrder.fDateTime1}
+            </if>
+
+            <if test="omsOrder.bizRemark != null and omsOrder.bizRemark != ''">
+                AND biz_remark LIKE CONCAT('%',#{omsOrder.bizRemark},'%')
+            </if>
+
+            <if test="omsOrder.remark != null and omsOrder.remark != ''">
+                AND remark LIKE CONCAT('%',#{omsOrder.remark},'%')
+            </if>
+
+            <if test="omsOrder.orgId != null ">
+                AND org_id = ${omsOrder.orgId}
+            </if>
+
+            <if test="omsOrder.tenantId != null ">
+                AND tenant_id = ${omsOrder.tenantId}
+            </if>
+
+            <if test="omsOrder.deletedUserId != null ">
+                AND deleted_user_id = ${omsOrder.deletedUserId}
+            </if>
+
+            <if test="omsOrder.deleteUserName != null ">
+                AND delete_user_name = ${omsOrder.deleteUserName}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.oms.order.model.po.OmsOrder">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.oms.order.model.po.OmsOrder">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  oms_order WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE oms_order SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryOmsOrderForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_no 'orderNo',
+            ref_no 'refNo',
+            order_date 'orderDate',
+            biz_type 'bizType',
+            cust_id 'custId',
+            cust_no 'custNo',
+            cust_name 'custName',
+            cust_buyer 'custBuyer',
+            cust_mail 'custMail',
+            org_name 'orgName',
+            org_part 'orgPart',
+            org_sales_id 'orgSalesId',
+            org_sales_name 'orgSalesName',
+            contract_id 'contractId',
+            contract_no 'contractNo',
+            account_type 'accountType',
+            state_flag 'stateFlag',
+            f_level 'fLevel',
+            f_step 'fStep',
+            check_state_flag 'checkStateFlag',
+            flow_instance_id 'flowInstanceId',
+            f_multi_level0 'fMultiLevel0',
+            f_date_time0 'fDateTime0',
+            f_multi_level1 'fMultiLevel1',
+            f_date_time1 'fDateTime1',
+            biz_remark 'bizRemark',
+            remark 'remark',
+            org_id 'orgId',
+            tenant_id 'tenantId',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_deleted 'isDeleted',
+            deleted_user_id 'deletedUserId',
+            delete_user_name 'deleteUserName'
+        FROM oms_order
+        WHERE is_deleted = 0
+                    <if test="orderNo != null and orderNo != ''">
+                        AND order_no LIKE CONCAT('%',#{orderNo}, '%')
+                    </if>
+                    <if test="refNo != null and refNo != ''">
+                        AND ref_no LIKE CONCAT('%',#{refNo}, '%')
+                    </if>
+                    <if test="orderDate != null ">
+                        AND order_date = #{orderDate}
+                    </if>
+                    <if test="bizType != null and bizType != ''">
+                        AND biz_type LIKE CONCAT('%',#{bizType}, '%')
+                    </if>
+                    <if test="custId != null ">
+                        AND cust_id = #{custId}
+                    </if>
+                    <if test="custNo != null and custNo != ''">
+                        AND cust_no LIKE CONCAT('%',#{custNo}, '%')
+                    </if>
+                    <if test="custName != null and custName != ''">
+                        AND cust_name LIKE CONCAT('%',#{custName}, '%')
+                    </if>
+                    <if test="custBuyer != null and custBuyer != ''">
+                        AND cust_buyer LIKE CONCAT('%',#{custBuyer}, '%')
+                    </if>
+                    <if test="custMail != null and custMail != ''">
+                        AND cust_mail LIKE CONCAT('%',#{custMail}, '%')
+                    </if>
+                    <if test="orgName != null and orgName != ''">
+                        AND org_name LIKE CONCAT('%',#{orgName}, '%')
+                    </if>
+                    <if test="orgPart != null and orgPart != ''">
+                        AND org_part LIKE CONCAT('%',#{orgPart}, '%')
+                    </if>
+                    <if test="orgSalesId != null ">
+                        AND org_sales_id = #{orgSalesId}
+                    </if>
+                    <if test="orgSalesName != null and orgSalesName != ''">
+                        AND org_sales_name LIKE CONCAT('%',#{orgSalesName}, '%')
+                    </if>
+                    <if test="contractId != null ">
+                        AND contract_id = #{contractId}
+                    </if>
+                    <if test="contractNo != null and contractNo != ''">
+                        AND contract_no LIKE CONCAT('%',#{contractNo}, '%')
+                    </if>
+                    <if test="accountType != null and accountType != ''">
+                        AND account_type LIKE CONCAT('%',#{accountType}, '%')
+                    </if>
+                    <if test="stateFlag != null ">
+                        AND state_flag = #{stateFlag}
+                    </if>
+                    <if test="fLevel != null ">
+                        AND f_level = #{fLevel}
+                    </if>
+                    <if test="fStep != null ">
+                        AND f_step = #{fStep}
+                    </if>
+                    <if test="checkStateFlag != null and checkStateFlag != ''">
+                        AND check_state_flag LIKE CONCAT('%',#{checkStateFlag}, '%')
+                    </if>
+                    <if test="flowInstanceId != null ">
+                        AND flow_instance_id = #{flowInstanceId}
+                    </if>
+                    <if test="fMultiLevel0 != null and fMultiLevel0 != ''">
+                        AND f_multi_level0 LIKE CONCAT('%',#{fMultiLevel0}, '%')
+                    </if>
+                    <if test="fDateTime0 != null ">
+                        AND f_date_time0 = #{fDateTime0}
+                    </if>
+                    <if test="fMultiLevel1 != null and fMultiLevel1 != ''">
+                        AND f_multi_level1 LIKE CONCAT('%',#{fMultiLevel1}, '%')
+                    </if>
+                    <if test="fDateTime1 != null ">
+                        AND f_date_time1 = #{fDateTime1}
+                    </if>
+                    <if test="bizRemark != null and bizRemark != ''">
+                        AND biz_remark LIKE CONCAT('%',#{bizRemark}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+                    <if test="orgId != null ">
+                        AND org_id = #{orgId}
+                    </if>
+                    <if test="tenantId != null ">
+                        AND tenant_id = #{tenantId}
+                    </if>
+                    <if test="deletedUserId != null ">
+                        AND deleted_user_id = #{deletedUserId}
+                    </if>
+                    <if test="deleteUserName != null ">
+                        AND delete_user_name = #{deleteUserName}
+                    </if>
+
+    </select>
+
+</mapper>

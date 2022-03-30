@@ -4,44 +4,44 @@
 
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.crm.model.po.CrmCreditDepart">
-        <id column="id" property="id" />
-        <result column="credit_id" property="creditId" />
-        <result column="credit_name" property="creditName" />
-        <result column="depart_id" property="departId" />
-        <result column="depart_name" property="departName" />
-        <result column="credit_value" property="creditValue" />
-        <result column="credit_amt" property="creditAmt" />
-        <result column="tenant_code" property="tenantCode" />
-        <result column="remark" property="remark" />
-        <result column="is_deleted" property="isDeleted" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
-        <result column="f_level" property="fLevel" />
-        <result column="f_step" property="fStep" />
-        <result column="check_state_flag" property="checkStateFlag" />
+        <id column="id" property="id"/>
+        <result column="credit_id" property="creditId"/>
+        <result column="credit_name" property="creditName"/>
+        <result column="depart_id" property="departId"/>
+        <result column="depart_name" property="departName"/>
+        <result column="credit_value" property="creditValue"/>
+        <result column="credit_amt" property="creditAmt"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="f_level" property="fLevel"/>
+        <result column="f_step" property="fStep"/>
+        <result column="check_state_flag" property="checkStateFlag"/>
         <result column="credit_granted_money" property="creditGrantedMoney"/>
     </resultMap>
 
     <resultMap id="BaseResultMapOne" type="com.jayud.crm.model.vo.CrmCreditDepartVO">
-        <id column="id" property="id" />
-        <result column="credit_id" property="creditId" />
-        <result column="credit_name" property="creditName" />
-        <result column="depart_id" property="departId" />
-        <result column="depart_name" property="departName" />
-        <result column="credit_value" property="creditValue" />
-        <result column="credit_amt" property="creditAmt" />
-        <result column="tenant_code" property="tenantCode" />
-        <result column="remark" property="remark" />
-        <result column="is_deleted" property="isDeleted" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
-        <result column="f_level" property="fLevel" />
-        <result column="f_step" property="fStep" />
-        <result column="check_state_flag" property="checkStateFlag" />
+        <id column="id" property="id"/>
+        <result column="credit_id" property="creditId"/>
+        <result column="credit_name" property="creditName"/>
+        <result column="depart_id" property="departId"/>
+        <result column="depart_name" property="departName"/>
+        <result column="credit_value" property="creditValue"/>
+        <result column="credit_amt" property="creditAmt"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="f_level" property="fLevel"/>
+        <result column="f_step" property="fStep"/>
+        <result column="check_state_flag" property="checkStateFlag"/>
         <result column="credit_granted_money" property="creditGrantedMoney"/>
     </resultMap>
 
@@ -54,8 +54,10 @@
     <sql id="tname">crm_credit_depart </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        FROM <include refid="tname"/>
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
         <where>
             is_deleted = 0
             <if test="crmCreditDepart.creditId != null and crmCreditDepart.creditId != ''">
@@ -67,11 +69,11 @@
             </if>
 
             <if test="crmCreditDepart.departId != null ">
-                AND depart_id = ${crmCreditDepart.departId}
+                AND depart_id = #{crmCreditDepart.departId}
             </if>
 
             <if test="crmCreditDepart.departName != null ">
-                AND depart_name = ${crmCreditDepart.departName}
+                AND depart_name = #{crmCreditDepart.departName}
             </if>
 
             <if test="crmCreditDepart.creditValue != null and crmCreditDepart.creditValue != ''">
@@ -95,13 +97,12 @@
 
     <select id="pageList" resultMap="BaseResultMapOne" parameterType="com.jayud.crm.model.po.CrmCreditDepart">
         <include refid="selects"/>
+        order by create_time desc
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.crm.model.po.CrmCreditDepart">
         <include refid="selects"/>
     </select>
-
-
 
 
     <delete id="phyDelById">
@@ -115,46 +116,46 @@
 
     <select id="queryCrmCreditDepartForExcel" resultType="java.util.LinkedHashMap">
         SELECT
-            id 'id',
-            credit_id 'creditId',
-            credit_name 'creditName',
-            depart_id 'departId',
-            depart_name 'departName',
-            credit_value 'creditValue',
-            credit_amt 'creditAmt',
-            tenant_code 'tenantCode',
-            remark 'remark',
-            is_deleted 'isDeleted',
-            create_by 'createBy',
-            create_time 'createTime',
-            update_by 'updateBy',
-            update_time 'updateTime'
+        id 'id',
+        credit_id 'creditId',
+        credit_name 'creditName',
+        depart_id 'departId',
+        depart_name 'departName',
+        credit_value 'creditValue',
+        credit_amt 'creditAmt',
+        tenant_code 'tenantCode',
+        remark 'remark',
+        is_deleted 'isDeleted',
+        create_by 'createBy',
+        create_time 'createTime',
+        update_by 'updateBy',
+        update_time 'updateTime'
         FROM crm_credit_depart
         WHERE is_deleted = 0
-                    <if test="creditId != null and creditId != ''">
-                        AND credit_id LIKE CONCAT('%',#{creditId}, '%')
-                    </if>
-                    <if test="creditName != null and creditName != ''">
-                        AND credit_name LIKE CONCAT('%',#{creditName}, '%')
-                    </if>
-                    <if test="departId != null ">
-                        AND depart_id = #{departId}
-                    </if>
-                    <if test="departName != null ">
-                        AND depart_name = #{departName}
-                    </if>
-                    <if test="creditValue != null and creditValue != ''">
-                        AND credit_value LIKE CONCAT('%',#{creditValue}, '%')
-                    </if>
-                    <if test="creditAmt != null ">
-                        AND credit_amt = #{creditAmt}
-                    </if>
-                    <if test="tenantCode != null and tenantCode != ''">
-                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
-                    </if>
-                    <if test="remark != null and remark != ''">
-                        AND remark LIKE CONCAT('%',#{remark}, '%')
-                    </if>
+        <if test="creditId != null and creditId != ''">
+            AND credit_id LIKE CONCAT('%',#{creditId}, '%')
+        </if>
+        <if test="creditName != null and creditName != ''">
+            AND credit_name LIKE CONCAT('%',#{creditName}, '%')
+        </if>
+        <if test="departId != null ">
+            AND depart_id = #{departId}
+        </if>
+        <if test="departName != null ">
+            AND depart_name = #{departName}
+        </if>
+        <if test="creditValue != null and creditValue != ''">
+            AND credit_value LIKE CONCAT('%',#{creditValue}, '%')
+        </if>
+        <if test="creditAmt != null ">
+            AND credit_amt = #{creditAmt}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark LIKE CONCAT('%',#{remark}, '%')
+        </if>
 
     </select>
 

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.AirPortMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.AirPort">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="status" property="status" />
+        <result column="country" property="country" />
+        <result column="route" property="route" />
+        <result column="chinese_name" property="chineseName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, name, create_time,create_by , status, country, route, chinese_name
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">air_port </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            status = 1
+            <if test="airPort.code != null and airPort.code != ''">
+                AND code LIKE CONCAT('%',#{airPort.code},'%')
+            </if>
+
+            <if test="airPort.name != null and airPort.name != ''">
+                AND name LIKE CONCAT('%',#{airPort.name},'%')
+            </if>
+
+            <if test="airPort.createBy != null and airPort.createBy != ''">
+                AND create_by LIKE CONCAT('%',#{airPort.createBy},'%')
+            </if>
+
+            <if test="airPort.status != null ">
+                AND status = ${airPort.status}
+            </if>
+
+            <if test="airPort.country != null and airPort.country != ''">
+                AND country LIKE CONCAT('%',#{airPort.country},'%')
+            </if>
+
+            <if test="airPort.route != null and airPort.route != ''">
+                AND route LIKE CONCAT('%',#{airPort.route},'%')
+            </if>
+
+            <if test="airPort.chineseName != null and airPort.chineseName != ''">
+                AND chinese_name LIKE CONCAT('%',#{airPort.chineseName},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.AirPort">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.AirPort">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  air_port WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE air_port SET status = 0 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND status = 1
+    </update>
+
+    <select id="queryAirPortForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            name 'name',
+            create_time 'createTime',
+            create_user 'createUser',
+            status 'status',
+            country 'country',
+            route 'route',
+            chinese_name 'chineseName'
+        FROM air_port
+        WHERE satus = 1
+                    <if test="code != null and code != ''">
+                        AND code LIKE CONCAT('%',#{code}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        AND name LIKE CONCAT('%',#{name}, '%')
+                    </if>
+                    <if test="createUser != null and createUser != ''">
+                        AND create_user LIKE CONCAT('%',#{createUser}, '%')
+                    </if>
+                    <if test="status != null ">
+                        AND status = #{status}
+                    </if>
+                    <if test="country != null and country != ''">
+                        AND country LIKE CONCAT('%',#{country}, '%')
+                    </if>
+                    <if test="route != null and route != ''">
+                        AND route LIKE CONCAT('%',#{route}, '%')
+                    </if>
+                    <if test="chineseName != null and chineseName != ''">
+                        AND chinese_name LIKE CONCAT('%',#{chineseName}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

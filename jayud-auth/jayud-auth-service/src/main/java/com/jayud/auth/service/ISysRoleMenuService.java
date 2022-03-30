@@ -71,6 +71,11 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
 
     List<Long> getMenuIdsByRoleId(Long roleId);
 
-
-
+    /**
+     * 获取按钮与角色关系
+     * @param longs
+     * @param  menuId
+     * @return
+     */
+    List<SysRoleMenu> getSystemRoleMenuByRoleIdsAndActionCode(List<Long> longs, Long menuId);
 }

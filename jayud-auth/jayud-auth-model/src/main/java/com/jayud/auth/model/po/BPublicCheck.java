@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * BPublicCheck 实体类
  *
@@ -32,6 +34,9 @@ public class BPublicCheck extends SysBaseEntity {
 
     @ApiModelProperty(value = "记录ID")
     private Long recordId;
+
+    @ApiModelProperty(value = "按钮code")
+    private String menuCode;
 
     @ApiModelProperty(value = "需要审核级别")
     private Integer fLevel;

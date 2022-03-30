@@ -29,9 +29,9 @@ public interface BaseCommonService {
      * @param: requestParam
      * @param: costTime
      * @param: username
+     * @param: trueName 真实名称
      * @return: void
      **/
-    void addLog(String logContent, SysLogTypeEnum sysLogTypeEnum, String method, String requestParam, Long costTime, String username);
-
+    void addLog(String logContent, SysLogTypeEnum sysLogTypeEnum, String method, String requestParam, Long costTime, String username,String trueName);
 
 }

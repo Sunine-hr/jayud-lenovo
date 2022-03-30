@@ -75,5 +75,8 @@ public class CrmCreditVisitVO extends SysBaseEntity {
     @ApiModelProperty(value = "拜访人员集合s")
     private List<Long> visitNameList;
 
+    @ApiModelProperty(value = "创建时间保存")
+    private List<String> creationVisitTime;
+
 
 }

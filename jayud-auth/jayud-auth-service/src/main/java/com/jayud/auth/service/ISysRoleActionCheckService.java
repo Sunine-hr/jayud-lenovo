@@ -2,6 +2,8 @@ package com.jayud.auth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.bo.CheckForm;
+import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.po.SysRoleActionCheck;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
@@ -30,7 +32,7 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param: req
      * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    IPage<SysRoleActionCheckVO> selectPage(SysRoleActionCheck sysRoleActionCheck,
+    IPage<SysRoleActionCheckVO> selectPage(QueryForm form,
                                            Integer currentPage,
                                            Integer pageSize,
                                            HttpServletRequest req);
@@ -43,7 +45,7 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param: req
      * @return: java.util.List<com.jayud.auth.model.po.SysRoleActionCheck>
      **/
-    List<SysRoleActionCheck> selectList(SysRoleActionCheck sysRoleActionCheck);
+    List<SysRoleActionCheck> selectList(QueryForm form);
 
 
 
@@ -64,7 +66,7 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    void logicDel(Long id);
+    void logicDel(List<Long> id);
 
 
 
@@ -83,4 +85,19 @@ public interface ISysRoleActionCheckService extends IService<SysRoleActionCheck>
      * @param sysRoleActionCheck
      */
     void saveSysRoleActionCheck(SysRoleActionCheckForm sysRoleActionCheck);
+
+    /**
+     * 获取按钮有几个审核级别
+     * @param checkForm
+     * @return
+     */
+    List<SysRoleActionCheckVO> getList(CheckForm checkForm);
+
+    /**
+     * 获取该级审核有哪些角色
+     * @param checkLevel
+     * @param menuCode
+     * @return
+     */
+    List<SysRoleActionCheckVO> getListByCheckLevelAndMenuCode(Integer checkLevel, String menuCode);
 }

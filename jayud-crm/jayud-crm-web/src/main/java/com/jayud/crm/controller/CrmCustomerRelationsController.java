@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import com.jayud.crm.feign.AuthClient;
 import com.jayud.crm.model.bo.CrmCustomerRelationsForm;
 import com.jayud.crm.model.bo.DeleteForm;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,6 @@ public class CrmCustomerRelationsController {
 
     @Autowired
     public ICrmCustomerRelationsService crmCustomerRelationsService;
-
 
     /**
      * @description 分页查询

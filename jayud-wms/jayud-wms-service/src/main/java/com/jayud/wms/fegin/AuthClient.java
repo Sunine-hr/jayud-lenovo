@@ -52,7 +52,11 @@ public interface AuthClient {
     public BaseResult<String> getOrder(@RequestParam(name = "code") String code, @RequestParam(name = "date") Date date);
 
 
-
+    /**
+     * 字段表查询
+     */
+    @PostMapping(value = "/sysDictItem/api/selectItemByDictCode")
+    public BaseResult selectItemByDictCodeFeign(@RequestParam("dictCode") String dictCode);
 
 
 }

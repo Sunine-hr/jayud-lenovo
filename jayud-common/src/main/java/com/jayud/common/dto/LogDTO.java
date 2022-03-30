@@ -78,6 +78,11 @@ public class LogDTO implements Serializable {
      * 操作人用户名称
      */
     private String username;
+
+    /**
+     * 操作人真实姓名
+     */
+    private String trueName;
     /**
      * 操作人用户账户
      */

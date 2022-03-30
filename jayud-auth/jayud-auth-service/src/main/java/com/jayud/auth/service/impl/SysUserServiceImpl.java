@@ -3,6 +3,7 @@ package com.jayud.auth.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.mapper.SysUserRoleMapper;
@@ -87,6 +88,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserRole1.setUserId(sysUser.getId());
             sysUserRoleMapper.updateSysUserRoleMultiRow(sysUserRole1);
             //修改
+
+            //截取集合拼接成字符串  未完 。。。。
+            //所属部门id 的节点   departIdLists
+            String fileNameString =null;
+            if(sysUserForm.getDepartIdLists().size()!=0){
+                fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
+            }
+            //负责部门节点id集合
+            sysUser.setDepartmentList(fileNameString);
+
             sysUser.setUpdateBy(CurrentUserUtil.getUsername());
             sysUser.setUpdateTime(new Date());
             //后续待定
@@ -121,7 +132,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //所属部门id 的节点   departIdLists
             String fileNameString =null;
             if(sysUserForm.getDepartIdLists().size()!=0){
-                  fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
+                fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
             }
 
             //负责部门节点id集合
@@ -162,6 +173,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return sysUserMapper.findSysUserNameOne(sysUserForm);
     }
 
+    @Override
+    public SysUser findSysUserNameOne(SysUserForm sysUserForm) {
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysUser::getName, sysUserForm.getName());
+        lambdaQueryWrapper.eq(SysUser::getIsDeleted, false);
+        SysUser one = this.getOne(lambdaQueryWrapper);
+        return one;
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -176,6 +196,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         List<SysUser> sysUsers = new ArrayList<>();
         for (int i = 0; i < ids.size(); i++) {
+            //判断是不是 在职 在职不可删除
+            SysUser sysUser1 = new SysUser();
+            sysUser1.setId(ids.get(i));
+            sysUser1.setJobStatus(1);
+            List<SysUserVO> list = sysUserMapper.list(sysUser1);
+            if(list.size()!=0){
+                return BaseResult.error(SysTips.SYS_USER_ON_JOB_REMIND);
+            }
             SysUser sysUser = new SysUser();
             sysUser.setId(ids.get(i));
             sysUser.setIsDeleted(true);
@@ -202,7 +230,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (sysUser == null) {
             return BaseResult.error(SysTips.ACCOUNT_NON_EXISTENT);
         }
-        if (sysUser.getPassword().equals(encoder.encode(password))) {
+        if (!encoder.matches(password,sysUser.getPassword())) {
             return BaseResult.error(SysTips.LOGIN_ERROR);
         }
         if (sysUser.getJobStatus().equals(0)) {
@@ -310,6 +338,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Cacheable(value = "sys:cache:userId", key = "#userId")
     public SysUser selectByUserId(Long userId) {
         return this.getById(userId);
+    }
+
+    @Override
+    public List<SysUser> getSysUserByDepartmentId(Long departId) {
+        QueryWrapper<SysUser> condition = new QueryWrapper<>();
+        condition.lambda().eq(SysUser::getDepartId,departId);
+        condition.lambda().eq(SysUser::getIsDeleted,0);
+        return this.list(condition);
+    }
+
+    @Override
+    public List<SysUser> getUserByUserIds(Set<Long> userIds) {
+        QueryWrapper<SysUser> condition = new QueryWrapper<>();
+        condition.lambda().in(SysUser::getId,userIds);
+        condition.lambda().eq(SysUser::getIsDeleted,0);
+        return this.list(condition);
     }
 
     public static void main(String[] args) {

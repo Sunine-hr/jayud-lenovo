@@ -101,7 +101,7 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
         boolean result = this.saveOrUpdate(warehouse1);
         if (result) {
             if (warehouse.getId() == null) {
-                warehouseProcessConfService.initConfig(warehouse1.getId());
+//                warehouseProcessConfService.initConfig(warehouse1.getId());
             }
             log.warn("新增或修改仓库成功");
         }

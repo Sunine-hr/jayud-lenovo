@@ -1,5 +1,7 @@
 package com.jayud.auth.controller;
 
+import com.jayud.auth.model.bo.DeleteForm;
+import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
 import lombok.extern.slf4j.Slf4j;
@@ -58,11 +60,11 @@ public class SysRoleActionCheckController {
      **/
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<IPage<SysRoleActionCheckVO>> selectPage(SysRoleActionCheck sysRoleActionCheck,
+    public BaseResult<IPage<SysRoleActionCheckVO>> selectPage(QueryForm form,
                                                               @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                               @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                               HttpServletRequest req) {
-        return BaseResult.ok(sysRoleActionCheckService.selectPage(sysRoleActionCheck,currentPage,pageSize,req));
+        return BaseResult.ok(sysRoleActionCheckService.selectPage(form,currentPage,pageSize,req));
     }
 
 
@@ -76,9 +78,9 @@ public class SysRoleActionCheckController {
     **/
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
-    public BaseResult<List<SysRoleActionCheck>> selectList(SysRoleActionCheck sysRoleActionCheck,
-                                                HttpServletRequest req) {
-        return BaseResult.ok(sysRoleActionCheckService.selectList(sysRoleActionCheck));
+    public BaseResult<List<SysRoleActionCheck>> selectList(QueryForm form,
+                                                           HttpServletRequest req) {
+        return BaseResult.ok(sysRoleActionCheckService.selectList(form));
     }
 
 
@@ -137,9 +139,9 @@ public class SysRoleActionCheckController {
      **/
     @ApiOperation("逻辑删除")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        sysRoleActionCheckService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm form){
+        sysRoleActionCheckService.logicDel(form.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

@@ -14,7 +14,7 @@ public enum SysLogTypeEnum {
     /**
      * 操作
      */
-    COMMON(1, "普通日志"),
+    COMMON(1, "操作日志"),
     /**
      * 登录
      */

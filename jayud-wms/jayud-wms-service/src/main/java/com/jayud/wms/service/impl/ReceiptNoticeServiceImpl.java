@@ -249,14 +249,16 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
     public Receipt transferReceipt(Long id) {
         //获取详情数据
         ReceiptNoticeVO details = this.getDetails(id);
-        if (!details.getStatus().equals(ReceiptNoticeStatusEnum.CREATE.getCode())) {
-            throw new ServiceException("该阶段无法转收货单");
-        }
-        String status = this.orderProcessService.getNextNode(details.getReceiptNoticeNum(), details.getProcessFlag());
-        if (StringUtils.isEmpty(status)) {
-            throw new ServiceException("不存在该流程节点");
-        }
-        if (status.equals(InboundOrderProStatusEnum.TWO.getCode() + "")) {
+//        if (!details.getStatus().equals(ReceiptNoticeStatusEnum.CREATE.getCode())) {
+//            throw new ServiceException("该阶段无法转收货单");
+//        }
+//        String status = this.orderProcessService.getNextNode(details.getReceiptNoticeNum(), details.getProcessFlag());
+//        if (StringUtils.isEmpty(status)) {
+//            throw new ServiceException("不存在该流程节点");
+//        }
+//        if (status.equals(InboundOrderProStatusEnum.TWO.getCode() + "")) {
+
+        if (details.getStatus().equals(ReceiptNoticeStatusEnum.CREATE.getCode())) {
             Date date = new Date();
             Receipt receipt = ConvertUtil.convert(details, Receipt.class);
             //把数据转移到收货单
@@ -286,7 +288,7 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
                 materialSn.setStatus(MaterialSnStatusEnum.ONE.getCode()).setOrderNum(receiptOrderNo).setOrderId(receipt.getId());
                 materialSns.add(materialSn);
             }
-            this.materialSnService.saveBatch(materialSns);
+//            this.materialSnService.saveBatch(materialSns);
 
             //收货通知单更改数据
             ReceiptNotice receiptNotice = new ReceiptNotice();
@@ -296,15 +298,14 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
             this.updateById(receiptNotice);
 
             //添加流程记录
-            OrderTrack orderTrack = new OrderTrack().setOrderNo(details.getReceiptNoticeNum()).setType(1)
-                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.RECEIVING.getDesc());
-            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
-            this.orderTrackService.save(orderTrack);
+//            OrderTrack orderTrack = new OrderTrack().setOrderNo(details.getReceiptNoticeNum()).setType(1)
+//                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.RECEIVING.getDesc());
+//            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+//            this.orderTrackService.save(orderTrack);
 
             return receipt;
         }else{
-
-            return null;
+            throw new ServiceException("该阶段无法转收货单");
         }
     }
 

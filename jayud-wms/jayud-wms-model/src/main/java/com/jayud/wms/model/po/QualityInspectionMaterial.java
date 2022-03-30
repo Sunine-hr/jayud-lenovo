@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="质检物料信息对象", description="质检物料信息")
+@ApiModel(value = "质检物料信息对象", description = "质检物料信息")
 @TableName(value = "wms_quality_inspection_material")
 public class QualityInspectionMaterial extends SysBaseEntity {
 
@@ -100,8 +100,6 @@ public class QualityInspectionMaterial extends SysBaseEntity {
     private Boolean isDeleted;
 
 
-
-
     @ApiModelProperty(value = "检验数量")
     private Integer inspectionQuantity;
 
@@ -116,6 +114,12 @@ public class QualityInspectionMaterial extends SysBaseEntity {
 
     @ApiModelProperty(value = "上传文件")
     private String description;
+
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "合格率")
+    private String percentOfPass;
 
 
 }

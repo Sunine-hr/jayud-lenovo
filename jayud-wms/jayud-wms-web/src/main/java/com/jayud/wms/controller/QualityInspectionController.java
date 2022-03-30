@@ -61,7 +61,6 @@ public class QualityInspectionController {
      * @param queryQualityInspectionForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryQualityInspectionForm.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<QualityInspectionVO>> selectPage(@RequestBody QueryQualityInspectionForm queryQualityInspectionForm, HttpServletRequest req) {
@@ -74,7 +73,6 @@ public class QualityInspectionController {
      * @param queryClientQualityInspectionForm
      * @return
      */
-    @SysDataPermission(clazz = QueryQualityInspectionForm.class)
     @ApiOperation("app外部调用分页查询数据")
     @PostMapping(value ="/client/selectPage")
     public BaseResult selectPageFeign(@RequestBody QueryClientQualityInspectionForm queryClientQualityInspectionForm) {

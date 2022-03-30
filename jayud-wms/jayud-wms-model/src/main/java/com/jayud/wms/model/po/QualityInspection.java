@@ -83,5 +83,19 @@ public class QualityInspection extends SysBaseEntity {
     @ApiModelProperty(value = "流程标志")
     private String processFlag;
 
+    @ApiModelProperty(value = "主订单号")
+    private String wmsQualityInspection;
 
+
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    @ApiModelProperty(value = "单据类型")
+    private String documentType;
+
+    @ApiModelProperty(value = "订单来源")
+    private String orderSource;
 }

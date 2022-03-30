@@ -1,5 +1,6 @@
 package com.jayud.auth.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -72,6 +73,7 @@ public class SysDepart extends SysBaseEntity {
     private Boolean status;
 
     @ApiModelProperty(value = "租户编码")
+    @TableField(fill = FieldFill.INSERT)
     private String tenantCode;
 
     @ApiModelProperty(value = "备注")

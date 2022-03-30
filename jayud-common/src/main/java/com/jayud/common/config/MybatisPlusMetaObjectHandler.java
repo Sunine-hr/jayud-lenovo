@@ -35,6 +35,19 @@ public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
 
     }
 
+//    /**
+//     * 获取元数据里的动态表名
+//     * @param metaObject 元数据对象
+//     * @return 表名
+//     */
+//    private String getDynamicTableName(MetaObject metaObject){
+//        Object originalObject = metaObject.getOriginalObject();
+//        JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(originalObject));
+//        JSONObject boundSql = jsonObject.getJSONObject("boundSql");
+//        JSONObject parameterObject = boundSql.getJSONObject("parameterObject");
+//        return String.valueOf(parameterObject.get(Dynamic_Table_Name));
+//    }
+
     @Override
     public void updateFill(MetaObject metaObject) {
         String username = "";

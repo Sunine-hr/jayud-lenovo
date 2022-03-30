@@ -242,5 +242,35 @@ public interface ICrmCustomerService extends IService<CrmCustomer> {
      */
     IPage selectCrmCustomerPage(CrmCustomerForm crmCustomerForm, Integer currentPage, Integer pageSize, HttpServletRequest req);
 
+    /**
+     * 获取订单客户名称下拉框的数据
+     * @param crmCustomerForm
+     * @return
+     */
     List<CrmCustomerVO> selectCrmCustomerList(CrmCustomerForm crmCustomerForm);
+
+    /**
+     * 供应商转客户
+     * @param crmCustomerList
+     * @return
+     */
+    BaseResult changeToCust(List<CrmCustomer> crmCustomerList);
+
+    /**
+     * 根据客户名称查询客户信息
+     * @param custName
+     * @return
+     */
+    CrmCustomer getCustomerByCustomerName(String custName);
+
+    /**
+     * 根据社会信用代码查询客户信息
+     * @param unCreditCode
+     * @return
+     */
+    CrmCustomer getCustomerByUnCreditCode(String unCreditCode);
+
+    CrmCustomer getCustomerBySupplierName(String custName);
+
+    CrmCustomer getCustomerBySupplierUnCreditCode(String unCreditCode);
 }

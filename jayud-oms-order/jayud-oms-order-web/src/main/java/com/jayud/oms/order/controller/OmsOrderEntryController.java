@@ -257,7 +257,7 @@ public class OmsOrderEntryController {
      * 导出商品模板
      */
     @ApiOperation(value = "导出商品模板")
-    @GetMapping(value = "/exportCommodityTemplate")
+    @PostMapping(value = "/exportCommodityTemplate")
     public void exportInProductTemplate( HttpServletResponse response) throws IOException {
 //        ExcelUtils.exportSinglePageHeadExcel("商品模板", AddCommodityModelForm.class,response);
 

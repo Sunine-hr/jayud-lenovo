@@ -8,6 +8,7 @@ import com.jayud.oms.order.model.bo.InputOrderForm;
 import com.jayud.oms.order.model.bo.OmsOrderForm;
 import com.jayud.oms.order.model.po.OmsOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.order.model.vo.OrderVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public interface IOmsOrderService extends IService<OmsOrder> {
     * @param: id
     * @return: com.jyd.component.commons.result.Result
     **/
-    void logicDel(Long id);
+    void logicDel(List<Long> id);
 
 
 
@@ -108,4 +109,18 @@ public interface IOmsOrderService extends IService<OmsOrder> {
      * @return
      */
     BaseResult unCheck(CheckForm checkForm);
+
+    /**
+     * 获取订单详情
+     * @param id
+     * @return
+     */
+    OrderVO getOrderById(Long id);
+
+    /**
+     * 复制新建订单
+     * @param id
+     * @return
+     */
+    BaseResult copyNew(Long id);
 }

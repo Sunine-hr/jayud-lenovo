@@ -40,7 +40,7 @@ public class InputOrderForm {
     private InputStorageOutOrderForm storageOutOrderForm;
 
     @ApiModelProperty(value = "快进快出")
-    private InputStorageFastOrderForm storageFastOrderForm;
+    private InputStorageOrderForm storageFastOrderForm;
 
     @ApiModelProperty(value = "附件列表")
     private List<CrmFileForm> crmFileForms;

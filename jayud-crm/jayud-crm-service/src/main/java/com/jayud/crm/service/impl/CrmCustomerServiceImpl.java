@@ -318,9 +318,9 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             List<CrmCustomer> supplierList = customerList.stream().filter(x -> x.getIsSupplier()).collect(Collectors.toList());
             comCustomerForm.setExitSupplierList(supplierList);
             if (CollUtil.isNotEmpty(changeList)) {
-                List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, true);
+                List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, true,false);
                 crmCustomerList.forEach(crmCustomer -> {
-                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
+                    crmCustomer.setCustCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
                 });
                 this.updateBatchById(crmCustomerList);
             }
@@ -340,7 +340,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         comCustomerForm.setCrmCustomerList(custList);
         crmCustomerManagerService.getChangeCustManager(comCustomerForm);
         if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())) {
-            List<CrmCustomer> crmCustomerList = tranferCust(comCustomerForm.getChangeList(), true, false);
+            List<CrmCustomer> crmCustomerList = tranferCust(comCustomerForm.getChangeList(), true, false,false);
             this.updateBatchById(crmCustomerList);
         }
         BaseResult errResult = getErrMsg(comCustomerForm);
@@ -528,7 +528,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         }
         if (CollUtil.isNotEmpty(comCustomerForm.getExitSupplierList())) {
             List<String> supplierList = comCustomerForm.getExitSupplierList().stream().map(x -> x.getCustName()).collect(Collectors.toList());
-            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已存转为供应商，请勿重复修改！";
+            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为供应商，请勿重复修改！";
+        }
+        if (CollUtil.isNotEmpty(comCustomerForm.getExitCustList())) {
+            List<String> supplierList = comCustomerForm.getExitSupplierList().stream().map(x -> x.getCustName()).collect(Collectors.toList());
+            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为客户，请勿重复修改！";
         }
         if (StringUtils.isNotBlank(errString)) {
             return BaseResult.error(errString);
@@ -599,6 +603,73 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         return crmCustomerVOS;
     }
 
+    @Override
+    public BaseResult changeToCust(List<CrmCustomer> custList) {
+        ComCustomerForm comCustomerForm = new ComCustomerForm();
+        comCustomerForm.setCrmCustomerList(custList);
+        crmCustomerManagerService.getChangeCustManager(comCustomerForm);
+        crmCustomerRiskService.checkIsRiskByCutsIds(comCustomerForm);
+
+        if (CollUtil.isNotEmpty(comCustomerForm.getChangeList())) {
+            List<Long> custIdList = comCustomerForm.getChangeList().stream().map(x -> x.getId()).collect(Collectors.toList());
+            CrmCustomerForm crmCustomerForm = new CrmCustomerForm();
+            crmCustomerForm.setCustIdList(custIdList);
+            List<CrmCustomerForm> customerList = selectList(crmCustomerForm);
+            List<CrmCustomer> changeList = customerList.stream().filter(x -> !x.getIsCust()).collect(Collectors.toList());
+            List<CrmCustomer> supplierList = customerList.stream().filter(x -> x.getIsCust()).collect(Collectors.toList());
+            comCustomerForm.setExitCustList(supplierList);
+            if (CollUtil.isNotEmpty(changeList)) {
+                List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, false,true);
+                crmCustomerList.forEach(crmCustomer -> {
+                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_CUST_CODE));
+                });
+                this.updateBatchById(crmCustomerList);
+            }
+        }
+
+        BaseResult errResult = getErrMsg(comCustomerForm);
+        if (!errResult.isSuccess()) {
+            return errResult;
+        }
+        return BaseResult.ok();
+    }
+
+    @Override
+    public CrmCustomer getCustomerByCustomerName(String custName) {
+        QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CrmCustomer::getCustName,custName);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsCust,1);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public CrmCustomer getCustomerByUnCreditCode(String unCreditCode) {
+        QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CrmCustomer::getUnCreditCode,unCreditCode);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsCust,1);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public CrmCustomer getCustomerBySupplierName(String custName) {
+        QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CrmCustomer::getCustName,custName);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsSupplier,1);
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public CrmCustomer getCustomerBySupplierUnCreditCode(String unCreditCode) {
+        QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(CrmCustomer::getUnCreditCode,unCreditCode);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsSupplier,1);
+        return this.getOne(queryWrapper);
+    }
+
     /**
      * @description 初始用户数据
      * @author ciro
@@ -623,7 +694,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
      * @param: isSupplier
      * @return: java.util.List<com.jayud.crm.model.po.CrmCustomer>
      **/
-    private List<CrmCustomer> tranferCust(List<CrmCustomer> crmCustomerList, boolean isPublic, boolean isSupplier) {
+    private List<CrmCustomer> tranferCust(List<CrmCustomer> crmCustomerList, boolean isPublic, boolean isSupplier,boolean isCust) {
         List<Long> ids = crmCustomerList.stream().map(x -> x.getId()).collect(Collectors.toList());
         LambdaQueryWrapper<CrmCustomer> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(CrmCustomer::getId, ids);
@@ -640,6 +711,12 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             if (isSupplier) {
                 if (!crmCustomer.getIsSupplier()) {
                     crmCustomer.setIsSupplier(true);
+                    crmCustomerArrayList.add(crmCustomer);
+                }
+            }
+            if (isCust) {
+                if (!crmCustomer.getIsCust()) {
+                    crmCustomer.setIsCust(true);
                     crmCustomerArrayList.add(crmCustomer);
                 }
             }

@@ -107,7 +107,7 @@ public class SysUserVO extends SysBaseEntity {
     private String partTimeDepId;
 
     @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
+    private String code;
 
     @ApiModelProperty(value = "备注")
     private String remark;

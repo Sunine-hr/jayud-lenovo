@@ -5,6 +5,10 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.order.model.po.OmsOrderEntry;
+import com.jayud.oms.order.model.vo.OmsOrderEntryVO;
+import com.jayud.oms.order.model.vo.OmsOrderFollowVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -70,6 +74,16 @@ public class OmsOrderFollowServiceImpl extends ServiceImpl<OmsOrderFollowMapper,
     @Override
     public List<LinkedHashMap<String, Object>> queryOmsOrderFollowForExcel(Map<String, Object> paramMap) {
         return this.baseMapper.queryOmsOrderFollowForExcel(paramMap);
+    }
+
+    @Override
+    public List<OmsOrderFollowVO> getByOrderId(Long id) {
+        QueryWrapper<OmsOrderFollow> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(OmsOrderFollow::getOmsOrderId,id);
+        queryWrapper.lambda().eq(OmsOrderFollow::getIsDeleted,0);
+        List<OmsOrderFollow> list = this.list(queryWrapper);
+        List<OmsOrderFollowVO> omsOrderFollowVOS = ConvertUtil.convertList(list, OmsOrderFollowVO.class);
+        return omsOrderFollowVOS;
     }
 
 }

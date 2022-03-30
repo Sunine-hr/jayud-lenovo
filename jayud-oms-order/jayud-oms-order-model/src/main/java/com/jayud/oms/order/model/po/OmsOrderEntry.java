@@ -46,6 +46,12 @@ public class OmsOrderEntry extends SysBaseEntity {
     @ApiModelProperty(value = "商品编码")
     private String itemNo;
 
+    @ApiModelProperty(value = "商品分类")
+    private String itemClassification;
+
+    @ApiModelProperty(value = "sku")
+    private String sku;
+
     @ApiModelProperty(value = "型号")
     private String itemModel;
 

@@ -87,9 +87,15 @@ public class AirPortServiceImpl extends ServiceImpl<AirPortMapper, AirPort> impl
 
     @Override
     public void saveAirPort(AirPort airPort) {
-        airPort.setCreateBy(CurrentUserUtil.getUsername());
-        airPort.setCreateTime(new Date());
-        airPort.setStatus(1);
+        if(null == airPort.getId()){
+            airPort.setCreateBy(CurrentUserUtil.getUsername());
+            airPort.setCreateTime(new Date());
+            airPort.setStatus(1);
+        }else{
+            airPort.setUpdateBy(CurrentUserUtil.getUsername());
+            airPort.setUpdateTime(new Date());
+        }
+
         this.saveOrUpdate(airPort);
     }
 

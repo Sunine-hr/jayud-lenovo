@@ -1,19 +1,18 @@
 package com.jayud.oms.order.model.bo;
 
-import com.baomidou.mybatisplus.annotation.TableLogic;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jayud.common.entity.SysBaseEntity;
 import com.jayud.common.utils.StringUtils;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * OmsOrder 实体类
@@ -36,6 +35,9 @@ public class OmsOrderForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "业务类型")
     private String bizType;
+
+    @ApiModelProperty(value = "业务类型")
+    private List<String> bizTypeList;
 
     @ApiModelProperty(value = "客户ID")
     private Long custId;
@@ -80,9 +82,11 @@ public class OmsOrderForm extends SysBaseEntity {
     private Integer stateFlag;
 
     @ApiModelProperty(value = "审核级别")
+    @JsonProperty("fLevel")
     private Integer fLevel;
 
     @ApiModelProperty(value = "当前级别")
+    @JsonProperty("fStep")
     private Integer fStep;
 
     @ApiModelProperty(value = "审核状态")
@@ -92,19 +96,23 @@ public class OmsOrderForm extends SysBaseEntity {
     private Long flowInstanceId;
 
     @ApiModelProperty(value = "提交审核人")
+    @JsonProperty("fMultiLevel0")
     private String fMultiLevel0;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "提交时间")
+    @JsonProperty("fDateTime0")
     private LocalDateTime fDateTime0;
 
     @ApiModelProperty(value = "最后审核人")
+    @JsonProperty("fMultiLevel1")
     private String fMultiLevel1;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @ApiModelProperty(value = "最后审核时间")
+    @JsonProperty("fDateTime1")
     private LocalDateTime fDateTime1;
 
     @ApiModelProperty(value = "业务要求")

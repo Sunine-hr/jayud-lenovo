@@ -95,7 +95,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         //组织区分租户
         AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
         SysUser sysUser = sysUserService.getById(userDetail.getId());
-        String tenantCode = sysUser.getTenantCode();
+        String tenantCode = sysUser.getCode();
         form.setTenantCode(tenantCode);
         List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
         List<SysDepart> tree = buildTree(departs, "0");
@@ -163,7 +163,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         //组织区分租户
         AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
         SysUser sysUser = sysUserService.getById(userDetail.getId());
-        String tenantCode = sysUser.getTenantCode();
+        String tenantCode = sysUser.getCode();
         form.setTenantCode(tenantCode);
 
         //机构类别 1集团，2公司，3部门
@@ -225,7 +225,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         //组织区分租户
         AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
         SysUser sysUser = sysUserService.getById(userDetail.getId());
-        String tenantCode = sysUser.getTenantCode();
+        String tenantCode = sysUser.getCode();
         form.setTenantCode(tenantCode);
         List<SysDepart> departs = sysDepartMapper.selectDeptTree(form);
         List<SysDepart> tree = buildTreeStaff(departs, "0");
@@ -254,7 +254,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
     public List<SysDepart> selectOperationSubject(QuerySysDeptForm form) {
         AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
         SysUser sysUser = sysUserService.getById(userDetail.getId());
-        String tenantCode = sysUser.getTenantCode();
+        String tenantCode = sysUser.getCode();
         form.setTenantCode(tenantCode);
         return this.baseMapper.selectOperationSubject(form);
     }

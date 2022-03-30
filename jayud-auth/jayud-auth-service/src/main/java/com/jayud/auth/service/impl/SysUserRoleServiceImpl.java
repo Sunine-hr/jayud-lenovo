@@ -100,7 +100,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         if (userIds.size() == 0) {
             userIds.add(-1L);
         }
-        IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm().setUserIds(userIds).setTenantCode(CurrentUserUtil.getUserTenantCode()), currentPage, pageSize, req);
+        IPage<SysUserVO> userPages = this.sysUserService.selectPage(new SysUserForm().setUserIds(userIds).setCode(CurrentUserUtil.getUserTenantCode()), currentPage, pageSize, req);
         return userPages;
     }
 
@@ -173,7 +173,7 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         }
         StringBuffer stringBuffer = new StringBuffer();
         for (SysUser sysUser : sysUsers) {
-            stringBuffer.append(sysUser.getName()).append(",");
+            stringBuffer.append(sysUser.getUserName()).append(",");
         }
         return stringBuffer.substring(0,stringBuffer.length()-1).toString();
     }

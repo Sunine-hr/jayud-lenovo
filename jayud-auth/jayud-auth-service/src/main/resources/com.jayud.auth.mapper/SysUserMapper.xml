@@ -28,7 +28,7 @@
         <result column="user_type" property="userType"/>
         <result column="supervisor_id" property="supervisorId"/>
         <result column="part_time_dep_id" property="partTimeDepId"/>
-        <result column="tenant_code" property="tenantCode"/>
+        <result column="code" property="code"/>
         <result column="remark" property="remark"/>
         <result column="is_deleted" property="isDeleted"/>
         <result column="create_by" property="createBy"/>
@@ -39,7 +39,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, name, password, user_name, en_user_name,number_name ,head_portrait, sex, phone, cell_phone_number,nailing_number,wechat_number,email, is_depart_charge, depart_id,department_list, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, name, password, user_name, en_user_name,number_name ,head_portrait, sex, phone, cell_phone_number,nailing_number,wechat_number,email, is_depart_charge, depart_id,department_list, depart_ids, rel_tenant_ids, post_id, entry_time, job_status, status, user_type, supervisor_id, part_time_dep_id, code, remark, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -132,8 +132,8 @@
                 AND part_time_dep_id = #{sysUser.partTimeDepId}
             </if>
 
-            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
-                AND tenant_code = #{sysUser.tenantCode}
+            <if test="sysUser.code != null and sysUser.code != ''">
+                AND code = #{sysUser.code}
             </if>
 
             <if test="sysUser.remark != null and sysUser.remark != ''">
@@ -179,7 +179,7 @@
         user_type,
         supervisor_id,
         part_time_dep_id,
-        tenant_code,
+        code,
         remark,
         is_deleted,
         create_by,
@@ -199,8 +199,8 @@
             <if test="sysUser.userName != null and sysUser.userName != ''">
                 AND user_name LIKE CONCAT('%',#{sysUser.userName}, '%')
             </if>
-            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
-                AND tenant_code = #{sysUser.tenantCode}
+            <if test="sysUser.code != null and sysUser.code != ''">
+                AND code = #{sysUser.code}
             </if>
             <if test="sysUser.departId != null and sysUser.departId != ''">
                 AND depart_id = #{sysUser.departId}
@@ -261,7 +261,7 @@
         user_type,
         supervisor_id,
         part_time_dep_id,
-        tenant_code,
+        code,
         remark,
         is_deleted,
         create_by,
@@ -278,8 +278,8 @@
             <if test="sysUser.userName != null and sysUser.userName != ''">
                 AND user_name LIKE CONCAT('%',#{sysUser.userName}, '%')
             </if>
-            <if test="sysUser.tenantCode != null and sysUser.tenantCode != ''">
-                AND tenant_code = #{sysUser.tenantCode}
+            <if test="sysUser.code != null and sysUser.code != ''">
+                AND code = #{sysUser.code}
             </if>
             <if test="sysUser.departId != null and sysUser.departId != ''">
                 AND depart_id = #{sysUser.departId}
@@ -338,7 +338,7 @@
         user_type,
         supervisor_id,
         part_time_dep_id,
-        tenant_code,
+        code,
         remark,
         is_deleted,
         create_by,
@@ -392,7 +392,7 @@
             su.user_type,
             su.supervisor_id,
             su.part_time_dep_id,
-            su.tenant_code,
+            su.code,
             su.remark,
             su.is_deleted,
             su.create_by,
@@ -439,7 +439,7 @@
             su.user_type,
             su.supervisor_id,
             su.part_time_dep_id,
-            su.tenant_code,
+            su.code,
             su.remark,
             su.is_deleted,
             su.create_by,

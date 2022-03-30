@@ -100,6 +100,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         SysRole sysRole = ConvertUtil.convert(form, SysRole.class);
         if (sysRole.getId() == null) {
             sysRole.setCreateTime(new Date()).setCreateBy(CurrentUserUtil.getUsername());
+            sysRole.setCode(CurrentUserUtil.getUserTenantCode());
             this.save(sysRole);
         } else {
             sysRole.setUpdateTime(new Date()).setUpdateBy(CurrentUserUtil.getUsername());

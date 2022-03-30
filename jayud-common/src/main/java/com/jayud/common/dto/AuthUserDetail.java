@@ -38,7 +38,7 @@ public class AuthUserDetail implements UserDetails {
     /**
      * 租户编码
      */
-    private String tenantCode;
+    private String code;
     /**
      * 是否部门负责人
      */

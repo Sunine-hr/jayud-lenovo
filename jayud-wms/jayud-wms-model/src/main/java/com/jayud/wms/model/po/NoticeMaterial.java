@@ -89,4 +89,7 @@ public class NoticeMaterial extends SysBaseEntity {
     //@TableLogic //@TableLogic注解表示逻辑删除,设置修改人手动更新，这里注释
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
 }

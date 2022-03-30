@@ -34,6 +34,13 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="main_order_number" property="mainOrderNumber" />
+        <result column="unit" property="unit" />
+        <result column="car_barnd" property="carBarnd" />
+        <result column="car_model" property="carMmodel" />
+        <result column="car_driver" property="carDriver" />
+        <result column="car_relation" property="carRelation" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -179,7 +186,7 @@
             rn.total_volume,
             rn.confirmed_by,
             rn.STATUS,
-        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'notifyReceiptOfOrderStatus' AND rn.STATUS = sdi.item_value) as  statusDetails,
+       --  (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'notifyReceiptOfOrderStatus' AND rn.STATUS = sdi.item_value) as  statusDetails,
             rn.confirmation_time,
             rn.tenant_code,
             rn.remark,
@@ -187,7 +194,13 @@
             rn.create_by,
             rn.create_time,
             rn.update_by,
-            rn.update_time
+            rn.update_time,
+            rn.main_order_number,
+            rn.unit,
+            rn.car_barnd,
+            rn.car_model,
+            rn.car_driver,
+            rn.car_relation
             from
         wms_receipt_notice rn
         <where>
@@ -208,11 +221,24 @@
                     AND rn.status =#{receiptNotice.status}
                 </if>
 
+                <if test="receiptNotice.supplierId != null ">
+                    AND rn.supplier_id =#{receiptNotice.supplierId}
+                </if>
+
                 <if test="receiptNotice.receiptNoticeNum != null and receiptNotice.receiptNoticeNum != ''  ">
                     AND rn.receipt_notice_num = #{receiptNotice.receiptNoticeNum}
                 </if>
+
                 <if test="receiptNotice.ower != null and receiptNotice.ower != '' ">
                     AND rn.ower  like CONCAT('%',#{receiptNotice.ower} , '%')
+                </if>
+
+                <if test="receiptNotice.carBarnd != null and receiptNotice.carBarnd != '' ">
+                    AND rn.car_barnd  like CONCAT('%',#{receiptNotice.carBarnd} , '%')
+                </if>
+
+                <if test="receiptNotice.mainOrderNumber != null and receiptNotice.mainOrderNumber != '' ">
+                    AND rn.main_order_number  like CONCAT('%',#{receiptNotice.mainOrderNumber} , '%')
                 </if>
 
                 <if test="receiptNotice.arrivalTime !=null and receiptNotice.arrivalTime.size > 0">

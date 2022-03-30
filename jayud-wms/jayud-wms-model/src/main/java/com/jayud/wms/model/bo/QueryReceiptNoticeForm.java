@@ -88,16 +88,21 @@ public class QueryReceiptNoticeForm extends SysBaseEntity {
     }
 
 
-    //公司
-    private List<String> orgIds;
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
+    @ApiModelProperty(value = "单位")
+    private String unit;
 
-    //是否在这个体系内
-    private Boolean isCharge;
+    @ApiModelProperty(value = "车牌")
+    private String carBarnd;
 
-    //货主id
-    private List<String> owerIdList;
+    @ApiModelProperty(value = "车型")
+    private String carMmodel;
 
-    //仓库id
-    private List<String> warehouseIdList;
+    @ApiModelProperty(value = "司机")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
 
 }

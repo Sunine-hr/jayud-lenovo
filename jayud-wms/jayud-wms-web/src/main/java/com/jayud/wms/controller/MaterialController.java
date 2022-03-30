@@ -198,4 +198,10 @@ public class MaterialController {
         return materialService.confirmReceipt(deleteForm);
     }
 
+    @ApiOperation("确认上架--new")
+    @PostMapping(path = "/confirmPullShelf")
+    public BaseResult confirmPullShelf(@RequestBody  DeleteForm deleteForm){
+        return materialService.confirmPullShelf(deleteForm);
+    }
+
 }

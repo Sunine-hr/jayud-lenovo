@@ -10,12 +10,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.wms.model.bo.DeleteForm;
+import com.jayud.wms.model.bo.InventoryDetailForm;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QualityMaterialForm;
 import com.jayud.wms.model.po.Material;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.mapper.MaterialMapper;
 import com.jayud.wms.model.po.Receipt;
+import com.jayud.wms.service.IInventoryDetailService;
 import com.jayud.wms.service.IMaterialService;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -26,7 +28,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 货单物料信息 服务实现类
@@ -39,6 +45,8 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Autowired
     private IReceiptService receiptService;
+    @Autowired
+    private IInventoryDetailService inventoryDetailService;
 
     @Autowired
     private MaterialMapper materialMapper;
@@ -220,6 +228,42 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         return BaseResult.ok(SysTips.SUCCESS_MSG);
     }
 
+    @Override
+    public BaseResult confirmPullShelf(DeleteForm deleteForm) {
+        if (CollUtil.isNotEmpty(deleteForm.getIds())) {
+            deleteForm.setIds(deleteForm.getIds().stream().filter(x->x!=null).distinct().collect(Collectors.toList()));
+            Material material = new Material();
+            material.setIds(deleteForm.getIds());
+            List<Material> materialList = selectList(material);
+            List<Material> successList = new ArrayList<>();
+            List<String> errList = new ArrayList<>();
+            if (CollUtil.isNotEmpty(materialList)){
+                materialList.forEach(material1 -> {
+                    boolean isChange = true;
+                    if (material1.getIsPutShelf() != null){
+                        if (material1.getIsPutShelf()){
+                            errList.add(material1.getMaterialName());
+                            isChange = false;
+                        }
+                    }
+                    if (isChange){
+                        material1.setIsPutShelf(true);
+                        successList.add(material1);
+                    }
+                });
+            }
+            if (CollUtil.isNotEmpty(successList)){
+                this.updateBatchById(successList);
+//                initInventoryDetail(successList);
+            }
+            if (CollUtil.isNotEmpty(errList)){
+                return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已上架，请勿重复上架！");
+            }
+            return BaseResult.ok(SysTips.SUCCESS_MSG);
+        }
+        return null;
+    }
+
     /**
      * @description 判断是否全部确认收货并修改为待上架
      * @author  ciro
@@ -260,6 +304,59 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             return true;
         }
         return false;
+    }
+
+    private void initInventoryDetail(List<Material> materialList){
+        Receipt receipt = receiptService.getById(materialList.get(0).getOrderId());
+        List<InventoryDetailForm> inventoryDetailForms = new ArrayList<>();
+        LocalTime localTime = LocalTime.now();
+        materialList.forEach(material -> {
+            InventoryDetailForm detailForm = new InventoryDetailForm();
+            //仓库
+            detailForm.setWarehouseId(receipt.getWarehouseId());
+            detailForm.setWarehouseCode(receipt.getWarehouse());
+            //货主
+            detailForm.setOwerId(receipt.getOwerId());
+            detailForm.setOwerCode(receipt.getOwer());
+            //库区
+
+            //库位
+            detailForm.setWarehouseLocationId(material.getWarehouseLocationId());
+            detailForm.setWarehouseLocationCode(material.getWarehouseLocationCode());
+            //库位状态
+            detailForm.setWarehouseLocationStatus(0);
+            detailForm.setWarehouseLocationStatus2(0);
+            //容器
+            detailForm.setContainerCode(material.getContainerNum());
+            //物料
+            detailForm.setMaterialCode(material.getMaterialCode());
+            detailForm.setMaterialName(material.getMaterialName());
+            //自定义字段-5个
+            detailForm.setBatchCode(material.getBatchNum());
+            detailForm.setMaterialProductionDate(LocalDateTime.of(material.getProductionDate(), localTime));
+            detailForm.setCustomField1(material.getColumnOne());
+            detailForm.setCustomField2(material.getColumnTwo());
+            detailForm.setCustomField3(material.getColumnThree());
+            //入仓号
+            detailForm.setInWarehouseNumber(material.getInWarehouseNumber());
+            if (material.getWeight() == null){
+                detailForm.setWeight(new BigDecimal(0));
+            }else {
+                detailForm.setWeight(material.getWeight());
+            }
+            if (material.getVolume() == null){
+                detailForm.setWeight(new BigDecimal(0));
+            }else {
+                detailForm.setVolume(material.getVolume());
+            }
+            detailForm.setUnit(material.getUnit());
+            //数量
+            detailForm.setOperationCount(new BigDecimal(material.getNum()));
+            inventoryDetailForms.add(detailForm);
+        });
+        if (CollUtil.isNotEmpty(inventoryDetailForms)) {
+            inventoryDetailService.input(inventoryDetailForms);
+        }
     }
 
 

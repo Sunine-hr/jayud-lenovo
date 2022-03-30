@@ -104,4 +104,14 @@ public interface IMaterialService extends IService<Material> {
      **/
     BaseResult cancelConfirmReceipt(DeleteForm deleteForm);
 
+
+    /**
+     * @description 确认上架
+     * @author  ciro
+     * @date   2022/3/29 17:10
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult confirmPullShelf(DeleteForm deleteForm);
+
 }

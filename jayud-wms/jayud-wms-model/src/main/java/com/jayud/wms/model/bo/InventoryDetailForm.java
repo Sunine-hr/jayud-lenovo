@@ -106,6 +106,18 @@ public class InventoryDetailForm extends SysBaseEntity {
     @ApiModelProperty(value = "操作数量（入库，出库）")
     private BigDecimal operationCount;
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "重量")
+    private BigDecimal weight;
+
+    @ApiModelProperty(value = "体积")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
 
 //    @ApiModelProperty(value = "是否删除，0未删除，1已删除")
 //    //@TableLogic //@TableLogic注解表示逻辑删除,设置修改人手动更新，这里注释

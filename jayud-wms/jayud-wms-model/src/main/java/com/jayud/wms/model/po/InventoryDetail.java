@@ -184,6 +184,18 @@ public class InventoryDetail extends SysBaseEntity {
     @TableField(exist = false)
     private String conditionParam;
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "重量")
+    private BigDecimal weight;
+
+    @ApiModelProperty(value = "体积")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
     /**
      * 可用量(计算字段),可用量=现有量-分配量-拣货量，数据库不存在此字段
      * @return

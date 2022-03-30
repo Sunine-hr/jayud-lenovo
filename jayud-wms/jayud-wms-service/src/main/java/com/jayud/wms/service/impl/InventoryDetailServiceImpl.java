@@ -120,13 +120,13 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         if(CollUtil.isEmpty(list)){
             throw new IllegalArgumentException("库存操作信息不能为空");
         }
-        //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3) -> 确定唯一组合值
+        //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3) + (入仓号 + 重量 + 体积 + 单位) -> 确定唯一组合值
         List<String> collect = list.stream()
-                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()))
+                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()+"_"+k.getInWarehouseNumber()+"_"+k.getWeight()+"_"+k.getVolume()+"_"+k.getUnit()))
                 .collect(Collectors.toList());
         long count = collect.stream().distinct().count();
         if (collect.size() != count) {
-            throw new IllegalArgumentException("(货主+仓库+库区+库位+容器+物料)+(批次号+生产日期+字段1+字段2+字段3),唯一组合值不能重复");
+            throw new IllegalArgumentException("(货主+仓库+库区+库位+容器+物料)+(批次号+生产日期+字段1+字段2+字段3)+ (入仓号+重量+体积+单位),唯一组合值不能重复");
         }
         list.forEach(detail -> {
             //货主 + 仓库 + 库区 + 库位 + 容器 + 物料，确认库位的库存信息
@@ -160,8 +160,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             if(ObjectUtil.isEmpty(materialCode)){
                 throw new IllegalArgumentException("物料不能为空");
             }
-            Long materialTypeId = detail.getMaterialTypeId();//物料类型ID
-            String materialType = detail.getMaterialType();//物料类型
             BigDecimal operationCount = detail.getOperationCount();//入库操作数量
             if(ObjectUtil.isEmpty(operationCount)){
                 throw new IllegalArgumentException("操作数量不能为空");
@@ -187,10 +185,13 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseAreaCode, warehouseAreaCode);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseLocationId, warehouseLocationId);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseLocationCode, warehouseLocationCode);
-            queryWrapper.lambda().eq(InventoryDetail::getContainerId, containerId);
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
-            queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
+            queryWrapper.lambda().eq(InventoryDetail::getMaterialName, detail.getMaterialName());
+            queryWrapper.lambda().eq(InventoryDetail::getInWarehouseNumber, detail.getInWarehouseNumber());
+            queryWrapper.lambda().eq(InventoryDetail::getWeight, detail.getWeight());
+            queryWrapper.lambda().eq(InventoryDetail::getVolume, detail.getVolume());
+            queryWrapper.lambda().eq(InventoryDetail::getUnit, detail.getUnit());
             if(ObjectUtil.isNotEmpty(batchCode)){
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
             }
@@ -208,7 +209,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             }
             queryWrapper.lambda().groupBy(InventoryDetail::getOwerCode, InventoryDetail::getWarehouseCode, InventoryDetail::getWarehouseAreaCode,
                     InventoryDetail::getWarehouseLocationCode, InventoryDetail::getContainerCode, InventoryDetail::getMaterialCode,
-                    InventoryDetail::getBatchCode, InventoryDetail::getMaterialProductionDate, InventoryDetail::getCustomField1, InventoryDetail::getCustomField2, InventoryDetail::getCustomField3);//group by 分组，保证唯一值
+                    InventoryDetail::getBatchCode, InventoryDetail::getMaterialProductionDate, InventoryDetail::getCustomField1, InventoryDetail::getCustomField2, InventoryDetail::getCustomField3,
+                    InventoryDetail::getInWarehouseNumber, InventoryDetail::getWeight, InventoryDetail::getVolume, InventoryDetail::getUnit);//group by 分组，保证唯一值
             InventoryDetail inventoryDetail = this.baseMapper.selectOne(queryWrapper);
 
             BigDecimal originalExistingCount = new BigDecimal("0");//记录原始库存的物料数量
@@ -244,7 +246,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
             String key = detail.getOwerCode()+"_"+detail.getWarehouseCode()+"_"+detail.getWarehouseAreaCode()+"_"
                     +detail.getWarehouseLocationCode()+"_"+detail.getContainerCode()+"_"+detail.getMaterialCode()+"_"
-                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3();
+                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3()+"_"
+                    +detail.getInWarehouseNumber()+"_"+detail.getWeight()+"_"+detail.getVolume()+"_"+detail.getUnit();
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("originalExistingCount", originalExistingCount);
             jsonObject.set("toOperationCount", toOperationCount);
@@ -261,7 +264,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         detailList.forEach(detail -> {
             String key = detail.getOwerCode()+"_"+detail.getWarehouseCode()+"_"+detail.getWarehouseAreaCode()+"_"
                     +detail.getWarehouseLocationCode()+"_"+detail.getContainerCode()+"_"+detail.getMaterialCode()+"_"
-                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3();
+                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3()+"_"
+                    +detail.getInWarehouseNumber()+"_"+detail.getWeight()+"_"+detail.getVolume()+"_"+detail.getUnit();
             JSONObject jsonObject = originalMap.get(key);
             BigDecimal originalExistingCount = jsonObject.getBigDecimal("originalExistingCount");
             BigDecimal toOperationCount = jsonObject.getBigDecimal("toOperationCount");

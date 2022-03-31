@@ -42,11 +42,21 @@
         <result column="documentType_text" property="documentType_text" />
         <result column="orderSourceType_text" property="orderSourceType_text" />
         <result column="orderStatusType_text" property="orderStatusType_text" />
+        <result column="unit" property="unit" />
+        <result column="car_barnd" property="carBarnd" />
+        <result column="car_model" property="carModel" />
+        <result column="car_driver" property="carDriver" />
+        <result column="car_relation" property="carRelation" />
+        <result column="operators_id" property="operatorsId" />
+        <result column="operators_name" property="operatorsName" />
+        <result column="comfirm_id" property="comfirmId" />
+        <result column="comfirm_name" property="comfirmName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         wooi.id, wooi.notice_order_number, wooi.order_number, wooi.wave_number, wooi.warehouse_id, wooi.warehouse_code, wooi.warehouse_name, wooi.ower_id, wooi.ower_code, wooi.ower_name, wooi.document_type, wooi.order_source_type, wooi.external_order_number_first,wooi.external_order_number_second, wooi.customer_id, wooi.customer_code, wooi.customer_name, wooi.plan_delivery_time, wooi.column_one, wooi.column_two, wooi.all_count, wooi.all_height, wooi.all_volume, wooi.assignor_by, wooi.assignor_time, wooi.order_status_type, wooi.real_delivery_time, wooi.material_account, wooi.tenant_code, wooi.remark, wooi.is_deleted, wooi.create_by, wooi.create_time, wooi.update_by,wooi.update_time,
+        wooi.unit,wooi.car_barnd, wooi.car_model,wooi.car_driver,wooi.car_relation,wooi.operators_id,wooi.operators_name,comfirm_id,comfirm_name,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeDocumentType' AND wooi.document_type = sdi.item_value) documentType_text,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeOrderSourceType' AND wooi.order_source_type = sdi.item_value) orderSourceType_text,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeOrderStatusType' AND wooi.order_status_type = sdi.item_value) orderStatusType_text
@@ -193,6 +203,21 @@
                 <foreach item="id" collection="wmsOutboundOrderInfoVO.orderNumberList" open="(" separator="," close=")">
                     #{id}
                 </foreach>
+            </if>
+            <if test="wmsOutboundOrderInfoVO.unit != null and wmsOutboundOrderInfoVO.unit != ''">
+                AND wooi.unit LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.unit},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoVO.carBarnd != null and wmsOutboundOrderInfoVO.carBarnd != ''">
+                AND wooi.car_barnd LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.carBarnd},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoVO.carModel != null and wmsOutboundOrderInfoVO.carModel != ''">
+                AND wooi.car_model LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.carModel},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoVO.carDriver != null and wmsOutboundOrderInfoVO.carDriver != ''">
+                AND wooi.car_driver LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.carDriver},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoVO.carRelation != null and wmsOutboundOrderInfoVO.carRelation != ''">
+                AND wooi.car_relation LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.carRelation},'%')
             </if>
         </where>
 

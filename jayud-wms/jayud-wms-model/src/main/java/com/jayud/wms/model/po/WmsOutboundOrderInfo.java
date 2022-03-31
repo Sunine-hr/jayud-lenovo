@@ -131,6 +131,32 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    @ApiModelProperty(value = "车牌号")
+    private String carBarnd;
+
+    @ApiModelProperty(value = "车型")
+    private String carModel;
+
+    @ApiModelProperty(value = "司机名称")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
+
+    @ApiModelProperty(value = "作业人员id")
+    private Long operatorsId;
+
+    @ApiModelProperty(value = "作业人员名称")
+    private String operatorsName;
+
+    @ApiModelProperty(value = "确认人员id")
+    private Long comfirmId;
+
+    @ApiModelProperty(value = "确认人员名称")
+    private String comfirmName;
 
 
 

@@ -307,13 +307,13 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         if(CollUtil.isEmpty(list)){
             throw new IllegalArgumentException("库存操作信息不能为空");
         }
-        //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3) -> 确定唯一组合值
+        //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3) + (入仓号 + 重量 + 体积 + 单位) -> 确定唯一组合值
         List<String> collect = list.stream()
-                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()))
+                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()+"_"+k.getInWarehouseNumber()+"_"+k.getWeight()+"_"+k.getVolume()+"_"+k.getUnit()))
                 .collect(Collectors.toList());
         long count = collect.stream().distinct().count();
         if (collect.size() != count) {
-            throw new IllegalArgumentException("(货主+仓库+库区+库位+容器+物料)+(批次号+生产日期+字段1+字段2+字段3),唯一组合值不能重复");
+            throw new IllegalArgumentException("(货主+仓库+库区+库位+容器+物料)+(批次号+生产日期+字段1+字段2+字段3)+ (入仓号+重量+体积+单位),唯一组合值不能重复");
         }
         list.forEach(detail -> {
             //货主 + 仓库 + 库区 + 库位 + 容器 + 物料，确认库位的库存信息
@@ -376,6 +376,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
+            queryWrapper.lambda().eq(InventoryDetail::getInWarehouseNumber, detail.getInWarehouseNumber());
+            queryWrapper.lambda().eq(InventoryDetail::getWeight, detail.getWeight());
+            queryWrapper.lambda().eq(InventoryDetail::getVolume, detail.getVolume());
+            queryWrapper.lambda().eq(InventoryDetail::getUnit, detail.getUnit());
             if(ObjectUtil.isNotEmpty(batchCode)){
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
             }
@@ -1204,13 +1208,13 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         if(CollUtil.isEmpty(list)){
             throw new IllegalArgumentException("库存操作信息不能为空");
         }
-        //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3) -> 确定唯一组合值
+        //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3)  + (入仓号 + 重量 + 体积 + 单位)-> 确定唯一组合值
         List<String> collect = list.stream()
-                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()))
+                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()+"_"+k.getInWarehouseNumber()+"_"+k.getWeight()+"_"+k.getVolume()+"_"+k.getUnit()))
                 .collect(Collectors.toList());
         long count = collect.stream().distinct().count();
         if (collect.size() != count) {
-            throw new IllegalArgumentException("(货主+仓库+库区+库位+容器+物料)+(批次号+生产日期+字段1+字段2+字段3),唯一组合值不能重复");
+            throw new IllegalArgumentException("(货主+仓库+库区+库位+容器+物料)+(批次号+生产日期+字段1+字段2+字段3)+ (入仓号+重量+体积+单位),唯一组合值不能重复");
         }
         list.forEach(detail -> {
             //货主 + 仓库 + 库区 + 库位 + 容器 + 物料，确认库位的库存信息
@@ -1273,6 +1277,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
+            queryWrapper.lambda().eq(InventoryDetail::getInWarehouseNumber, detail.getInWarehouseNumber());
+            queryWrapper.lambda().eq(InventoryDetail::getWeight, detail.getWeight());
+            queryWrapper.lambda().eq(InventoryDetail::getVolume, detail.getVolume());
+            queryWrapper.lambda().eq(InventoryDetail::getUnit, detail.getUnit());
             if(ObjectUtil.isNotEmpty(batchCode)){
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
             }
@@ -1314,10 +1322,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                     throw new IllegalArgumentException("拣货量 不能小于 出库操作数量");
                 }
                 BigDecimal existingCount = inventoryDetail.getExistingCount();//现有量
+                BigDecimal newAllocationCount = pickingCount.subtract(operationCount);//拣货量 - 出库操作数量
                 BigDecimal newPickingCount = pickingCount.subtract(operationCount);//拣货量 - 出库操作数量
-                BigDecimal newExistingCount = existingCount.subtract(operationCount);//现有量 - 出库操作数量
                 inventoryDetail.setPickingCount(newPickingCount);
-                inventoryDetail.setExistingCount(newExistingCount);
+                inventoryDetail.setAllocationCount(newAllocationCount);
                 BigDecimal subtract = inventoryDetail.getExistingCount().subtract(inventoryDetail.getAllocationCount()).subtract(inventoryDetail.getPickingCount());//可用量=现有量-分配量-拣货量
                 if(subtract.compareTo(new BigDecimal("0")) < 0){
                     throw new IllegalArgumentException("最新计算的可用量，不能小于0");

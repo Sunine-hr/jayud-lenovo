@@ -126,7 +126,20 @@ public class WmsOutboundNoticeOrderInfo extends SysBaseEntity {
     @TableLogic
     private Boolean isDeleted;
 
+    @ApiModelProperty(value = "单位")
+    private String unit;
 
+    @ApiModelProperty(value = "车牌号")
+    private String carBarnd;
+
+    @ApiModelProperty(value = "车型")
+    private String carModel;
+
+    @ApiModelProperty(value = "司机名称")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
 
 
 

@@ -93,6 +93,27 @@ public class WmsOutboundOrderInfoToMaterial extends SysBaseEntity {
     @TableField(exist = false)
     private String OriginUnit;
 
+    @ApiModelProperty(value = "重量")
+    private BigDecimal weight;
+
+    @ApiModelProperty(value = "体积")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "出仓号")
+    private String outWarehouseNumber;
+
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "拣货下架库位id")
+    private Long warehouseLocationId;
+
+    @ApiModelProperty(value = "拣货下架库位编码")
+    private String warehouseLocationCode;
+
+    @ApiModelProperty(value = "库存明细id")
+    private Long inventoryDetailId;
+
 
 
 

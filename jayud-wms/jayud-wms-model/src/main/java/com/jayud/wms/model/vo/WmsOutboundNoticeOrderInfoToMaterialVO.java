@@ -30,11 +30,6 @@ public class WmsOutboundNoticeOrderInfoToMaterialVO extends WmsOutboundNoticeOrd
     @ApiModelProperty(value = "物料类型名称")
     private String materialTypeId_text;
 
-    @ApiModelProperty(value = "重量")
-    private BigDecimal weight;
-
-    @ApiModelProperty(value = "体积")
-    private BigDecimal volume;
 
 
 }

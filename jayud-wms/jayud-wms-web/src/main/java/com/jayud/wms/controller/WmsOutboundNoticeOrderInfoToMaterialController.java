@@ -5,6 +5,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfoToMaterial;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO;
 import com.jayud.wms.service.IWmsOutboundNoticeOrderInfoToMaterialService;
@@ -164,6 +165,12 @@ public class WmsOutboundNoticeOrderInfoToMaterialController {
         } catch (Exception e) {
             logger.warn(e.toString());
         }
+    }
+
+    @ApiOperation("获取库存物料信息")
+    @PostMapping(path = "/getInventoryMetailDetailList")
+    public BaseResult<List<WmsOutboundNoticeOrderInfoToMaterialVO>> getInventoryMetailDetailList(@RequestBody InventoryDetail inventoryDetail){
+        return BaseResult.ok(wmsOutboundNoticeOrderInfoToMaterialService.getInventoryMetailDetailList(inventoryDetail));
     }
 
 }

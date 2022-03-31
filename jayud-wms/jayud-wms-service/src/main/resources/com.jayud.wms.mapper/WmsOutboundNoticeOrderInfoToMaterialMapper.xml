@@ -30,26 +30,24 @@
         <result column="material_type_code" property="materialTypeCode" />
         <result column="weight" property="weight" />
         <result column="volume" property="volume" />
+        <result column="out_warehouse_number" property="outWarehouseNumber" />
+        <result column="in_warehouse_number" property="inWarehouseNumber" />
+        <result column="warehouse_location_id" property="warehouseLocationId" />
+        <result column="warehouse_location_code" property="warehouseLocationCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        wonoitm.id, wonoitm.order_number, wonoitm.material_id, wonoitm.material_code, wonoitm.material_name,wonoitm.material_specification, wonoitm.account, wonoitm.unit, wonoitm.external_number, wonoitm.external_line_number, wonoitm.batch_code, wonoitm.material_production_date, wonoitm.custom_field1, wonoitm.custom_field2, wonoitm.custom_field3, wonoitm.remark, wonoitm.is_deleted, wonoitm.create_by, wonoitm.create_time, wonoitm.update_by, wonoitm.update_time
+        wonoitm.id, wonoitm.order_number, wonoitm.material_id, wonoitm.material_code, wonoitm.material_name,wonoitm.material_specification, wonoitm.account, wonoitm.unit, wonoitm.external_number, wonoitm.external_line_number, wonoitm.batch_code, wonoitm.material_production_date, wonoitm.custom_field1, wonoitm.custom_field2, wonoitm.custom_field3, wonoitm.remark, wonoitm.is_deleted, wonoitm.create_by, wonoitm.create_time, wonoitm.update_by, wonoitm.update_time,
+        wonoitm.out_warehouse_number,wonoitm.in_warehouse_number,wonoitm.weight,wonoitm.volume,wonoitm.warehouse_location_id,wonoitm.warehouse_location_code
     </sql>
 
     <!-- 表名 -->
     <sql id="tname">wms_outbound_notice_order_info_to_material wonoitm</sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>,
-        mti.id  material_type_id,
-        mti.material_type_name material_type_name,
-        mti.material_type_code material_type_code,
-        wmbi.weight weight,
-        wmbi.volume volume
+        SELECT <include refid="Base_Column_List"/>
         FROM <include refid="tname"/>
-         LEFT JOIN wms_material_basic_info wmbi ON wonoitm.material_code = wmbi.material_code
-         LEFT JOIN wms_material_type_info mti ON wmbi.material_type_id = mti.id
         <where>
             wonoitm.is_deleted = 0
             <if test="wmsOutboundNoticeOrderInfoToMaterialVO.orderNumber != null and wmsOutboundNoticeOrderInfoToMaterialVO.orderNumber != ''">
@@ -110,6 +108,25 @@
 
             <if test="wmsOutboundNoticeOrderInfoToMaterialVO.remark != null and wmsOutboundNoticeOrderInfoToMaterialVO.remark != ''">
                 AND wonoitm.remark LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoToMaterialVO.remark},'%')
+            </if>
+
+            <if test="wmsOutboundNoticeOrderInfoToMaterialVO.outWarehouseNumber != null and wmsOutboundNoticeOrderInfoToMaterialVO.outWarehouseNumber != ''">
+                AND wonoitm.out_warehouse_number LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoToMaterialVO.outWarehouseNumber},'%')
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoToMaterialVO.inWarehouseNumber != null and wmsOutboundNoticeOrderInfoToMaterialVO.inWarehouseNumber != ''">
+                AND wonoitm.in_warehouse_number LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoToMaterialVO.inWarehouseNumber},'%')
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoToMaterialVO.weight != null">
+                AND wonoitm.weight = #{wmsOutboundNoticeOrderInfoToMaterialVO.weight}
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoToMaterialVO.volume != null ">
+                AND wonoitm.volume = #{wmsOutboundNoticeOrderInfoToMaterialVO.volume}
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoToMaterialVO.warehouseLocationId != null">
+                AND wonoitm.warehouse_location_id = #{wmsOutboundNoticeOrderInfoToMaterialVO.warehouseLocationId}
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoToMaterialVO.warehouseLocationCode != null and wmsOutboundNoticeOrderInfoToMaterialVO.warehouseLocationCode != ''">
+                AND wonoitm.warehouse_location_code LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoToMaterialVO.warehouseLocationCode},'%')
             </if>
 
         </where>

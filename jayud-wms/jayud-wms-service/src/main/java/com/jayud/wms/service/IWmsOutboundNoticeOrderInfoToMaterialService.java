@@ -3,6 +3,7 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfoToMaterial;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO;
@@ -71,6 +72,15 @@ public interface IWmsOutboundNoticeOrderInfoToMaterialService extends IService<W
      * @return: void
      **/
     void delByOrderNumber(String orderNumber);
+
+    /**
+     * @description 获取库存物料信息
+     * @author  ciro
+     * @date   2022/3/30 16:01
+     * @param: inventoryDetail
+     * @return: java.util.List<com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO>
+     **/
+    List<WmsOutboundNoticeOrderInfoToMaterialVO> getInventoryMetailDetailList(InventoryDetail inventoryDetail);
 
 
 }

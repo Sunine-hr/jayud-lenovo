@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.ListUtils;
 import com.jayud.wms.mapper.WmsOutboundNoticeOrderInfoToMaterialMapper;
+import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfoToMaterial;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO;
+import com.jayud.wms.service.IInventoryDetailService;
 import com.jayud.wms.service.IWmsOutboundNoticeOrderInfoToMaterialService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -28,6 +31,8 @@ import java.util.*;
 @Service
 public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOutboundNoticeOrderInfoToMaterialMapper, WmsOutboundNoticeOrderInfoToMaterial> implements IWmsOutboundNoticeOrderInfoToMaterialService {
 
+    @Autowired
+    private IInventoryDetailService iInventoryDetailService;
 
     @Autowired
     private WmsOutboundNoticeOrderInfoToMaterialMapper wmsOutboundNoticeOrderInfoToMaterialMapper;
@@ -112,6 +117,35 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
     @Override
     public void delByOrderNumber(String orderNumber) {
         wmsOutboundNoticeOrderInfoToMaterialMapper.delteByOrderNumberAndMaterialCode(orderNumber, null,null, CurrentUserUtil.getUsername());
+    }
+
+    @Override
+    public List<WmsOutboundNoticeOrderInfoToMaterialVO> getInventoryMetailDetailList(InventoryDetail inventoryDetail) {
+        List<InventoryDetail> detailList = iInventoryDetailService.selectList(inventoryDetail);
+        List<WmsOutboundNoticeOrderInfoToMaterialVO> materialList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(detailList)){
+            detailList.forEach(detail -> {
+                WmsOutboundNoticeOrderInfoToMaterialVO material = new WmsOutboundNoticeOrderInfoToMaterialVO();
+                material.setMaterialName(detail.getMaterialName());
+                material.setMaterialCode(detail.getMaterialCode());
+                material.setMaterialSpecification(detail.getMaterialSpecification());
+                material.setAccount(detail.getExistingCount().subtract(detail.getAllocationCount()).subtract(detail.getPickingCount()));
+                material.setBatchCode(detail.getBatchCode());
+                material.setMaterialProductionDate(detail.getMaterialProductionDate());
+                material.setCustomField1(detail.getCustomField1());
+                material.setCustomField2(detail.getCustomField2());
+                material.setCustomField3(detail.getCustomField3());
+                material.setInWarehouseNumber(detail.getInWarehouseNumber());
+                material.setWeight(detail.getWeight());
+                material.setVolume(detail.getVolume());
+                material.setWarehouseLocationId(detail.getWarehouseLocationId());
+                material.setWarehouseLocationCode(detail.getWarehouseLocationCode());
+                material.setInventoryDetailId(detail.getId());
+                materialList.add(material);
+
+            });
+        }
+        return materialList;
     }
 
     /**

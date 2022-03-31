@@ -2,6 +2,7 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -215,6 +216,13 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
         //获取收货通知单
         QualityInspection qualityInspection = this.getById(id);
         QualityInspectionVO inspectionVO = ConvertUtil.convert(qualityInspection, QualityInspectionVO.class);
+        if (StringUtils.isNotBlank(qualityInspection.getQualityInspectorIds())){
+            List<Long> idList = Arrays.asList(qualityInspection.getQualityInspectorIds().split(StrUtil.COMMA)).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
+            inspectionVO.setQualityInspectorIds(idList);
+        }else {
+            inspectionVO.setQualityInspectorIds(new ArrayList<>());
+        }
+        inspectionVO.setQualityInspectorIds(new ArrayList<>());
         //获取物料信息
         List<QualityInspectionMaterial> materials = this.qualityInspectionMaterialService.getByCondition(new QualityInspectionMaterial().setQualityInspectionId(inspectionVO.getId()).setIsDeleted(false));
         List<QualityInspectionMaterialVO> materialList = ConvertUtil.convertList(materials, QualityInspectionMaterialVO.class);
@@ -331,6 +339,7 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
     public BaseResult saveDetail(QualityInspectionVO qualityInspectionVO) {
         QualityInspection qualityInspection = new QualityInspection();
         BeanUtils.copyProperties(qualityInspectionVO,qualityInspection);
+        qualityInspection.setQualityInspectorIds(StringUtils.join(qualityInspectionVO.getQualityInspectorIds(),StrUtil.C_COMMA));
         this.updateById(qualityInspection);
         List<QualityInspectionMaterialVO> materialList = qualityInspectionVO.getMaterialForms();
         if (CollUtil.isNotEmpty(materialList)){

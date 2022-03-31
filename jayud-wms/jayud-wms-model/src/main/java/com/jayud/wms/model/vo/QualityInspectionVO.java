@@ -110,6 +110,12 @@ public class QualityInspectionVO extends SysBaseEntity {
     @ApiModelProperty(value = "订单来源")
     private String orderSource;
 
+    @ApiModelProperty(value = "总数量")
+    private Double totalNum;
+
+    @ApiModelProperty(value = "质检人id集合")
+    private List<Long> qualityInspectorIds;
+
     @ApiModelProperty(value = "物料信息")
     List<QualityInspectionMaterialVO> materialForms;
 

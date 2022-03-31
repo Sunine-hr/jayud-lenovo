@@ -57,6 +57,9 @@ public class QualityInspection extends SysBaseEntity {
     @ApiModelProperty(value = "质检部门")
     private String qualityInspectionDept;
 
+    @ApiModelProperty(value = "质检人id集合")
+    private String qualityInspectorIds;
+
     @ApiModelProperty(value = "质检人")
     private String qualityInspector;
 
@@ -83,9 +86,6 @@ public class QualityInspection extends SysBaseEntity {
     @ApiModelProperty(value = "流程标志")
     private String processFlag;
 
-    @ApiModelProperty(value = "主订单号")
-    private String wmsQualityInspection;
-
 
     @ApiModelProperty(value = "主订单号")
     private String mainOrderNumber;
@@ -98,4 +98,7 @@ public class QualityInspection extends SysBaseEntity {
 
     @ApiModelProperty(value = "订单来源")
     private String orderSource;
+
+    @ApiModelProperty(value = "总数量")
+    private Double totalNum;
 }

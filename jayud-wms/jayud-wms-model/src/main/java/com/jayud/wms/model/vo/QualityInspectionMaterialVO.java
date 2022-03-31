@@ -68,7 +68,7 @@ public class QualityInspectionMaterialVO extends SysBaseEntity {
     @ApiModelProperty(value = "生产日期")
     private LocalDate productionDate;
 
-    @ApiModelProperty(value = "容器号")
+    @ApiModelProperty(value = "卡板编号")
     private String containerNum;
 
     @ApiModelProperty(value = "外部订单号")

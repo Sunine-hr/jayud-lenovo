@@ -5,6 +5,7 @@ import com.jayud.common.exception.ServiceException;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.model.enums.ReceiptStatusEnum;
 import com.jayud.wms.model.po.Container;
+import com.jayud.wms.model.po.WmsReceiptAppend;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -126,6 +127,8 @@ public class ReceiptForm extends SysBaseEntity {
     @ApiModelProperty(value = "物料sn信息")
     private List<MaterialSnForm> materialSnForms;
 
+    @ApiModelProperty(value = "物料sn信息")
+    private List<WmsReceiptAppendForm> wmsReceiptAppendForms;
 
     public void checkParam() {
 

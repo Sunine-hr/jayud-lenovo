@@ -191,7 +191,7 @@
             r.actual_volume,
             r.receiver,
             r.STATUS,
-        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS = sdi.item_value) AS statusDetails,
+      --   (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS = sdi.item_value) AS statusDetails,
             r.receiving_time,
             r.column_one,
             r.column_two,

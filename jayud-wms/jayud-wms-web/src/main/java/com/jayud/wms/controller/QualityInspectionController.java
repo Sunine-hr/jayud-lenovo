@@ -7,6 +7,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.QueryClientQualityInspectionForm;
+import com.jayud.common.result.BasePage;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.bo.QualityInspectionForm;
@@ -24,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,9 +65,11 @@ public class QualityInspectionController {
      */
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
-    public BaseResult<IPage<QualityInspectionVO>> selectPage(@RequestBody QueryQualityInspectionForm queryQualityInspectionForm, HttpServletRequest req) {
+    public BaseResult<BasePage<QualityInspectionVO>> selectPage(@RequestBody QueryQualityInspectionForm queryQualityInspectionForm, HttpServletRequest req) {
         IPage<QualityInspectionVO> qualityInspectionVOIPage = qualityInspectionService.selectPage(queryQualityInspectionForm, queryQualityInspectionForm.getCurrentPage(), queryQualityInspectionForm.getPageSize(), req);
-        return BaseResult.ok(qualityInspectionVOIPage);
+        BasePage<QualityInspectionVO> basePage = new BasePage<>();
+        BeanUtils.copyProperties(qualityInspectionVOIPage,basePage);
+        return BaseResult.ok(basePage);
     }
 
     /**
@@ -324,6 +328,11 @@ public class QualityInspectionController {
     }
 
 
+    @ApiOperation("保存质检数据")
+    @PostMapping(value = "/saveDetail")
+    public BaseResult saveDetail(@RequestBody QualityInspectionVO qualityInspectionVO){
+        return qualityInspectionService.saveDetail(qualityInspectionVO);
+    }
 
 
 

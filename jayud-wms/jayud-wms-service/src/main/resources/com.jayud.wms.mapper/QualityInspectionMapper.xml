@@ -175,21 +175,19 @@
                     #{id}
                 </foreach>
             </if>
+            <if test="qualityInspection.supplierId!=null ">
+                qi.supplier_id = #{qualityInspection.supplierId}
+            </if>
+
 
             <if test="qualityInspection.mainOrderNumber != null  and qualityInspection.mainOrderNumber != ''">
                 AND qi.main_order_number LIKE CONCAT('%',#{qualityInspection.mainOrderNumber}, '%')
             </if>
 
             <if test="qualityInspection.documentType != null  and qualityInspection.documentType != ''">
-                AND qi.main_order_number = #{qualityInspection.documentType}
+                AND qi.document_type = #{qualityInspection.documentType}
             </if>
 
-            <if test="qualityInspection.qualityInspector != null  and qualityInspection.qualityInspector != ''">
-                AND qi.quality_inspector  LIKE CONCAT('%',#{qualityInspection.qualityInspector}, '%')
-            </if>
-            <if test="qualityInspection.startReceiveTime != null  and qualityInspection.startReceiveTime != '' and qualityInspection.endReceiveTime != null  and qualityInspection.endReceiveTime != ''">
-                AND qi.quality_inspection_time &gt;= #{qualityInspection.startReceiveTime} AND qi.quality_inspection_time &lt;= #{qualityInspection.startReceiveTime}
-            </if>
 
         </where>
         ORDER BY qi.create_time DESC

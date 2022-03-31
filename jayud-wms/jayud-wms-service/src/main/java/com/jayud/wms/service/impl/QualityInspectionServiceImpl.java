@@ -2,10 +2,13 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.exception.ServiceException;
 import com.jayud.common.utils.ConvertUtil;
@@ -28,6 +31,7 @@ import com.jayud.wms.model.vo.QualityInspectionVO;
 import com.jayud.wms.model.vo.ReceiptVO;
 import com.jayud.wms.service.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -211,7 +215,7 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
         //获取收货通知单
         QualityInspection qualityInspection = this.getById(id);
         QualityInspectionVO inspectionVO = ConvertUtil.convert(qualityInspection, QualityInspectionVO.class);
-        //获取物理信息
+        //获取物料信息
         List<QualityInspectionMaterial> materials = this.qualityInspectionMaterialService.getByCondition(new QualityInspectionMaterial().setQualityInspectionId(inspectionVO.getId()).setIsDeleted(false));
         List<QualityInspectionMaterialVO> materialList = ConvertUtil.convertList(materials, QualityInspectionMaterialVO.class);
         inspectionVO.setMaterialForms(materialList);
@@ -321,5 +325,25 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
         qualityInspection.setQualityInspector(CurrentUserUtil.getUsername());
         qualityInspection.setQualityInspectionTime(LocalDate.now());
         this.updateById(qualityInspection);
+    }
+
+    @Override
+    public BaseResult saveDetail(QualityInspectionVO qualityInspectionVO) {
+        QualityInspection qualityInspection = new QualityInspection();
+        BeanUtils.copyProperties(qualityInspectionVO,qualityInspection);
+        this.updateById(qualityInspection);
+        List<QualityInspectionMaterialVO> materialList = qualityInspectionVO.getMaterialForms();
+        if (CollUtil.isNotEmpty(materialList)){
+            List<QualityInspectionMaterial> updateList = new ArrayList<>();
+            materialList.forEach(vo->{
+                QualityInspectionMaterial material = new QualityInspectionMaterial();
+                BeanUtils.copyProperties(vo, material);
+                updateList.add(material);
+            });
+            if (CollUtil.isNotEmpty(updateList)){
+                qualityInspectionMaterialService.updateBatchById(updateList);
+            }
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
     }
 }

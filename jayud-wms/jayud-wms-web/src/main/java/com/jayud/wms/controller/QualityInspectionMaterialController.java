@@ -190,16 +190,5 @@ public class QualityInspectionMaterialController {
     }
 
 
-    @ApiOperation("确认质检")
-    @PostMapping(path = "/comfirmQuality")
-    public BaseResult comfirmQuality(@RequestBody QualityInspectionVO qualityInspectionVO){
-        return qualityInspectionMaterialService.comfirmQuality(qualityInspectionVO);
-    }
-
-    @ApiOperation("取消质检")
-    @PostMapping(path = "/cancelQuality")
-    public BaseResult cancelQuality(@RequestBody QualityInspectionVO qualityInspectionVO){
-        return qualityInspectionMaterialService.comfirmQuality(qualityInspectionVO);
-    }
 
 }

@@ -68,24 +68,5 @@ public interface IQualityInspectionMaterialService extends IService<QualityInspe
     QualityInspectionMaterial findQualityInspectionMaterialOne(QueryQualityInspectionMaterialForm qualityInspectionMaterial);
 
 
-    /**
-     * @description 确认质检
-     * @author  ciro
-     * @date   2022/3/31 10:17
-     * @param: qualityInspectionVO
-     * @return: com.jayud.common.BaseResult
-     **/
-    BaseResult comfirmQuality(QualityInspectionVO qualityInspectionVO);
-
-
-    /**
-     * @description 取消质检
-     * @author  ciro
-     * @date   2022/3/31 10:37
-     * @param: qualityInspectionVO
-     * @return: com.jayud.common.BaseResult
-     **/
-    BaseResult cancelQuality(QualityInspectionVO qualityInspectionVO);
-
 
 }

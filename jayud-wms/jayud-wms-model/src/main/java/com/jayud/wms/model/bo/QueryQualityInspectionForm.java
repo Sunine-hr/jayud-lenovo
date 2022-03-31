@@ -61,17 +61,12 @@ public class QueryQualityInspectionForm extends SysBaseEntity {
     @ApiModelProperty(value = "单据类型")
     private String documentType;
 
-    @ApiModelProperty(value = "货主id")
-    private Long owerId;
+    @ApiModelProperty(value = "客户id")
+    private Long supplierId;
 
     @ApiModelProperty(value = "质检人员")
     private String qualityInspector;
 
-    @ApiModelProperty(value = "开始收货时间")
-    private String startReceiveTime;
-
-    @ApiModelProperty(value = "结束收货时间")
-    private String endReceiveTime;
 
 
 }

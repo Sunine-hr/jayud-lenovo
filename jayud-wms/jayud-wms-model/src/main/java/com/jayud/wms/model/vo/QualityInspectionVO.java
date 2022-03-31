@@ -3,6 +3,7 @@ package com.jayud.wms.model.vo;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,6 +41,7 @@ public class QualityInspectionVO extends SysBaseEntity {
     private String ower;
 
     @ApiModelProperty(value = "质检单号")
+    @JsonProperty(value = "qcNo")
     private String qcNo;
 
     @ApiModelProperty(value = "收货单号")
@@ -48,10 +50,10 @@ public class QualityInspectionVO extends SysBaseEntity {
     @ApiModelProperty(value = "收货通知单号")
     private String receiptNoticeNum;
 
-    @ApiModelProperty(value = "供应商id(基础客户表)")
+    @ApiModelProperty(value = "客户id-供应商id(基础客户表)")
     private Long supplierId;
 
-    @ApiModelProperty(value = "供应商(基础客户表)")
+    @ApiModelProperty(value = "客户名称-供应商(基础客户表)")
     private String supplier;
 
     @ApiModelProperty(value = "质检部门id")
@@ -75,7 +77,7 @@ public class QualityInspectionVO extends SysBaseEntity {
     @ApiModelProperty(value = "质检状态详情")
     private String statusDetails;
 
-    @ApiModelProperty(value = "质检状态(1:未质检,2:已质检)")
+    @ApiModelProperty(value = "质检状态文本")
     private String statusDesc;
 
     @ApiModelProperty(value = "租户编码")

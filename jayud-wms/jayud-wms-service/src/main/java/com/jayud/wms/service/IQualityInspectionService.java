@@ -3,6 +3,7 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
 import com.jayud.wms.model.bo.QualityInspectionForm;
 import com.jayud.wms.model.bo.QueryQualityInspectionForm;
 import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
@@ -82,4 +83,13 @@ public interface IQualityInspectionService extends IService<QualityInspection> {
      * @return: void
      **/
     void changeQualityUser(Long qcno);
+
+    /**
+     * @description 保存质检数据
+     * @author  ciro
+     * @date   2022/3/31 15:01
+     * @param: qualityInspectionVO
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult saveDetail(QualityInspectionVO qualityInspectionVO);
 }

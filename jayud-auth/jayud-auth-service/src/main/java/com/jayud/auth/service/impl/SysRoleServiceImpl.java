@@ -84,11 +84,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public boolean checkUnique(Long id, String roleName, String roleCode) {
-        SysRole sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleName(roleName).setTenantCode(CurrentUserUtil.getUserTenantCode())));
+        SysRole sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleName(roleName).setCode(CurrentUserUtil.getUserTenantCode())));
         if (sysRole != null && !sysRole.getId().equals(id)) {
             throw new JayudBizException("角色名称必须唯一");
         }
-        sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleCode(roleCode).setTenantCode(CurrentUserUtil.getUserTenantCode())));
+        sysRole = this.getOne(new QueryWrapper<>(new SysRole().setIsDeleted(false).setRoleCode(roleCode).setCode(CurrentUserUtil.getUserTenantCode())));
         if (sysRole != null && !sysRole.getId().equals(id)) {
             throw new JayudBizException("角色编码必须唯一");
         }
@@ -100,6 +100,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         SysRole sysRole = ConvertUtil.convert(form, SysRole.class);
         if (sysRole.getId() == null) {
             sysRole.setCreateTime(new Date()).setCreateBy(CurrentUserUtil.getUsername());
+            sysRole.setCode(CurrentUserUtil.getUserTenantCode());
             this.save(sysRole);
         } else {
             sysRole.setUpdateTime(new Date()).setUpdateBy(CurrentUserUtil.getUsername());
@@ -148,7 +149,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public List<SysRole> getRoleByTenantCode(String tenantCode) {
         LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(SysRole::getIsDeleted,false);
-        lambdaQueryWrapper.eq(SysRole::getTenantCode,tenantCode);
+        lambdaQueryWrapper.eq(SysRole::getCode,tenantCode);
         List<SysRole> roleList = this.list(lambdaQueryWrapper);
         return roleList;
     }

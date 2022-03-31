@@ -111,7 +111,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             //创建人ID(system_user id)
             systemSqlConfig.setCrtBy(systemUser.getId().intValue());
             //创建人名称(system_user user_name)
-            systemSqlConfig.setCrtByName(systemUser.getUserName());
+            systemSqlConfig.setCrtByName(systemUser.getName());
             //创建时间
             systemSqlConfig.setCrtByDtm(LocalDateTime.now());
         }else{
@@ -126,7 +126,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             //最后修改人ID
             systemSqlConfig.setMdyBy(systemUser.getId().intValue());
             //最后修改人名称
-            systemSqlConfig.setMdyByName(systemUser.getUserName());
+            systemSqlConfig.setMdyByName(systemUser.getName());
             //最后修改时间
             systemSqlConfig.setMdyByDtm(LocalDateTime.now());
             systemSqlConfig.setVersion(systemSqlConfig.getVersion()+1);

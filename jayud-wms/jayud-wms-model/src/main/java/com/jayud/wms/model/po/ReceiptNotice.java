@@ -112,7 +112,20 @@ public class ReceiptNotice extends SysBaseEntity {
     private String processFlag;
 
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
+    @ApiModelProperty(value = "单位")
+    private String unit;
 
+    @ApiModelProperty(value = "车牌")
+    private String carBarnd;
 
+    @ApiModelProperty(value = "车型")
+    private String carModel;
 
+    @ApiModelProperty(value = "司机")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
 }

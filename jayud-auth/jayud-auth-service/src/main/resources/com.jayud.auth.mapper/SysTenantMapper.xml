@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysTenant">
         <id column="id" property="id" />
-        <result column="tenant_code" property="tenantCode" />
+        <result column="code" property="code" />
         <result column="tenant_name" property="tenantName" />
         <result column="tenant_contact" property="tenantContact" />
         <result column="tenant_email" property="tenantEmail" />
@@ -25,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, tenant_code, tenant_name, tenant_contact, tenant_email, tenant_tel, begin_date, end_date, status, remark, system_name, log_url, is_deleted, create_by, create_time, update_by, update_time
+            id, code, tenant_name, tenant_contact, tenant_email, tenant_tel, begin_date, end_date, status, remark, system_name, log_url, is_deleted, create_by, create_time, update_by, update_time
     </sql>
 
     <!-- 表名 -->
@@ -36,8 +36,8 @@
         FROM <include refid="tname"/>
         <where>
             is_deleted = 0
-            <if test="sysTenant.tenantCode != null and sysTenant.tenantCode != ''">
-                AND tenant_code  LIKE CONCAT('%',#{sysTenant.tenantCode},'%')
+            <if test="sysTenant.code != null and sysTenant.code != ''">
+                AND code  LIKE CONCAT('%',#{sysTenant.code},'%')
             </if>
 
             <if test="sysTenant.tenantName != null and sysTenant.tenantName != ''">

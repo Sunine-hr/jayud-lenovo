@@ -123,12 +123,13 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         if (form.getId() == null) {
             receiptNotice.setReceiptNoticeNum(authClient.getOrder("receipt_notice", new Date()).getResult())
                     .setStatus(1).setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
-            //创建订单流程配置
-            this.orderProcessService.generationProcess(receiptNotice.getReceiptNoticeNum(), form.getWarehouseId(), 1);
-            OrderTrack orderTrack = new OrderTrack().setOrderNo(receiptNotice.getReceiptNoticeNum()).setType(1)
-                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.CREATE.getDesc());
-            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
-            this.orderTrackService.save(orderTrack);
+            //创建订单流程配置  待定
+//            this.orderProcessService.generationProcess(receiptNotice.getReceiptNoticeNum(), form.getWarehouseId(), 1);
+            //运行轨迹
+//            OrderTrack orderTrack = new OrderTrack().setOrderNo(receiptNotice.getReceiptNoticeNum()).setType(1)
+//                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.CREATE.getDesc());
+//            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+//            this.orderTrackService.save(orderTrack);
             this.save(receiptNotice);
         } else {
             System.out.println("进入到了方法！");
@@ -166,8 +167,8 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         noticeMaterialService.saveOrUpdateBatch(noticeMaterials);
 
         //存储物料SN信息表
-        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
-        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
+//        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
+//        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
 
         return receiptNotice;//返回收货通知单
     }
@@ -248,14 +249,16 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
     public Receipt transferReceipt(Long id) {
         //获取详情数据
         ReceiptNoticeVO details = this.getDetails(id);
-        if (!details.getStatus().equals(ReceiptNoticeStatusEnum.CREATE.getCode())) {
-            throw new ServiceException("该阶段无法转收货单");
-        }
-        String status = this.orderProcessService.getNextNode(details.getReceiptNoticeNum(), details.getProcessFlag());
-        if (StringUtils.isEmpty(status)) {
-            throw new ServiceException("不存在该流程节点");
-        }
-        if (status.equals(InboundOrderProStatusEnum.TWO.getCode() + "")) {
+//        if (!details.getStatus().equals(ReceiptNoticeStatusEnum.CREATE.getCode())) {
+//            throw new ServiceException("该阶段无法转收货单");
+//        }
+//        String status = this.orderProcessService.getNextNode(details.getReceiptNoticeNum(), details.getProcessFlag());
+//        if (StringUtils.isEmpty(status)) {
+//            throw new ServiceException("不存在该流程节点");
+//        }
+//        if (status.equals(InboundOrderProStatusEnum.TWO.getCode() + "")) {
+
+        if (details.getStatus().equals(ReceiptNoticeStatusEnum.CREATE.getCode())) {
             Date date = new Date();
             Receipt receipt = ConvertUtil.convert(details, Receipt.class);
             //把数据转移到收货单
@@ -285,7 +288,7 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
                 materialSn.setStatus(MaterialSnStatusEnum.ONE.getCode()).setOrderNum(receiptOrderNo).setOrderId(receipt.getId());
                 materialSns.add(materialSn);
             }
-            this.materialSnService.saveBatch(materialSns);
+//            this.materialSnService.saveBatch(materialSns);
 
             //收货通知单更改数据
             ReceiptNotice receiptNotice = new ReceiptNotice();
@@ -295,15 +298,14 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
             this.updateById(receiptNotice);
 
             //添加流程记录
-            OrderTrack orderTrack = new OrderTrack().setOrderNo(details.getReceiptNoticeNum()).setType(1)
-                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.RECEIVING.getDesc());
-            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
-            this.orderTrackService.save(orderTrack);
+//            OrderTrack orderTrack = new OrderTrack().setOrderNo(details.getReceiptNoticeNum()).setType(1)
+//                    .setStatus(receiptNotice.getStatus() + "").setStatusName(ReceiptNoticeStatusEnum.RECEIVING.getDesc());
+//            orderTrack.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+//            this.orderTrackService.save(orderTrack);
 
             return receipt;
         }else{
-
-            return null;
+            throw new ServiceException("该阶段无法转收货单");
         }
     }
 
@@ -339,17 +341,17 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
             this.noticeMaterialService.updateById(noticeMaterial);
         });
 
-        //查询物料sn编码单
-        List<NoticeSnMaterial> snMaterials = this.noticeSnMaterialService.getByCondition(new NoticeSnMaterial().setReceiptNoticeId(id).setIsDeleted(false));
-        //删除物料sn编码单
-        snMaterials.stream().forEach(v -> {
-            NoticeSnMaterial noticeSnMaterial = new NoticeSnMaterial();
-            noticeSnMaterial.setId(v.getId());
-            noticeSnMaterial.setIsDeleted(true);
-            noticeSnMaterial.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(new Date());
-            //删除物料单sn
-            noticeSnMaterialService.updateById(noticeSnMaterial);
-        });
+//        //查询物料sn编码单
+//        List<NoticeSnMaterial> snMaterials = this.noticeSnMaterialService.getByCondition(new NoticeSnMaterial().setReceiptNoticeId(id).setIsDeleted(false));
+//        //删除物料sn编码单
+//        snMaterials.stream().forEach(v -> {
+//            NoticeSnMaterial noticeSnMaterial = new NoticeSnMaterial();
+//            noticeSnMaterial.setId(v.getId());
+//            noticeSnMaterial.setIsDeleted(true);
+//            noticeSnMaterial.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(new Date());
+//            //删除物料单sn
+//            noticeSnMaterialService.updateById(noticeSnMaterial);
+//        });
         return true;
     }
 
@@ -390,8 +392,8 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         form.setOrderSourceCode(2);//
 
         List<NoticeSnMaterialForm> noticeSnMaterialForms = new ArrayList<>();
-        form.setNoticeSnMaterialForms(noticeSnMaterialForms);
-         createOrderFeign(form);
+//        form.setNoticeSnMaterialForms(noticeSnMaterialForms);
+        createOrderFeign(form);
         return BaseResult.ok();
     }
 
@@ -454,8 +456,8 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         noticeMaterialService.saveOrUpdateBatch(noticeMaterials);
 
         //存储物料SN信息表
-        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
-        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
+//        List<NoticeSnMaterialForm> snMaterialForms = form.getNoticeSnMaterialForms();
+//        this.noticeSnMaterialService.createOrder(receiptNotice.getId(), receiptNotice.getReceiptNoticeNum(), snMaterialForms);
 
         return BaseResult.ok();
     }

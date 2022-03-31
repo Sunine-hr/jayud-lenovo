@@ -115,6 +115,12 @@ public class QualityInspectionMaterialForm extends SysBaseEntity {
     @ApiModelProperty(value = "上传文件")
     private String description;
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "合格率")
+    private String percentOfPass;
+
     public void checkParam() {
 
         if (this.actualNum < this.inspectionQuantity) {

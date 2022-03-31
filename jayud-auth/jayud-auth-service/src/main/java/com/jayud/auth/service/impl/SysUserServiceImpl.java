@@ -217,7 +217,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUser getUserByUserName(String tenantCode, String name) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotBlank(tenantCode)) {
-            lambdaQueryWrapper.eq(SysUser::getTenantCode, tenantCode);
+            lambdaQueryWrapper.eq(SysUser::getCode, tenantCode);
         }
         lambdaQueryWrapper.eq(SysUser::getName, name);
         lambdaQueryWrapper.eq(SysUser::getIsDeleted, false);

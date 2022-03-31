@@ -4,6 +4,7 @@ package com.jayud.oms.order.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.oms.order.model.po.OmsOrderEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.oms.order.model.vo.OmsOrderEntryVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -78,5 +79,10 @@ public interface IOmsOrderEntryService extends IService<OmsOrderEntry> {
      **/
     List<LinkedHashMap<String, Object>> queryOmsOrderEntryForExcel(Map<String, Object> paramMap);
 
-
+    /**
+     * 根据订单id获取订单明细详情
+     * @param id
+     * @return
+     */
+    List<OmsOrderEntryVO> getByOrderId(Long id);
 }

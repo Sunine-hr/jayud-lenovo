@@ -3,7 +3,7 @@
 
 	<!--定义日志文件的存储地址 -->
 <!--	<property name="LOG_HOME" value="${user.home}/logs/jayud/oms/system-web"/>-->
-	<property name="LOG_HOME" value="./logs/crm"/>
+	<property name="LOG_HOME" value="./logs/omsOrder"/>
 
 	<!-- 控制台输出 -->
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

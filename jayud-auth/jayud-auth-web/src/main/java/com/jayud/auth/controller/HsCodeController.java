@@ -84,6 +84,17 @@ public class HsCodeController {
     @PostMapping(value = "/saveOrUpdateHsCode")
     public CommonResult saveOrUpdateHsCode(@Valid @RequestBody AddHsCodeForm form) {
 
+        //判断海关编码是否重复
+        HsCodeVO hsCodeByCodeNo = hsCodeService.getHsCodeByCodeNo(form.getCodeNo());
+        if(null != hsCodeByCodeNo){
+            if(null == hsCodeByCodeNo.getId()){
+                return CommonResult.error(444,"海关编码已存在");
+            }
+            if(!form.getId().equals(hsCodeByCodeNo.getId())){
+                return CommonResult.error(444,"海关编码已存在");
+            }
+        }
+
         boolean result = hsCodeService.saveOrUpdateHsCode(form);
         if(result){
             return CommonResult.success();

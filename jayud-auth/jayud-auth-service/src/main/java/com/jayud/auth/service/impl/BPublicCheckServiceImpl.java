@@ -116,15 +116,15 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             return BaseResult.error(444,"该订单已审核完成");
         }
         //当前用户不为管理员，判断该用户的审核权限
-        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getTenantCode());
+        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getCode());
         if(count <= 0){
             //判断该用户有无审核按钮权限
-            int check = sysUserRoleService.getCountByUserName(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode());
+            int check = sysUserRoleService.getCountByUserName(systemUserByName.getName(),systemUserByName.getCode(),checkForm.getMenuCode());
             if(check<=0){
                 return BaseResult.error(444,"没有审核按钮权限");
             }
             //判断该用户是否有该级审核权限
-            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode(),newStep);
+            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getCode(),checkForm.getMenuCode(),newStep);
             if(checkCount <= 0){
                 return BaseResult.error(444,"没有该级别审核权限");
             }
@@ -248,15 +248,15 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             return BaseResult.error(444,"该订单还未审核，无法反审");
         }
         //当前用户不为管理员，判断该用户的审核权限
-        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getTenantCode());
+        int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getCode());
         if(count <= 0){
             //判断该用户有无审核按钮权限
-            int check = sysUserRoleService.getCountByUserName(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode());
+            int check = sysUserRoleService.getCountByUserName(systemUserByName.getName(),systemUserByName.getCode(),checkForm.getMenuCode());
             if(check<=0){
                 return BaseResult.error(444,"没有反审核按钮权限");
             }
             //判断该用户是否有该级反审核权限
-            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getTenantCode(),checkForm.getMenuCode(),sStep);
+            int checkCount = sysUserRoleService.getCountByUserNameAndStep(systemUserByName.getName(),systemUserByName.getCode(),checkForm.getMenuCode(),sStep);
             if(checkCount <= 0){
                 return BaseResult.error(444,"没有该级别反审核权限");
             }

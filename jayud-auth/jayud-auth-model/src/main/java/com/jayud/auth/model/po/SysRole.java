@@ -41,7 +41,7 @@ public class SysRole extends SysBaseEntity {
     private Integer status;
 
     @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
+    private String code;
 
     @ApiModelProperty(value = "备注")
     private String remark;

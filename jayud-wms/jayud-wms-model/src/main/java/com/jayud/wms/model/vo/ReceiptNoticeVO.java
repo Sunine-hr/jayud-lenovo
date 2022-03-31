@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
+import com.jayud.wms.model.enums.SowingResultsStatusEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -127,5 +129,28 @@ public class ReceiptNoticeVO extends SysBaseEntity {
 
     @ApiModelProperty(value = "流程标志")
     private String processFlag;
+
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    @ApiModelProperty(value = "车牌")
+    private String carBarnd;
+
+    @ApiModelProperty(value = "车型")
+    private String carModel;
+
+    @ApiModelProperty(value = "司机")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
+
+    public void setStatus(Integer status) {
+        this.status = status;
+        this.statusDetails = ReceiptNoticeStatusEnum.getIntegerDesc(status);
+    }
+
 
 }

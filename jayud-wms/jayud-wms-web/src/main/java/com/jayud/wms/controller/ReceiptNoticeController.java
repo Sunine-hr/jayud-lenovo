@@ -3,6 +3,7 @@ package com.jayud.wms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.constant.SysTips;
@@ -62,7 +63,7 @@ public class ReceiptNoticeController {
      * @param receiptNoticeForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryReceiptNoticeForm.class)
+
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<ReceiptNoticeVO>> selectPage(@RequestBody QueryReceiptNoticeForm receiptNoticeForm, HttpServletRequest req) {
@@ -148,19 +149,25 @@ public class ReceiptNoticeController {
     @GetMapping(value = "/getNoticeOfDeliveryPaidType")
     public BaseResult getReceiptOfGoodsAdviceOrderSourceType() {
         //收货通知单部分下拉值
-        List<LinkedHashMap<String, Object>> receiptOfGoodsAdviceOrderSource = authService.queryDictByDictType("receiptOfGoodsAdviceOrderSource");
-        List<LinkedHashMap<String, Object>> notifyReceiptOfOrderStatus = authService.queryDictByDictType("notifyReceiptOfOrderStatus");
-        List<LinkedHashMap<String, Object>> receiptNotificationDocument = authService.queryDictByDictType("receiptNotificationDocument");
-        notifyReceiptOfOrderStatus.stream().forEach(ro -> {
-            ro.put("value", Integer.parseInt(ro.get("value").toString()));
-        });
-        receiptOfGoodsAdviceOrderSource.stream().forEach(ro -> {
-            ro.put("value", Integer.parseInt(ro.get("value").toString()));
-        });
+        //入库订单状态
+        BaseResult<List<SysDictItem>> wmsStorageOrderStatus  = authClient.selectItemByDictCode("wms_storage_order_status");
+
+//        wmsStorageOrderStatus.getResult().stream().forEach(ro -> {
+//            ro.setItemValue(Integer.parseInt(ro.getItemValue()));
+//            ro.put("itemValue", Integer.parseInt(ro.get("value").toString()));
+//        });
+        //入库单据类型
+        BaseResult<List<SysDictItem>> wmsStorageTypeOfDocument  = authClient.selectItemByDictCode("wms_storage_type_of_document");
+        //入库单位
+        BaseResult<List<SysDictItem>> wmsStorageUnit = authClient.selectItemByDictCode("wms_storage_unit");
+        //入库车型
+        BaseResult<List<SysDictItem>> wmsStorageMotorcycleType = authClient.selectItemByDictCode("wms_storage_motorcycle_type");
+
         Map<String, Object> map = new HashMap<>();
-        map.put("receiptOfGoodsAdviceOrderSource", receiptOfGoodsAdviceOrderSource);
-        map.put("receiptNotificationDocument", receiptNotificationDocument);
-        map.put("notifyReceiptOfOrderStatus", notifyReceiptOfOrderStatus);
+        map.put("wmsStorageOrderStatus", wmsStorageOrderStatus);
+        map.put("wmsStorageTypeOfDocument", wmsStorageTypeOfDocument);
+        map.put("wmsStorageUnit", wmsStorageUnit);
+        map.put("wmsStorageMotorcycleType", wmsStorageMotorcycleType);
         return BaseResult.ok(map);
     }
 
@@ -171,7 +178,7 @@ public class ReceiptNoticeController {
      * @param response          响应对象
      * @param receiptNoticeForm 参数receiptNoticeForm
      */
-    @SysDataPermission(clazz = QueryReceiptNoticeForm.class)
+
     @ApiOperation("根据查询条件导出收货通知单信息")
     @PostMapping(path = "/exportReceiptNoticeLocation")
     public void exportReceiptNoticeLocation(HttpServletResponse response, @RequestBody QueryReceiptNoticeForm receiptNoticeForm, HttpServletRequest req) {

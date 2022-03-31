@@ -79,9 +79,9 @@ public class SysRoleController {
                                                    HttpServletRequest req) {
         sysRole.setIsDeleted(false);
         if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
-            sysRole.setTenantCode(null);
+            sysRole.setCode(null);
         } else {
-            sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
+            sysRole.setCode(CurrentUserUtil.getUserTenantCode());
         }
         return BaseResult.ok(sysRoleService.selectPage(sysRole, currentPage, pageSize, req));
     }
@@ -101,11 +101,11 @@ public class SysRoleController {
                                                 HttpServletRequest req) {
 
         sysRole.setIsDeleted(false);
-        sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        sysRole.setCode(CurrentUserUtil.getUserTenantCode());
         if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
-            sysRole.setTenantCode(null);
+            sysRole.setCode(null);
         } else {
-            sysRole.setTenantCode(CurrentUserUtil.getUserTenantCode());
+            sysRole.setCode(CurrentUserUtil.getUserTenantCode());
         }
         return BaseResult.ok(sysRoleService.selectList(sysRole));
     }

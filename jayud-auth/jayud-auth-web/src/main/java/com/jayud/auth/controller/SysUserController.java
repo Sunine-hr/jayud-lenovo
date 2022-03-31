@@ -59,9 +59,9 @@ public class SysUserController {
     public BaseResult<IPage<SysUserVO>> selectPage(@RequestBody SysUserForm sysUserForm, HttpServletRequest req) {
 
         if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
-            sysUserForm.setTenantCode(null);
+            sysUserForm.setCode(null);
         } else {
-            sysUserForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
+            sysUserForm.setCode(CurrentUserUtil.getUserTenantCode());
         }
         return BaseResult.ok(sysUserService.selectPage(sysUserForm, sysUserForm.getCurrentPage(), sysUserForm.getPageSize(), req));
     }
@@ -87,9 +87,9 @@ public class SysUserController {
     public BaseResult selectListFeign() {
         SysUser sysUser = new SysUser();
         if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
-            sysUser.setTenantCode(null);
+            sysUser.setCode(null);
         } else {
-            sysUser.setTenantCode(CurrentUserUtil.getUserTenantCode());
+            sysUser.setCode(CurrentUserUtil.getUserTenantCode());
         }
         List<SysUserVO> sysUserVOS = sysUserService.selectList(sysUser);
         System.out.println("远程调用查询到的数据：" + sysUserVOS);

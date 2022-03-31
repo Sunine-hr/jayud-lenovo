@@ -113,5 +113,10 @@ public class QualityInspectionMaterialVO extends SysBaseEntity {
     private String causeNonconformity;
 
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "合格率")
+    private String percentOfPass;
 
 }

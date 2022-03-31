@@ -71,7 +71,7 @@ public class CurrentUserUtil {
      * @return: java.lang.String
      **/
     public static String getUserTenantCode(){
-        return getUserDetail().getTenantCode();
+        return getUserDetail().getCode();
     }
 
     /**

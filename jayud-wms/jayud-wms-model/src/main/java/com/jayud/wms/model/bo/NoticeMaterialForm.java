@@ -89,5 +89,6 @@ public class NoticeMaterialForm extends SysBaseEntity {
     @ApiModelProperty(value = "是否删除")
     private Boolean isDeleted;
 
-
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
 }

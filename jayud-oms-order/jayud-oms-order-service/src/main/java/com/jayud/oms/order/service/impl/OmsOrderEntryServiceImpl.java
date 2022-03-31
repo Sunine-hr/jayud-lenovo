@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jayud.common.utils.ConvertUtil;
+import com.jayud.oms.order.model.vo.OmsOrderEntryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -70,6 +72,16 @@ public class OmsOrderEntryServiceImpl extends ServiceImpl<OmsOrderEntryMapper, O
     @Override
     public List<LinkedHashMap<String, Object>> queryOmsOrderEntryForExcel(Map<String, Object> paramMap) {
         return this.baseMapper.queryOmsOrderEntryForExcel(paramMap);
+    }
+
+    @Override
+    public List<OmsOrderEntryVO> getByOrderId(Long id) {
+        QueryWrapper<OmsOrderEntry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(OmsOrderEntry::getOmsOrderId,id);
+        queryWrapper.lambda().eq(OmsOrderEntry::getIsDeleted,0);
+        List<OmsOrderEntry> list = this.list(queryWrapper);
+        List<OmsOrderEntryVO> omsOrderEntryVOS = ConvertUtil.convertList(list, OmsOrderEntryVO.class);
+        return omsOrderEntryVOS;
     }
 
 }

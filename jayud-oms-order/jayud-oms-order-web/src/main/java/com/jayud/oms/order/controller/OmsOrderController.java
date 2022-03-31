@@ -1,8 +1,10 @@
 package com.jayud.oms.order.controller;
 
+import com.jayud.common.entity.DeleteForm;
 import com.jayud.oms.order.model.bo.CheckForm;
 import com.jayud.oms.order.model.bo.InputOrderForm;
 import com.jayud.oms.order.model.bo.OmsOrderForm;
+import com.jayud.oms.order.model.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -141,10 +143,9 @@ public class OmsOrderController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "Long",required = true)
-    @GetMapping("/logicDel")
-    public BaseResult logicDel(@RequestParam Long id){
-        omsOrderService.logicDel(id);
+    @PostMapping("/logicDel")
+    public BaseResult logicDel(@RequestBody DeleteForm form){
+        omsOrderService.logicDel(form.getIds());
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
@@ -156,16 +157,14 @@ public class OmsOrderController {
      * @param: id
      * @return: com.jayud.common.BaseResult<com.jayud.oms.order.model.po.OmsOrder>
      **/
-    @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiOperation("根据id查询订单详情")
     @GetMapping(value = "/queryById")
-    public BaseResult<OmsOrder> queryById(@RequestParam(name="id",required=true) int id) {
-        OmsOrder omsOrder = omsOrderService.getById(id);
+    public BaseResult<OrderVO> queryById(@RequestParam(name="id",required=true) Long id) {
+        OrderVO omsOrder = omsOrderService.getOrderById(id);
         return BaseResult.ok(omsOrder);
     }
 
     @ApiOperation("根据id修改订单列表数据")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @PostMapping(value = "/updateById")
     public BaseResult updateById(@RequestBody OmsOrderForm omsOrderForm) {
 
@@ -256,5 +255,13 @@ public class OmsOrderController {
         return omsOrderService.unCheck(checkForm);
     }
 
+    /**
+     * 复制新建
+     */
+    @ApiOperation("复制新建")
+    @GetMapping(value = "/copyNew")
+    public BaseResult copyNew(@RequestParam(name="id",required=true) Long id){
+        return this.omsOrderService.copyNew(id);
+    }
 
 }

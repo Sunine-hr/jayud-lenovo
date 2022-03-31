@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +58,7 @@ public interface OmsOrderMapper extends BaseMapper<OmsOrder> {
      * @param: username
      * @return: int
      **/
-    int logicDel(@Param("id") Long id,@Param("username") String username);
+    int logicDel(@Param("id") List<Long> id,@Param("username") String username);
 
 
     /**

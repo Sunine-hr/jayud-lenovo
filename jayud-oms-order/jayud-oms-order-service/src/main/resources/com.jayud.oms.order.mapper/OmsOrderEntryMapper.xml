@@ -61,11 +61,13 @@
         <result column="is_deleted" property="isDeleted" />
         <result column="deleted_user_id" property="deletedUserId" />
         <result column="delete_user_name" property="deleteUserName" />
+        <result column="sku" property="sku" />
+        <result column="item_classification" property="itemClassification" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, s_type, oms_order_id, work_order_id, item_id, item_num, item_no, item_model, item_name, item_brand, item_origin, item_notes, accessories, qty, unit, currency_name, buy_price, hg_price, customs_code, item_elements, control_ma, hk_control, is_ciq, ciq_type, ciq_code, packing_type, packages, pallets, gw, nw, cbm, shipping_m, pn, bn, ctns_no, item_size, is_function, is_hg_tax, appoint_hg_tax, hg_tax, consume_tax, tlx_tax, item_brand_type, export_discounts, use_to, district_code, orig_place_code, org_id, tenant_id, remark, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name
+            id, s_type, oms_order_id, work_order_id, item_id, item_num, item_no, item_model, item_name, item_brand, item_origin, item_notes, accessories, qty, unit, currency_name, buy_price, hg_price, customs_code, item_elements, control_ma, hk_control, is_ciq, ciq_type, ciq_code, packing_type, packages, pallets, gw, nw, cbm, shipping_m, pn, bn, ctns_no, item_size, is_function, is_hg_tax, appoint_hg_tax, hg_tax, consume_tax, tlx_tax, item_brand_type, export_discounts, use_to, district_code, orig_place_code, org_id, tenant_id, remark, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name,sku,item_classification
     </sql>
 
     <!-- 表名 -->

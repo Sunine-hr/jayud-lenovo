@@ -210,7 +210,7 @@ public class CrmCustomerManagerController {
 
 
     @ApiOperation("根据客户id查询销售人员")
-    @PostMapping(path = "/selectCrmCustomerManagerByCustId")
+    @GetMapping(path = "/selectCrmCustomerManagerByCustId")
     public BaseResult<List<CrmCustomerManager>> selectCustIdListByUserIds(@RequestParam(name="customerId",required=true) Long customerId){
         return BaseResult.ok(crmCustomerManagerService.selectCrmCustomerManagerByCustId(customerId));
     }

@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 /**
  * 基本档案_文件(crm_file) 控制类
@@ -221,6 +220,13 @@ public class CrmFileController {
     public BaseResult addFile(@RequestParam("crmFiles")List<CrmFile> crmFiles,@RequestParam("business")Long business,@RequestParam("code")String code){
         this.crmFileService.doFileProcessing(crmFiles,business,code);
         return BaseResult.ok();
+    }
+
+    @ApiOperation("获取附件集合")
+    @PostMapping(path = "/getFileList")
+    public BaseResult<List<CrmFile>> getFileList(@RequestParam("business")Long business,@RequestParam("code")String code){
+        List<CrmFile> crmFiles = this.crmFileService.getFiles(business,code);
+        return BaseResult.ok(crmFiles);
     }
 
 

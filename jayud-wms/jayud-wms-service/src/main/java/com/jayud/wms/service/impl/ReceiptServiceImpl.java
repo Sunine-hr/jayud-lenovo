@@ -14,10 +14,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.wms.mapper.ReceiptMapper;
-import com.jayud.wms.model.bo.MaterialForm;
-import com.jayud.wms.model.bo.QualityMaterialForm;
-import com.jayud.wms.model.bo.QueryReceiptForm;
-import com.jayud.wms.model.bo.ReceiptForm;
+import com.jayud.wms.model.bo.*;
 import com.jayud.wms.model.enums.InboundOrderProStatusEnum;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
@@ -76,6 +73,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 
     @Autowired
     private IContainerService containerService;
+
+    @Autowired
+    public IWmsReceiptAppendService wmsReceiptAppendService;
 
 
     @Override
@@ -256,6 +256,23 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
             materials.add(material);
         }
         this.materialService.saveOrUpdateBatch(materials);
+
+
+        //收货单附加表
+        List<WmsReceiptAppendForm> wmsReceiptAppendForms = form.getWmsReceiptAppendForms();
+        List<WmsReceiptAppend> wmsReceiptAppends = new ArrayList<>();
+
+        for (WmsReceiptAppendForm wmsReceiptAppendForm : wmsReceiptAppendForms) {
+            WmsReceiptAppend convert = ConvertUtil.convert(wmsReceiptAppendForm, WmsReceiptAppend.class);
+
+            if (convert.getId() == null) {
+                convert.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+            } else {
+                convert.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(date);
+            }
+            wmsReceiptAppends.add(convert);
+        }
+        wmsReceiptAppendService.saveOrUpdateBatch(wmsReceiptAppends);
     }
 
     /**

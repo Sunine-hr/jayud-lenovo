@@ -32,6 +32,9 @@ public class Receipt extends SysBaseEntity {
     @ApiModelProperty(value = "所属仓库id")
     private Long warehouseId;
 
+    @ApiModelProperty(value = "所属仓库编码")
+    private String warehouseCode;
+
     @ApiModelProperty(value = "所属仓库名称")
     private String warehouse;
 
@@ -49,6 +52,9 @@ public class Receipt extends SysBaseEntity {
 
     @ApiModelProperty(value = "供应商id(基础客户表)")
     private Long supplierId;
+
+    @ApiModelProperty(value = "供应商编码(基础客户表)")
+    private String supplierCode;
 
     @ApiModelProperty(value = "供应商(基础客户表)")
     private String supplier;

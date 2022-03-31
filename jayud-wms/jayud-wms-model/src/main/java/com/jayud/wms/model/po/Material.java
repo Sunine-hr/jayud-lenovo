@@ -112,6 +112,15 @@ public class Material extends SysBaseEntity {
     @TableField(exist = false)
     private List<Long> ids;
 
+    @ApiModelProperty(value = "库区ID")
+    private Long warehouseAreaId;
+
+    @ApiModelProperty(value = "库区编号")
+    private String warehouseAreaCode;
+
+    @ApiModelProperty(value = "库区名称")
+    private String warehouseAreaName;
+
     @ApiModelProperty(value = "库位ID")
     private Long warehouseLocationId;
 

@@ -3,6 +3,7 @@ package com.jayud.wms.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -167,6 +168,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult confirmReceipt(DeleteForm deleteForm) {
         if (CollUtil.isEmpty(deleteForm.getIds())){
             return BaseResult.error(SysTips.IDS_ISEMPTY);
@@ -197,6 +199,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult cancelConfirmReceipt(DeleteForm deleteForm) {
         if (CollUtil.isEmpty(deleteForm.getIds())){
             return BaseResult.error(SysTips.IDS_ISEMPTY);
@@ -231,12 +234,14 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResult confirmPullShelf(DeleteForm deleteForm) {
         if (CollUtil.isNotEmpty(deleteForm.getIds())) {
             deleteForm.setIds(deleteForm.getIds().stream().filter(x->x!=null).distinct().collect(Collectors.toList()));
-            Material material = new Material();
-            material.setIds(deleteForm.getIds());
-            List<Material> materialList = selectList(material);
+            LambdaQueryWrapper<Material> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.in(Material::getId,deleteForm.getIds());
+            lambdaQueryWrapper.eq(Material::getIsDeleted,false);
+            List<Material> materialList = this.list(lambdaQueryWrapper);
             List<Material> successList = new ArrayList<>();
             List<String> errList = new ArrayList<>();
             if (CollUtil.isNotEmpty(materialList)){
@@ -325,12 +330,16 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             InventoryDetailForm detailForm = new InventoryDetailForm();
             //仓库
             detailForm.setWarehouseId(receipt.getWarehouseId());
-            detailForm.setWarehouseCode(receipt.getWarehouse());
+            detailForm.setWarehouseCode(receipt.getWarehouseCode());
+            detailForm.setWarehouseName(receipt.getWarehouse());
             //货主
-            detailForm.setOwerId(receipt.getOwerId());
-            detailForm.setOwerCode(receipt.getOwer());
+            detailForm.setOwerId(receipt.getSupplierId());
+            detailForm.setOwerCode(receipt.getSupplierCode());
+            detailForm.setOwerName(receipt.getSupplier());
             //库区
-
+            detailForm.setWarehouseAreaId(material.getWarehouseAreaId());
+            detailForm.setWarehouseAreaCode(material.getWarehouseAreaCode());
+            detailForm.setWarehouseAreaName(material.getWarehouseAreaName());
             //库位
             detailForm.setWarehouseLocationId(material.getWarehouseLocationId());
             detailForm.setWarehouseLocationCode(material.getWarehouseLocationCode());
@@ -344,7 +353,9 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             detailForm.setMaterialName(material.getMaterialName());
             //自定义字段-5个
             detailForm.setBatchCode(material.getBatchNum());
-            detailForm.setMaterialProductionDate(LocalDateTime.of(material.getProductionDate(), localTime));
+            if (material.getProductionDate() != null) {
+                detailForm.setMaterialProductionDate(LocalDateTime.of(material.getProductionDate(), localTime));
+            }
             detailForm.setCustomField1(material.getColumnOne());
             detailForm.setCustomField2(material.getColumnTwo());
             detailForm.setCustomField3(material.getColumnThree());

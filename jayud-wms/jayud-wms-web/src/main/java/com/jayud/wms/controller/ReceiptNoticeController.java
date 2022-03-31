@@ -93,7 +93,7 @@ public class ReceiptNoticeController {
      **/
     @ApiOperation("新增/编辑")
     @PostMapping("/addOrUpdate")
-    public BaseResult addOrUpdate(@Valid @RequestBody ReceiptNoticeForm form) {
+    public BaseResult addOrUpdate(@RequestBody ReceiptNoticeForm form) {
         if (!ReceiptNoticeStatusEnum.CREATE.getCode().equals(form.getStatus())) {
             return BaseResult.error("该状态无法操作");
         }
@@ -102,6 +102,24 @@ public class ReceiptNoticeController {
         receiptNoticeService.createOrder(form);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
+
+    /**
+     * 外部调用接口  新增/编辑
+     *
+     * @param form
+     **/
+//    @ApiOperation("外部调用接口新增/编辑")
+//    @PostMapping("/client/addOrUpdateFeign")
+//    public BaseResult addOrUpdateFeign(@RequestBody ReceiptNoticeForm form) {
+//        if (!ReceiptNoticeStatusEnum.CREATE.getCode().equals(form.getStatus())) {
+//            return BaseResult.error("该状态无法操作");
+//        }
+//        form.setOrderSource("MES下发");
+//        form.setOrderSourceCode(2);
+//        receiptNoticeService.createOrder(form);
+//        return BaseResult.ok(SysTips.ADD_SUCCESS);
+//    }
+
 
     /**
      * 编辑

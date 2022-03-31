@@ -40,12 +40,13 @@
         <result column="car_model" property="carModel" />
         <result column="car_driver" property="carDriver" />
         <result column="car_relation" property="carRelation" />
+        <result column="client_code" property="clientCode" />
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, warehouse_id, warehouse, ower_id,receipt_num, ower, receipt_notice_num, document_type, order_source_id, order_source, external_order_num_one, external_order_num_two, supplier_id, supplier, estimated_arrival_time, column_one, column_two, total_num, total_weight, total_volume, confirmed_by, status, confirmation_time, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,process_flag
+            id, warehouse_id, warehouse, ower_id,receipt_num, ower, receipt_notice_num, document_type, order_source_id, order_source, external_order_num_one, external_order_num_two, supplier_id, supplier, estimated_arrival_time, column_one, column_two, total_num, total_weight, total_volume, confirmed_by, status, confirmation_time, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,process_flag,client_code
     </sql>
 
     <!-- 表名 -->
@@ -186,7 +187,6 @@
             rn.total_volume,
             rn.confirmed_by,
             rn.STATUS,
-       --  (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'notifyReceiptOfOrderStatus' AND rn.STATUS = sdi.item_value) as  statusDetails,
             rn.confirmation_time,
             rn.tenant_code,
             rn.remark,
@@ -200,11 +200,15 @@
             rn.car_barnd,
             rn.car_model,
             rn.car_driver,
-            rn.car_relation
+            rn.car_relation,
+            group_concat(wnm.in_warehouse_number) inWarehouseNumberList,
+            rn.client_code
             from
         wms_receipt_notice rn
+        left join  wms_notice_material wnm  on rn.id=wnm.receipt_notice_id
         <where>
                rn.is_deleted=0
+              and  wnm.is_deleted=0
                 <if test="receiptNotice.id!= null ">
                     AND rn.id = #{receiptNotice.id}
                 </if>
@@ -259,7 +263,7 @@
                 </foreach>
             </if>
         </where>
-
+        group by  rn.receipt_notice_num
         ORDER BY rn.create_time DESC
 
     </select>

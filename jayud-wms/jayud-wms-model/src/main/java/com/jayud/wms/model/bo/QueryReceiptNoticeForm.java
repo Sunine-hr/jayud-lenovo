@@ -111,6 +111,9 @@ public class QueryReceiptNoticeForm extends SysBaseEntity {
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
 
+    @ApiModelProperty(value = "客户code")
+    private String clientCode;
+
 
 //
 //    public void setCreationTime(List<String> creationTime) {

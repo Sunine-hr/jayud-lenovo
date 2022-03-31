@@ -147,6 +147,12 @@ public class ReceiptNoticeVO extends SysBaseEntity {
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
 
+    @ApiModelProperty(value = "入仓号集合")
+    private String inWarehouseNumberList;
+
+    @ApiModelProperty(value = "客户code")
+    private String clientCode;
+
     public void setStatus(Integer status) {
         this.status = status;
         this.statusDetails = ReceiptNoticeStatusEnum.getIntegerDesc(status);

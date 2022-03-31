@@ -42,7 +42,6 @@ public class ReceiptNoticeForm extends SysBaseEntity {
     private String ower;
 
     @ApiModelProperty(value = "收货通知单号")
-//    @NotBlank(message = "请填写收货通知单号")
     private String receiptNoticeNum;
 
     @ApiModelProperty(value = "单据类型(存中文值)")
@@ -106,14 +105,13 @@ public class ReceiptNoticeForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除")
-    @TableLogic
     private Boolean isDeleted;
 
     @ApiModelProperty(value = "物料信息")
     private List<NoticeMaterialForm> noticeMaterialForms;
 
-//    @ApiModelProperty(value = "物料sn信息")
-//    private List<NoticeSnMaterialForm> noticeSnMaterialForms;
+    @ApiModelProperty(value = "物料sn信息")
+    private List<NoticeSnMaterialForm> noticeSnMaterialForms;
 
     @ApiModelProperty(value = "物料编号")
     private String materialCode;
@@ -134,6 +132,10 @@ public class ReceiptNoticeForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
+
+    @ApiModelProperty(value = "客户code")
+    private String clientCode;
+
 
     public void setStatus(Integer status) {
         if (status == null) {

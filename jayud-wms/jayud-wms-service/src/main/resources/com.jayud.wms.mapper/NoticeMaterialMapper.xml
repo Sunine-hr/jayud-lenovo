@@ -30,12 +30,12 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
-        <result column="type" property="type" />
+        <result column="in_warehouse_number" property="inWarehouseNumber" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, receipt_notice_id, receipt_notice_num, material_code, material_name, material_type_id, material_type, weight, volume, specification, num, unit, external_order_num, external_line_num, batch_num, production_date, column_one, column_two, column_three, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, type
+            id, receipt_notice_id, receipt_notice_num, material_code, material_name, material_type_id, material_type, weight, volume, specification, num, unit, external_order_num, external_line_num, batch_num, production_date, column_one, column_two, column_three, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time, in_warehouse_number
     </sql>
 
     <!-- 表名 -->

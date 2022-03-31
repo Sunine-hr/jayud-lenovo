@@ -92,7 +92,7 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     }
 
     @Override
-    public List<SysRoleMenu> getSystemRoleMenuByRoleIdsAndActionCode(List<Long> longs, Long menuId) {
+    public List<SysRoleMenu> getSystemRoleMenuByRoleIdsAndActionCode(Set<Long> longs, Long menuId) {
 
         QueryWrapper<SysRoleMenu> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(SysRoleMenu::getRoleId,longs);

@@ -75,6 +75,9 @@ public class SystemConfig extends SysBaseEntity {
     @ApiModelProperty(value = "多租户ID")
     private Long tenantId;
 
+    @ApiModelProperty(value = "多租户code")
+    private String tenantCode;
+
     @ApiModelProperty(value = "删除标志")
     @TableLogic
     private Boolean isDeleted;

@@ -3,8 +3,11 @@ package com.jayud.oms.order.feign;
 
 import com.jayud.common.BaseResult;
 import com.jayud.oms.order.model.bo.CrmFileForm;
+import com.jayud.oms.order.model.bo.QueryCrmFile;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,11 +22,11 @@ public interface CrmClient {
     /**
      * 新增附件
      */
-    @RequestMapping(value = "/crmFile/addFile")
-    public BaseResult addFile(@RequestParam("crmFiles") List<CrmFileForm> crmFiles, @RequestParam("business")Long business, @RequestParam("code")String code);
+    @PostMapping(value = "/crmFile/addFile")
+    public BaseResult addFile(@RequestBody QueryCrmFile queryCrmFile);
 
     @ApiOperation("获取附件集合")
-    @RequestMapping(path = "/crmFile/getFileList")
+    @PostMapping(path = "/crmFile/getFileList")
     public BaseResult<List<CrmFileForm>> getFileList(@RequestParam("business")Long business,@RequestParam("code")String code);
 
 }

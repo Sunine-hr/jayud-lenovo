@@ -6,10 +6,7 @@ import com.jayud.auth.model.po.SysRoleMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 角色-菜单关联表 服务类
@@ -77,5 +74,5 @@ public interface ISysRoleMenuService extends IService<SysRoleMenu> {
      * @param  menuId
      * @return
      */
-    List<SysRoleMenu> getSystemRoleMenuByRoleIdsAndActionCode(List<Long> longs, Long menuId);
+    List<SysRoleMenu> getSystemRoleMenuByRoleIdsAndActionCode(Set<Long> longs, Long menuId);
 }

@@ -69,4 +69,6 @@ public interface OmsOrderMapper extends BaseMapper<OmsOrder> {
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> queryOmsOrderForExcel(Map<String, Object> paramMap);
+
+    int updateOmsOrderById(@Param("ids")List<Long> ids, @Param("username")String username);
 }

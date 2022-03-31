@@ -694,7 +694,7 @@
         from crm_customer c
         where c.is_deleted = 0 and c.check_state_flag = 'Y'
         <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
-            AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
+            AND c.cust_name LIKE CONCAT('%',#{crmCustomerForm.custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{crmCustomerForm.custName}, '%')
         </if>
     </select>
 

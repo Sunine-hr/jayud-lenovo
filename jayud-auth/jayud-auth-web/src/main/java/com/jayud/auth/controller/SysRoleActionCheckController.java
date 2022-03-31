@@ -4,6 +4,8 @@ import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.bo.SysRoleActionCheckForm;
 import com.jayud.auth.model.vo.SysRoleActionCheckVO;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,6 +66,11 @@ public class SysRoleActionCheckController {
                                                               @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                               @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                               HttpServletRequest req) {
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            form.setTenantCode(null);
+        } else {
+            form.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysRoleActionCheckService.selectPage(form,currentPage,pageSize,req));
     }
 
@@ -80,6 +87,11 @@ public class SysRoleActionCheckController {
     @GetMapping("/selectList")
     public BaseResult<List<SysRoleActionCheck>> selectList(QueryForm form,
                                                            HttpServletRequest req) {
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            form.setTenantCode(null);
+        } else {
+            form.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysRoleActionCheckService.selectList(form));
     }
 

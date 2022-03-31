@@ -89,10 +89,10 @@ public class OmsOrderServiceImpl extends ServiceImpl<OmsOrderMapper, OmsOrder> i
             omsOrder.setId(id);
             omsOrder.setUpdateBy(CurrentUserUtil.getUsername());
             omsOrder.setUpdateTime(new Date());
-            omsOrder.setIsDeleted(true);
+            omsOrder.setIsDeleted(1);
             omsOrders.add(omsOrder);
         }
-        this.saveOrUpdateBatch(omsOrders);
+        this.updateBatchById(omsOrders);
     }
 
 
@@ -175,7 +175,11 @@ public class OmsOrderServiceImpl extends ServiceImpl<OmsOrderMapper, OmsOrder> i
         //附件
         if(CollectionUtils.isNotEmpty(form.getCrmFileForms())){
             List<CrmFileForm> crmFileForms = form.getCrmFileForms();
-            BaseResult baseResult = crmClient.addFile(crmFileForms, orderId, "OmsOrder");
+            QueryCrmFile queryCrmFile = new QueryCrmFile();
+            queryCrmFile.setCrmFileForm(crmFileForms);
+            queryCrmFile.setBusinessId(orderId);
+            queryCrmFile.setCode("OmsOrder");
+            BaseResult baseResult = crmClient.addFile(queryCrmFile);
             if(baseResult.getCode().equals(200)){
                 log.warn("附件新增成功");
             }
@@ -267,11 +271,15 @@ public class OmsOrderServiceImpl extends ServiceImpl<OmsOrderMapper, OmsOrder> i
         List<OmsOrderFollowVO> omsOrderFollowVOS = this.omsOrderFollowService.getByOrderId(id);
         if(CollectionUtils.isNotEmpty(omsOrderFollowVOS)){
             orderVO.setOmsOrderFollowVOS(omsOrderFollowVOS);
+        }else{
+            orderVO.setOmsOrderFollowVOS(new ArrayList<>());
         }
         //填充附件信息
         List<CrmFileForm> files = this.crmClient.getFileList(id,"OmsOrder").getResult();
         if(CollectionUtils.isNotEmpty(files)){
             orderVO.setCrmFileForms(files);
+        }else{
+            orderVO.setCrmFileForms(new ArrayList<>());
         }
         //后续开发 海运、空运等  TODO
 

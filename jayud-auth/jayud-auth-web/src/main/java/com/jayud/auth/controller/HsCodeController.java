@@ -7,6 +7,7 @@ import com.jayud.auth.model.bo.AddHsCodeForm;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.QueryForm;
 import com.jayud.auth.model.enums.CorrespondEnum;
+import com.jayud.auth.model.po.HsCode;
 import com.jayud.auth.model.vo.HsCodeFormVO;
 import com.jayud.auth.model.vo.HsCodeVO;
 import com.jayud.auth.service.IBUnitService;
@@ -85,7 +86,7 @@ public class HsCodeController {
     public CommonResult saveOrUpdateHsCode(@Valid @RequestBody AddHsCodeForm form) {
 
         //判断海关编码是否重复
-        HsCodeVO hsCodeByCodeNo = hsCodeService.getHsCodeByCodeNo(form.getCodeNo());
+        HsCode hsCodeByCodeNo = hsCodeService.getByCodeNo(form.getCodeNo());
         if(null != hsCodeByCodeNo){
             if(null == hsCodeByCodeNo.getId()){
                 return CommonResult.error(444,"海关编码已存在");

@@ -55,6 +55,9 @@ public class SysLog extends SysBaseEntity {
     @ApiModelProperty(value = "请求java方法")
     private String method;
 
+    @ApiModelProperty(value = "租户编码")
+    private String tenantCode;
+
     @ApiModelProperty(value = "请求路径")
     private String requestUrl;
 

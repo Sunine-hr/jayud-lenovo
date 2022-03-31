@@ -1,6 +1,8 @@
 package com.jayud.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,6 +58,12 @@ public class BNoRuleController {
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
+        bNoRule.setIsDeleted(0);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            bNoRule.setTenantCode(null);
+        } else {
+            bNoRule.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(bNoRuleService.selectPage(bNoRule,currentPage,pageSize,req));
     }
 
@@ -73,6 +81,12 @@ public class BNoRuleController {
     @GetMapping("/selectList")
     public BaseResult<List<BNoRule>> selectList(BNoRule bNoRule,
                                                 HttpServletRequest req) {
+        bNoRule.setIsDeleted(0);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            bNoRule.setTenantCode(null);
+        } else {
+            bNoRule.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(bNoRuleService.selectList(bNoRule));
     }
 

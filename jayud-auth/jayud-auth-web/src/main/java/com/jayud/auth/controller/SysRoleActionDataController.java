@@ -24,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -121,11 +123,13 @@ public class SysRoleActionDataController {
         if(count<=0){
             //获取登录用户所属角色
             List<SysRole> enabledRolesByUserId = sysUserRoleService.getEnabledRolesByUserId(systemUser.getId());
-            List<Long> longs = new ArrayList<>();
-            for (SysRole systemRole : enabledRolesByUserId) {
-                longs.add(systemRole.getId());
-
+            Set<Long> longs = new HashSet<>();
+            if(CollectionUtil.isNotEmpty(enabledRolesByUserId)){
+                for (SysRole systemRole : enabledRolesByUserId) {
+                    longs.add(systemRole.getId());
+                }
             }
+
             List<SysRoleMenu> systemRoleActions = sysRoleMenuService.getSystemRoleMenuByRoleIdsAndActionCode(longs,sysMenu.getId());
             if(CollectionUtil.isEmpty(systemRoleActions)){
                 return BaseResult.error(444,"该用户没有该按钮权限");

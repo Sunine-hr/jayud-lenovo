@@ -36,6 +36,10 @@
                 AND post_code  LIKE CONCAT('%',#{sysPost.postCode}, '%')
             </if>
 
+            <if test="sysPost.tenantCode != null and sysPost.tenantCode != ''">
+                AND tenant_code  LIKE CONCAT('%',#{sysPost.tenantCode}, '%')
+            </if>
+
             <if test="sysPost.postName != null and sysPost.postName != ''">
                 AND post_name LIKE CONCAT('%',#{sysPost.postName}, '%')
             </if>

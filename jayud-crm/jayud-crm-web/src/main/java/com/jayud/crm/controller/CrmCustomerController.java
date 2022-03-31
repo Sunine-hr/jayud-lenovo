@@ -1,5 +1,6 @@
 package com.jayud.crm.controller;
 
+import cn.hutool.core.map.MapUtil;
 import com.jayud.auth.model.bo.CheckForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysRole;
@@ -107,50 +108,65 @@ public class CrmCustomerController {
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerForm crmCustomerForm) {
 
-        //判断客户名称、社会信用代码不重复
-        if(crmCustomerForm.getIsSupplier()){
-            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerBySupplierName(crmCustomerForm.getCustName());
-            CrmCustomer crmCustomerServiceCustomerByUnCreditCode = this.crmCustomerService.getCustomerBySupplierUnCreditCode(crmCustomerForm.getUnCreditCode());
-            if(null != crmCustomer){
-                if(null == crmCustomerForm.getId()){
-                    return BaseResult.error(444,"客户名称已存在");
-                }
-                if(!crmCustomerForm.getId().equals(crmCustomer.getId())){
-                    return BaseResult.error(444,"客户名称已存在");
-                }
+        if(null != crmCustomerForm.getIsCust() && crmCustomerForm.getIsCust()){
+            authClient.addSysLogFeign("新增了客户", crmCustomerForm.getId());
+        }
+        if(null != crmCustomerForm.getIsSupplier() && crmCustomerForm.getIsSupplier()){
+            authClient.addSysLogFeign("新增了供应商", crmCustomerForm.getId());
+        }
+        if(null != crmCustomerForm.getIsPublic() && crmCustomerForm.getIsPublic()){
+            authClient.addSysLogFeign("新增了公海客户", crmCustomerForm.getId());
+        }
+
+        return crmCustomerService.saveCrmCustomer(crmCustomerForm);
+    }
+
+    /**
+     * @description 根据名称获取客户
+     **/
+    @ApiOperation("根据名称获取客户")
+    @PostMapping("/getCustomerByCustomerName")
+    public BaseResult getCustomerByCustomerName(@RequestBody Map<String,Object> map) {
+        String custName = MapUtil.getStr(map, "custName");
+        Integer isSupplier = MapUtil.getInt(map, "isSupplier");
+        if(isSupplier.equals(2)){
+            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerByCustomerName(custName);
+            if(crmCustomer != null){
+                return BaseResult.error(444,"名称已存在");
             }
-            if(null != crmCustomerServiceCustomerByUnCreditCode){
-                if(null == crmCustomerForm.getId()){
-                    return BaseResult.error(444,"统一信用代码已存在");
-                }
-                if(!crmCustomerForm.getId().equals(crmCustomerServiceCustomerByUnCreditCode.getId())){
-                    return BaseResult.error(444,"统一信用代码已存在");
-                }
-            }
-        }else {
-            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerByCustomerName(crmCustomerForm.getCustName());
-            CrmCustomer crmCustomerServiceCustomerByUnCreditCode = this.crmCustomerService.getCustomerByUnCreditCode(crmCustomerForm.getUnCreditCode());
-            if(null != crmCustomer){
-                if(null == crmCustomerForm.getId()){
-                    return BaseResult.error(444,"供应商名称已存在");
-                }
-                if(!crmCustomerForm.getId().equals(crmCustomer.getId())){
-                    return BaseResult.error(444,"供应商名称已存在");
-                }
-            }
-            if(null != crmCustomerServiceCustomerByUnCreditCode){
-                if(null == crmCustomerForm.getId()){
-                    return BaseResult.error(444,"统一信用代码已存在");
-                }
-                if(!crmCustomerForm.getId().equals(crmCustomerServiceCustomerByUnCreditCode.getId())){
-                    return BaseResult.error(444,"统一信用代码已存在");
-                }
+        }
+        if(isSupplier.equals(1)){
+            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerBySupplierName(custName);
+            if(crmCustomer != null){
+                return BaseResult.error(444,"名称已存在");
             }
         }
 
+        return BaseResult.ok();
+    }
 
-        authClient.addSysLogFeign("新增了客户", crmCustomerForm.getId());
-        return crmCustomerService.saveCrmCustomer(crmCustomerForm);
+    /**
+     * @description 根据社会编号获取客户
+     **/
+    @ApiOperation("根据社会编号获取客户")
+    @PostMapping("/getCustomerBySupplierUnCreditCode")
+    public BaseResult getCustomerBySupplierUnCreditCode(@RequestBody Map<String,Object> map) {
+        String unCreditCode = MapUtil.getStr(map, "unCreditCode");
+        Integer isSupplier = MapUtil.getInt(map, "isSupplier");
+        if(isSupplier.equals(2)){
+            CrmCustomer crmCustomer = this.crmCustomerService.getCustomerBySupplierUnCreditCode(unCreditCode);
+            if(crmCustomer != null){
+                return BaseResult.error(444,"统一信用代码已存在");
+            }
+        }
+        if(isSupplier.equals(1)){
+            CrmCustomer customer = this.crmCustomerService.getCustomerByUnCreditCode(unCreditCode);
+            if(customer != null){
+                return BaseResult.error(444,"统一信用代码已存在");
+            }
+        }
+
+        return BaseResult.ok();
     }
 
 
@@ -449,12 +465,6 @@ public class CrmCustomerController {
     @GetMapping("/selectCrmCustomerList")
     public BaseResult<List<CrmCustomerVO>> selectCrmCustomerList(CrmCustomerForm crmCustomerForm) {
         return BaseResult.ok(crmCustomerService.selectCrmCustomerList(crmCustomerForm));
-    }
-
-    @ApiOperation("获取当前用户部门")
-    @GetMapping("/selectUserDepart")
-    public BaseResult<Long> selectUserDepart(){
-        return BaseResult.ok(CurrentUserUtil.getUserDetail().getDepartId());
     }
 
 }

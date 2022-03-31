@@ -1,6 +1,7 @@
 package com.jayud.oms.order.model.bo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -72,8 +73,9 @@ public class OmsOrderForm extends SysBaseEntity {
     @ApiModelProperty(value = "协议编号")
     private String contractNo;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "操作时间")
-    private LocalDateTime operationTime ;
+    private String operationTime ;
 
     @ApiModelProperty(value = "结算方式")
     private String accountType;

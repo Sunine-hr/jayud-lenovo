@@ -77,4 +77,6 @@ public interface IHsCodeService extends IService<HsCode> {
      * @return
      */
     CommonResult deleteByIds(DeleteForm form);
+
+    HsCode getByCodeNo(String codeNo);
 }

@@ -21,11 +21,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_by" property="updateBy"/>
         <result column="update_time" property="updateTime"/>
+        <result column="tenant_code" property="tenantCode"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, log_type, business_id, log_content, operate_type, userid, username, ip, method, request_url, request_param, request_type, cost_time, create_by, create_time, update_by, update_time
+            id, log_type, business_id, log_content, operate_type, userid, username, ip, method, request_url, request_param, request_type, cost_time, create_by, create_time, update_by, update_time,tenant_code
     </sql>
 
     <!-- 表名 -->
@@ -80,6 +81,10 @@
 
             <if test="sysLog.requestType != null and sysLog.requestType != ''">
                 AND request_type LIKE CONCAT('%',#{sysLog.requestType},'%')
+            </if>
+
+            <if test="sysLog.tenantCode != null and sysLog.tenantCode != ''">
+                AND tenant_code  LIKE CONCAT('%',#{sysLog.tenantCode}, '%')
             </if>
 
             <if test="sysLog.costTime != null ">

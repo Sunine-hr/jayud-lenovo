@@ -1,6 +1,7 @@
 package com.jayud.auth.controller;
 
 import com.jayud.auth.model.bo.QuerySysDeptForm;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -209,6 +210,14 @@ public class SysDepartController {
     public BaseResult<List<SysDepart>> selectDeptTreeStaff(@RequestBody QuerySysDeptForm form){
         List<SysDepart> deptTree = sysDepartService.selectDeptTreeStaff(form);
         return BaseResult.ok(deptTree);
+    }
+
+    @ApiOperation("获取当前用户部门")
+    @GetMapping("/selectUserDepart")
+    public BaseResult selectUserDepart(){
+        Long departId = CurrentUserUtil.getUserDetail().getDepartId();
+        SysDepart byId = sysDepartService.getById(departId);
+        return BaseResult.ok(byId);
     }
 
 }

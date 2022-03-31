@@ -24,4 +24,7 @@ public class QueryForm extends BasePageForm {
 
     @ApiModelProperty("业务类型")
     private Integer modelType;
+
+    @ApiModelProperty(value = "租户编码")
+    private String tenantCode;
 }

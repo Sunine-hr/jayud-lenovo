@@ -127,8 +127,34 @@ public class ReceiptForm extends SysBaseEntity {
     @ApiModelProperty(value = "物料sn信息")
     private List<MaterialSnForm> materialSnForms;
 
-    @ApiModelProperty(value = "物料sn信息")
+    @ApiModelProperty(value = "收货单附加服务表对象")
     private List<WmsReceiptAppendForm> wmsReceiptAppendForms;
+
+
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    @ApiModelProperty(value = "车牌")
+    private String carBarnd;
+
+    @ApiModelProperty(value = "车型")
+    private String carModel;
+
+    @ApiModelProperty(value = "司机")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
+
+    @ApiModelProperty(value = "客户code")
+    private String clientCode;
+
+    @ApiModelProperty(value = "单据类型")
+    private String orderType;
+
 
     public void checkParam() {
 

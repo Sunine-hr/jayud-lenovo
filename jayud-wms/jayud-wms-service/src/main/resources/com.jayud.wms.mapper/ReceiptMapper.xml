@@ -4,39 +4,39 @@
 
     <!-- 通用查询映射结果ss -->
     <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.Receipt">
-        <id column="id" property="id" />
-        <result column="warehouse_id" property="warehouseId" />
-        <result column="warehouse" property="warehouse" />
-        <result column="ower_id" property="owerId" />
-        <result column="ower" property="ower" />
-        <result column="receipt_notice_num" property="receiptNoticeNum" />
-        <result column="receipt_num" property="receiptNum" />
-        <result column="supplier_id" property="supplierId" />
-        <result column="supplier" property="supplier" />
-        <result column="order_source_code" property="orderSourceCode" />
-        <result column="order_source" property="orderSource" />
-        <result column="planned_receiving_time" property="plannedReceivingTime" />
-        <result column="total_num" property="totalNum" />
-        <result column="total_weight" property="totalWeight" />
-        <result column="total_volume" property="totalVolume" />
-        <result column="actual_num" property="actualNum" />
-        <result column="actual_weight" property="actualWeight" />
-        <result column="actual_volume" property="actualVolume" />
-        <result column="receiver" property="receiver" />
-        <result column="status" property="status" />
-        <result column="receiving_time" property="receivingTime" />
-        <result column="column_one" property="columnOne" />
-        <result column="column_two" property="columnTwo" />
-        <result column="column_three" property="columnThree" />
-        <result column="is_put_shelf" property="isPutShelf" />
-        <result column="tenant_code" property="tenantCode" />
-        <result column="remark" property="remark" />
-        <result column="is_deleted" property="isDeleted" />
-        <result column="create_by" property="createBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="update_time" property="updateTime" />
-        <result column="process_flag" property="processFlag" />
+        <id column="id" property="id"/>
+        <result column="warehouse_id" property="warehouseId"/>
+        <result column="warehouse" property="warehouse"/>
+        <result column="ower_id" property="owerId"/>
+        <result column="ower" property="ower"/>
+        <result column="receipt_notice_num" property="receiptNoticeNum"/>
+        <result column="receipt_num" property="receiptNum"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="supplier" property="supplier"/>
+        <result column="order_source_code" property="orderSourceCode"/>
+        <result column="order_source" property="orderSource"/>
+        <result column="planned_receiving_time" property="plannedReceivingTime"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="total_weight" property="totalWeight"/>
+        <result column="total_volume" property="totalVolume"/>
+        <result column="actual_num" property="actualNum"/>
+        <result column="actual_weight" property="actualWeight"/>
+        <result column="actual_volume" property="actualVolume"/>
+        <result column="receiver" property="receiver"/>
+        <result column="status" property="status"/>
+        <result column="receiving_time" property="receivingTime"/>
+        <result column="column_one" property="columnOne"/>
+        <result column="column_two" property="columnTwo"/>
+        <result column="column_three" property="columnThree"/>
+        <result column="is_put_shelf" property="isPutShelf"/>
+        <result column="tenant_code" property="tenantCode"/>
+        <result column="remark" property="remark"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="process_flag" property="processFlag"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -48,8 +48,10 @@
     <sql id="tname">wms_receipt </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
-        FROM <include refid="tname"/>
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="tname"/>
         <where>
             is_deleted = 0
             <if test="receipt.warehouseId != null ">
@@ -168,7 +170,8 @@
     </select>
 
 
-    <select id="pageList" parameterType="com.jayud.wms.model.bo.QueryReceiptForm" resultType="com.jayud.wms.model.vo.ReceiptVO">
+    <select id="pageList" parameterType="com.jayud.wms.model.bo.QueryReceiptForm"
+            resultType="com.jayud.wms.model.vo.ReceiptVO">
 
         SELECT
             r.id,
@@ -191,7 +194,6 @@
             r.actual_volume,
             r.receiver,
             r.STATUS,
-      --   (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS = sdi.item_value) AS statusDetails,
             r.receiving_time,
             r.column_one,
             r.column_two,
@@ -205,11 +207,20 @@
             r.update_by,
             r.update_time,
             r.process_flag,
-            r.qc_no
-        FROM
+            r.qc_no,
+            r.main_order_number,
+            r.order_type,
+            r.unit,
+            r.car_barnd,
+            r.car_model,
+            r.client_code,
+            group_concat( wm.in_warehouse_number ) inWarehouseNumberList
+            FROM
             wms_receipt r
-        <where>
-                r.is_deleted=0
+            LEFT JOIN wms_material wm on r.id=wm.order_id
+         <where>
+            r.is_deleted=0
+            and wm.is_deleted=0
             <if test="receipt.id != null ">
                 AND r.id = #{receipt.id}
             </if>
@@ -219,41 +230,40 @@
             <if test="receipt.status != null ">
                 AND r.status = #{receipt.status}
             </if>
+
+             <if test="receipt.orderType != null ">
+                 AND r.order_type = #{receipt.orderType}
+             </if>
+
+             <if test="receipt.carBarnd != null ">
+                 AND r.car_barnd = #{receipt.carBarnd}
+             </if>
+
+             <if test="receipt.mainOrderNumber != null ">
+                 AND r.main_order_number = #{receipt.mainOrderNumber}
+             </if>
+
             <if test="receipt.receiptNum != null and receipt.receiptNum != ''">
-                AND r.receipt_num   LIKE CONCAT('%',#{receipt.receiptNum}, '%')
+                AND r.receipt_num LIKE CONCAT('%',#{receipt.receiptNum}, '%')
             </if>
 
             <if test="receipt.ower != null and receipt.ower != ''">
                 AND r.ower LIKE CONCAT('%',#{receipt.ower}, '%')
             </if>
 
-            <if test="receipt.arrivalTime !=null and receipt.arrivalTime.size > 0">
-                and r.planned_receiving_time between #{receipt.arrivalTime[0]} and #{receipt.arrivalTime[1]}
-            </if>
-
             <if test="receipt.timeOfReceipt !=null and receipt.timeOfReceipt.size > 0">
                 and r.receiving_time between #{receipt.timeOfReceipt[0]} and #{receipt.timeOfReceipt[1]}
             </if>
-                <if test="receipt.owerIdList !=null and  receipt.owerIdList.size > 0 ">
-                    and r.ower_id in
-                    <foreach item="id" collection="receipt.owerIdList" open="(" separator=","  close=")" >
-                        #{id}
-                    </foreach>
-                </if>
-                <if test="receipt.warehouseIdList!=null  and receipt.warehouseIdList.size > 0">
-                    and r.warehouse_id in
-                    <foreach item="id" collection="receipt.warehouseIdList" open="(" separator=","  close=")" >
-                        #{id}
-                    </foreach>
-                </if>
-        </where>
 
+        </where>
+        group by  r.receipt_num
         ORDER BY r.create_time DESC
 
     </select>
 
 
-    <select id="pageListFeign" parameterType="com.jayud.wms.model.bo.QueryReceiptForm" resultType="com.jayud.wms.model.vo.ReceiptVO">
+    <select id="pageListFeign" parameterType="com.jayud.wms.model.bo.QueryReceiptForm"
+            resultType="com.jayud.wms.model.vo.ReceiptVO">
 
         SELECT
         r.id,
@@ -276,7 +286,9 @@
         r.actual_volume,
         r.receiver,
         r.STATUS,
-        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS = sdi.item_value) AS statusDetails,
+        (SELECT sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id
+        WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS =
+        sdi.item_value) AS statusDetails,
         r.receiving_time,
         r.column_one,
         r.column_two,
@@ -307,15 +319,11 @@
                 AND r.status = #{receipt.status}
             </if>
             <if test="receipt.receiptNum != null and receipt.receiptNum != ''">
-                AND r.receipt_num   LIKE CONCAT('%',#{receipt.receiptNum}, '%')
+                AND r.receipt_num LIKE CONCAT('%',#{receipt.receiptNum}, '%')
             </if>
 
             <if test="receipt.ower != null and receipt.ower != ''">
                 AND r.ower LIKE CONCAT('%',#{receipt.ower}, '%')
-            </if>
-
-            <if test="receipt.arrivalTime !=null and receipt.arrivalTime.size > 0">
-                and r.planned_receiving_time between #{receipt.arrivalTime[0]} and #{receipt.arrivalTime[1]}
             </if>
 
             <if test="receipt.timeOfReceipt !=null and receipt.timeOfReceipt.size > 0">
@@ -323,13 +331,13 @@
             </if>
             <if test="receipt.owerIdList !=null and  receipt.owerIdList.size > 0 ">
                 and r.ower_id in
-                <foreach item="id" collection="receipt.owerIdList" open="(" separator=","  close=")" >
+                <foreach item="id" collection="receipt.owerIdList" open="(" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
             <if test="receipt.warehouseIdList!=null  and receipt.warehouseIdList.size > 0">
                 and r.warehouse_id in
-                <foreach item="id" collection="receipt.warehouseIdList" open="(" separator=","  close=")" >
+                <foreach item="id" collection="receipt.warehouseIdList" open="(" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
@@ -344,13 +352,16 @@
         <include refid="selects"/>
     </select>
 
-    <select id="queryReceiptForExcel" parameterType="com.jayud.wms.model.bo.QueryReceiptForm" resultType="java.util.LinkedHashMap">
+    <select id="queryReceiptForExcel" parameterType="com.jayud.wms.model.bo.QueryReceiptForm"
+            resultType="java.util.LinkedHashMap">
         SELECT
         r.receipt_num,
         r.warehouse,
         r.receipt_notice_num,
         r.ower,
-        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS = sdi.item_value) AS statusDetails,
+        (SELECT sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id
+        WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'receivingOrderStatus' AND r.STATUS =
+        sdi.item_value) AS statusDetails,
         r.actual_num,
         r.actual_weight,
         r.actual_volume,
@@ -374,7 +385,7 @@
                 AND r.status = #{receipt.status}
             </if>
             <if test="receipt.receiptNum != null and receipt.receiptNum != ''">
-                AND r.receipt_num   LIKE CONCAT('%',#{receipt.receiptNum}, '%')
+                AND r.receipt_num LIKE CONCAT('%',#{receipt.receiptNum}, '%')
             </if>
 
             <if test="receipt.ower != null and receipt.ower != ''">
@@ -390,13 +401,13 @@
             </if>
             <if test="receipt.owerIdList !=null ">
                 and r.ower_id in
-                <foreach item="id" collection="receipt.owerIdList" open="(" separator=","  close=")" >
+                <foreach item="id" collection="receipt.owerIdList" open="(" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
             <if test="receipt.warehouseIdList!=null ">
                 and r.warehouse_id in
-                <foreach item="id" collection="receipt.warehouseIdList" open="(" separator=","  close=")" >
+                <foreach item="id" collection="receipt.warehouseIdList" open="(" separator="," close=")">
                     #{id}
                 </foreach>
             </if>
@@ -404,7 +415,6 @@
 
         ORDER BY r.create_time DESC
     </select>
-
 
 
 </mapper>

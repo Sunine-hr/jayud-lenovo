@@ -18,11 +18,12 @@ import com.jayud.wms.model.po.Material;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.mapper.MaterialMapper;
 import com.jayud.wms.model.po.Receipt;
-import com.jayud.wms.service.IInventoryDetailService;
-import com.jayud.wms.service.IMaterialService;
+import com.jayud.wms.model.po.WarehouseArea;
+import com.jayud.wms.model.po.WarehouseLocation;
+import com.jayud.wms.model.vo.WarehouseAreaVO;
+import com.jayud.wms.service.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
-import com.jayud.wms.service.IReceiptService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,12 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Autowired
     private MaterialMapper materialMapper;
+
+    @Autowired
+    public IWarehouseLocationService warehouseLocationService;
+
+    @Autowired
+    public IWarehouseAreaService warehouseAreaService;
 
     @Override
     public IPage<Material> selectPage(Material material,
@@ -336,13 +343,27 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             detailForm.setOwerId(receipt.getSupplierId());
             detailForm.setOwerCode(receipt.getSupplierCode());
             detailForm.setOwerName(receipt.getSupplier());
+
+            //库位  根据库位编号查询库位id
+            QueryWrapper<WarehouseLocation> warehouseLocationQueryWrapper = new QueryWrapper<>();
+            warehouseLocationQueryWrapper.lambda().ne(WarehouseLocation::getCode, material.getWarehouseLocationCode());
+            warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getIsDeleted, 0);
+            WarehouseLocation warehouseLocationOne = warehouseLocationService.getOne(warehouseLocationQueryWrapper);
+
+            detailForm.setWarehouseLocationId(warehouseLocationOne.getId());
+            detailForm.setWarehouseLocationCode(warehouseLocationOne.getCode());
+
             //库区
-            detailForm.setWarehouseAreaId(material.getWarehouseAreaId());
-            detailForm.setWarehouseAreaCode(material.getWarehouseAreaCode());
-            detailForm.setWarehouseAreaName(material.getWarehouseAreaName());
-            //库位
-            detailForm.setWarehouseLocationId(material.getWarehouseLocationId());
-            detailForm.setWarehouseLocationCode(material.getWarehouseLocationCode());
+            //根据库位查询库区信息
+            QueryWrapper<WarehouseArea> warehouseAreaQueryWrapper = new QueryWrapper<>();
+            warehouseAreaQueryWrapper.lambda().ne(WarehouseArea::getId, warehouseLocationOne.getWarehouseAreaId());
+            warehouseAreaQueryWrapper.lambda().eq(WarehouseArea::getIsDeleted, 0);
+            WarehouseArea warehouseAreaOne = warehouseAreaService.getOne(warehouseAreaQueryWrapper);
+
+            detailForm.setWarehouseAreaId(warehouseAreaOne.getId());
+            detailForm.setWarehouseAreaCode(warehouseAreaOne.getCode());
+            detailForm.setWarehouseAreaName(warehouseAreaOne.getName());
+
             //库位状态
             detailForm.setWarehouseLocationStatus(0);
             detailForm.setWarehouseLocationStatus2(0);

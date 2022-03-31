@@ -213,12 +213,12 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         //获取物理信息
         List<Material> materials = this.materialService.getByCondition(new Material().setOrderId(receiptVO.getId()).setIsDeleted(false));
         List<MaterialVO> materialList = ConvertUtil.convertList(materials, MaterialVO.class);
-        //获取物料sn信息
-        List<MaterialSn> materialSns = this.materialSnService.getByCondition(new MaterialSn().setOrderId(receiptVO.getId()).setIsDeleted(false));
-        List<MaterialSnVO> materialSnList = ConvertUtil.convertList(materialSns, MaterialSnVO.class);
+//        //获取物料sn信息
+//        List<MaterialSn> materialSns = this.materialSnService.getByCondition(new MaterialSn().setOrderId(receiptVO.getId()).setIsDeleted(false));
+//        List<MaterialSnVO> materialSnList = ConvertUtil.convertList(materialSns, MaterialSnVO.class);
 
         receiptVO.setMaterialForms(materialList);
-        receiptVO.setMaterialSnForms(materialSnList);
+//        receiptVO.setMaterialSnForms(materialSnList);
 
         return receiptVO;
     }
@@ -232,9 +232,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         form.calculateTotalQuantity();
 
         //物料超收策略
-        List<String> materialCodes = form.getMaterialForms().stream().map(e -> e.getMaterialCode()).collect(Collectors.toList());
-        Map<String, BigDecimal> overchargePolicyMap = this.wmsMaterialBasicInfoService.getOverchargePolicy(materialCodes);
-        form.checkOverchargePolicy(overchargePolicyMap);
+//        List<String> materialCodes = form.getMaterialForms().stream().map(e -> e.getMaterialCode()).collect(Collectors.toList());
+//        Map<String, BigDecimal> overchargePolicyMap = this.wmsMaterialBasicInfoService.getOverchargePolicy(materialCodes);
+//        form.checkOverchargePolicy(overchargePolicyMap);
 //        form.calculationStatus();
         Receipt receipt = ConvertUtil.convert(form, Receipt.class);
         Date date = new Date();
@@ -245,7 +245,7 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         List<Material> materials = new ArrayList<>();
         for (MaterialForm materialForm : materialForms) {
             materialForm.calculationStatus();
-            Material material = ConvertUtil.convert(materialForm, Material.class).setStatus(materialForm.getStatus()).setIsPutShelf(receipt.getIsPutShelf());
+            Material material = ConvertUtil.convert(materialForm, Material.class).setStatus(materialForm.getStatus());
             material.setOrderNum(receipt.getReceiptNum()).setOrderId(receipt.getId());
             if (materialForm.getId() == null) {
 //                if (material.getStatus().equals(MaterialStatusEnum.FOUR.getCode())) continue;

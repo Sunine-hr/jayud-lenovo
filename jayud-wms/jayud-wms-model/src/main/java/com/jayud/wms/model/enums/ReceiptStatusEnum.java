@@ -16,6 +16,8 @@ public enum ReceiptStatusEnum {
     TWO(2, "部分收货"),
     THREE(3, "完全收货"),
     FOUR(4, "整单撤销"),
+    FIVE(5, "待上架"),
+    SIX(6, "已上架"),
     ;
     private Integer code;
     private String desc;

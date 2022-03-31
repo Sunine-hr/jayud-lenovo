@@ -121,7 +121,9 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         form.calculateTotalQuantity();
         //创建收货通知单
         if (form.getId() == null) {
-            receiptNotice.setReceiptNoticeNum(authClient.getOrder("receipt_notice", new Date()).getResult())
+            BaseResult  baseResult = authClient.getOrderFeign("receipt_notice", new Date());
+            HashMap data = (HashMap)baseResult.getResult();
+            receiptNotice.setReceiptNoticeNum(data.get("order").toString())
                     .setStatus(1).setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
             //创建订单流程配置  待定
 //            this.orderProcessService.generationProcess(receiptNotice.getReceiptNoticeNum(), form.getWarehouseId(), 1);
@@ -182,19 +184,19 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
         //获取物理信息
         List<NoticeMaterial> materials = this.noticeMaterialService.getByCondition(new NoticeMaterial().setReceiptNoticeId(receiptNoticeVO.getId()).setIsDeleted(false));
         List<NoticeMaterialVO> noticeMaterialList = ConvertUtil.convertList(materials, NoticeMaterialVO.class);
-        //获取物料sn信息
-        List<NoticeSnMaterial> snMaterials = this.noticeSnMaterialService.getByCondition(new NoticeSnMaterial().setReceiptNoticeId(receiptNoticeVO.getId()).setIsDeleted(false));
-        List<NoticeSnMaterialVO> noticeSnMaterialList = ConvertUtil.convertList(snMaterials, NoticeSnMaterialVO.class);
+//        //获取物料sn信息
+//        List<NoticeSnMaterial> snMaterials = this.noticeSnMaterialService.getByCondition(new NoticeSnMaterial().setReceiptNoticeId(receiptNoticeVO.getId()).setIsDeleted(false));
+//        List<NoticeSnMaterialVO> noticeSnMaterialList = ConvertUtil.convertList(snMaterials, NoticeSnMaterialVO.class);
 
         receiptNoticeVO.setNoticeMaterialForms(noticeMaterialList);
-        receiptNoticeVO.setNoticeSnMaterialForms(noticeSnMaterialList);
+//        receiptNoticeVO.setNoticeSnMaterialForms(noticeSnMaterialList);
 
-        noticeMaterialList.stream().forEach(e -> {
-            WmsMaterialBasicInfoVO wmsMaterialBasicInfoFrom = new WmsMaterialBasicInfoVO();
-            wmsMaterialBasicInfoFrom.setMaterialCode(e.getMaterialCode());
-            WmsMaterialBasicInfoVO wmsMaterialBasicInfoVO1 = wmsMaterialPackingSpecsService.selectByMaterialId(wmsMaterialBasicInfoFrom);
-            e.setPackingList(wmsMaterialBasicInfoVO1.getPackingList());
-        });
+//        noticeMaterialList.stream().forEach(e -> {
+//            WmsMaterialBasicInfoVO wmsMaterialBasicInfoFrom = new WmsMaterialBasicInfoVO();
+//            wmsMaterialBasicInfoFrom.setMaterialCode(e.getMaterialCode());
+//            WmsMaterialBasicInfoVO wmsMaterialBasicInfoVO1 = wmsMaterialPackingSpecsService.selectByMaterialId(wmsMaterialBasicInfoFrom);
+//            e.setPackingList(wmsMaterialBasicInfoVO1.getPackingList());
+//        });
 
 
         return receiptNoticeVO;

@@ -64,7 +64,6 @@ public class ReceiptController {
      * @param queryReceiptForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryReceiptForm.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<ReceiptVO>> selectPage(@RequestBody QueryReceiptForm queryReceiptForm, HttpServletRequest req) {
@@ -79,7 +78,6 @@ public class ReceiptController {
      * @param queryClientReceiptForm 查询条件
      * @return
      */
-    @SysDataPermission(clazz = QueryClientReceiptForm.class)
     @ApiOperation("外部调用分页查询数据")
     @PostMapping(value = "/client/selectPage")
     public BaseResult selectPageFeign(@RequestBody QueryClientReceiptForm queryClientReceiptForm) {
@@ -186,11 +184,11 @@ public class ReceiptController {
     @ApiOperation("创建/编辑订单")
     @PostMapping(value = "/createOrder")
     public BaseResult createOrder(@RequestBody ReceiptForm form) {
-        form.checkParam();
+//        form.checkParam();
         //TODO 远程调用容器
-        List<Container> containers = containerService.getEnableByWarehouseId(form.getWarehouseId());
-        Map<String, Container> containerMap = containers.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e));
-        form.checkContainer(containerMap);
+//        List<Container> containers = containerService.getEnableByWarehouseId(form.getWarehouseId());
+//        Map<String, Container> containerMap = containers.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e));
+//        form.checkContainer(containerMap);
         receiptService.createOrder(form);
         return BaseResult.ok();
     }

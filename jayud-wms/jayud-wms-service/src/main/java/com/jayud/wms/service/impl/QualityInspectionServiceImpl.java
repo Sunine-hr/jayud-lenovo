@@ -314,4 +314,12 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
             this.qualityInspectionMaterialService.saveOrUpdateBatch(list);
         }
     }
+
+    @Override
+    public void changeQualityUser(Long qcno) {
+        QualityInspection qualityInspection = this.getById(qcno);
+        qualityInspection.setQualityInspector(CurrentUserUtil.getUsername());
+        qualityInspection.setQualityInspectionTime(LocalDate.now());
+        this.updateById(qualityInspection);
+    }
 }

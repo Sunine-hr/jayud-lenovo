@@ -97,10 +97,6 @@ public class QualityInspectionVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "主订单号")
-    private String wmsQualityInspection;
-
-
-    @ApiModelProperty(value = "主订单号")
     private String mainOrderNumber;
 
     @ApiModelProperty(value = "单位")

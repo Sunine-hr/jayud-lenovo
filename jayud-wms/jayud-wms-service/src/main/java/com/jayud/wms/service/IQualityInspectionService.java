@@ -73,4 +73,13 @@ public interface IQualityInspectionService extends IService<QualityInspection> {
 
     //app修改质检单的物料信息
     void copyQualityInspectionMaterial(QueryQualityInspectionMaterialForm queryQualityInspectionMaterialForm);
+
+    /**
+     * @description 修改质检人
+     * @author  ciro
+     * @date   2022/3/31 10:33
+     * @param: qcno
+     * @return: void
+     **/
+    void changeQualityUser(Long qcno);
 }

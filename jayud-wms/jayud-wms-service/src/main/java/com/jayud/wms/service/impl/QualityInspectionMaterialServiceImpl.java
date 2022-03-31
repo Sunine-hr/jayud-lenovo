@@ -2,24 +2,31 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.BaseResult;
+import com.jayud.common.constant.SysTips;
 import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
 import com.jayud.wms.model.po.QualityInspectionMaterial;
 import com.jayud.wms.mapper.QualityInspectionMaterialMapper;
+import com.jayud.wms.model.vo.QualityInspectionMaterialVO;
+import com.jayud.wms.model.vo.QualityInspectionVO;
 import com.jayud.wms.service.IQualityInspectionMaterialService;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.wms.service.IQualityInspectionService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 质检物料信息 服务实现类
@@ -30,6 +37,8 @@ import java.util.Map;
 @Service
 public class QualityInspectionMaterialServiceImpl extends ServiceImpl<QualityInspectionMaterialMapper, QualityInspectionMaterial> implements IQualityInspectionMaterialService {
 
+    @Autowired
+    private IQualityInspectionService qualityInspectionService;
 
     @Autowired
     private QualityInspectionMaterialMapper qualityInspectionMaterialMapper;
@@ -112,6 +121,92 @@ public class QualityInspectionMaterialServiceImpl extends ServiceImpl<QualityIns
     @Override
     public QualityInspectionMaterial findQualityInspectionMaterialOne(QueryQualityInspectionMaterialForm qualityInspectionMaterial) {
         return qualityInspectionMaterialMapper.findQualityInspectionMaterialOne(qualityInspectionMaterial);
+    }
+
+    @Override
+    public BaseResult comfirmQuality(QualityInspectionVO qualityInspectionVO) {
+        List<QualityInspectionMaterialVO> materalList = qualityInspectionVO.getMaterialForms();
+        List<Long> ids = materalList.stream().map(x->x.getId()).collect(Collectors.toList());
+        LambdaQueryWrapper<QualityInspectionMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(QualityInspectionMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.in(QualityInspectionMaterial::getId,ids);
+        List<Long> successIdList = new ArrayList<>();
+        List<String> errorList = new ArrayList<>();
+        List<QualityInspectionMaterial> qualityInspectionMaterials = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(qualityInspectionMaterials)){
+            qualityInspectionMaterials.forEach(x->{
+                if (x.getIsComfirm()){
+                    errorList.add(x.getMaterialName());
+                }else {
+                    successIdList.add(x.getId());
+                }
+            });
+        }else {
+            return BaseResult.error("物料筛选数据为空！");
+        }
+        List<QualityInspectionMaterial> saveMateralList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(successIdList)){
+            materalList.forEach(x->{
+                if (successIdList.contains(x.getId())){
+                    QualityInspectionMaterial material = new QualityInspectionMaterial();
+                    BeanUtils.copyProperties(x,material);
+                    material.setIsComfirm(true);
+                    saveMateralList.add(material);
+                }
+            });
+        }
+        if (CollUtil.isNotEmpty(saveMateralList)){
+            this.updateBatchById(saveMateralList);
+            //修改质检人
+            qualityInspectionService.changeQualityUser(saveMateralList.get(0).getQualityInspectionId());
+        }
+        if (CollUtil.isNotEmpty(errorList)){
+            return BaseResult.error(StringUtils.join(errorList, StrUtil.C_COMMA)+" 已确认质检，请勿重复确认质检！");
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
+    }
+
+    @Override
+    public BaseResult cancelQuality(QualityInspectionVO qualityInspectionVO) {
+        List<QualityInspectionMaterialVO> materalList = qualityInspectionVO.getMaterialForms();
+        List<Long> ids = materalList.stream().map(x->x.getId()).collect(Collectors.toList());
+        LambdaQueryWrapper<QualityInspectionMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(QualityInspectionMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.in(QualityInspectionMaterial::getId,ids);
+        List<Long> successIdList = new ArrayList<>();
+        List<String> errorList = new ArrayList<>();
+        List<QualityInspectionMaterial> qualityInspectionMaterials = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(qualityInspectionMaterials)){
+            qualityInspectionMaterials.forEach(x->{
+                if (!x.getIsComfirm()){
+                    errorList.add(x.getMaterialName());
+                }else {
+                    successIdList.add(x.getId());
+                }
+            });
+        }else {
+            return BaseResult.error("物料筛选数据为空！");
+        }
+        List<QualityInspectionMaterial> saveMateralList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(successIdList)){
+            materalList.forEach(x->{
+                if (successIdList.contains(x.getId())){
+                    QualityInspectionMaterial material = new QualityInspectionMaterial();
+                    BeanUtils.copyProperties(x,material);
+                    material.setIsComfirm(false);
+                    saveMateralList.add(material);
+                }
+            });
+        }
+        if (CollUtil.isNotEmpty(saveMateralList)){
+            this.updateBatchById(saveMateralList);
+            //修改质检人
+            qualityInspectionService.changeQualityUser(saveMateralList.get(0).getQualityInspectionId());
+        }
+        if (CollUtil.isNotEmpty(errorList)){
+            return BaseResult.error(StringUtils.join(errorList, StrUtil.C_COMMA)+" 未确认质检，请勿取消质检！");
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
     }
 
 }

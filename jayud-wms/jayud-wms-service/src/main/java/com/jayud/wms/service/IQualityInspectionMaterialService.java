@@ -3,8 +3,10 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
 import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
 import com.jayud.wms.model.po.QualityInspectionMaterial;
+import com.jayud.wms.model.vo.QualityInspectionVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
@@ -64,4 +66,26 @@ public interface IQualityInspectionMaterialService extends IService<QualityInspe
      *   校验查询此订单有没有该物料
      */
     QualityInspectionMaterial findQualityInspectionMaterialOne(QueryQualityInspectionMaterialForm qualityInspectionMaterial);
+
+
+    /**
+     * @description 确认质检
+     * @author  ciro
+     * @date   2022/3/31 10:17
+     * @param: qualityInspectionVO
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult comfirmQuality(QualityInspectionVO qualityInspectionVO);
+
+
+    /**
+     * @description 取消质检
+     * @author  ciro
+     * @date   2022/3/31 10:37
+     * @param: qualityInspectionVO
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult cancelQuality(QualityInspectionVO qualityInspectionVO);
+
+
 }

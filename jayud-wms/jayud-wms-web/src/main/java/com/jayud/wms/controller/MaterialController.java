@@ -195,7 +195,7 @@ public class MaterialController {
     @ApiOperation("撤销收货--new")
     @PostMapping(path = "/cancelConfirmReceipt")
     public BaseResult cancelConfirmReceipt(@RequestBody  DeleteForm deleteForm){
-        return materialService.confirmReceipt(deleteForm);
+        return materialService.cancelConfirmReceipt(deleteForm);
     }
 
     @ApiOperation("确认上架--new")

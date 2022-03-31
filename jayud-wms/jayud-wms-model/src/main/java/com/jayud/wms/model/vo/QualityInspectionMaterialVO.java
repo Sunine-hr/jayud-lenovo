@@ -119,4 +119,7 @@ public class QualityInspectionMaterialVO extends SysBaseEntity {
     @ApiModelProperty(value = "合格率")
     private String percentOfPass;
 
+    @ApiModelProperty(value = "是否确认")
+    private Boolean isComfirm;
+
 }

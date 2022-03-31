@@ -168,7 +168,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public BaseResult confirmReceipt(DeleteForm deleteForm) {
-        if (CollUtil.isNotEmpty(deleteForm.getIds())){
+        if (CollUtil.isEmpty(deleteForm.getIds())){
             return BaseResult.error(SysTips.IDS_ISEMPTY);
         }
         List<String> errList = new ArrayList<>();
@@ -178,7 +178,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         List<Material> successList = new ArrayList<>();
         if (CollUtil.isNotEmpty(materialList)){
             materialList.forEach(materials -> {
-                if (materials.getStatus().equals(MaterialStatusEnum.THREE)){
+                if (materials.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
                     errList.add(materials.getMaterialCode());
                 }else {
                     materials.setStatus(MaterialStatusEnum.THREE.getCode());
@@ -198,7 +198,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public BaseResult cancelConfirmReceipt(DeleteForm deleteForm) {
-        if (CollUtil.isNotEmpty(deleteForm.getIds())){
+        if (CollUtil.isEmpty(deleteForm.getIds())){
             return BaseResult.error(SysTips.IDS_ISEMPTY);
         }
         Material material = new Material();
@@ -212,15 +212,17 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             }
             materialList.forEach(material1 -> {
                 //未确认收货
-                if (!material1.getStatus().equals(MaterialStatusEnum.THREE)){
+                if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
                     errList.add(material1.getMaterialCode());
                 }else {
+                    material1.setStatus(MaterialStatusEnum.FOUR.getCode());
                     successList.add(material1);
                 }
             });
         }
         if (CollUtil.isNotEmpty(successList)){
             this.updateBatchById(successList);
+            checkIsAllComfirmReceipt(successList.get(0).getOrderId());
         }
         if (CollUtil.isNotEmpty(errList)){
             return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 未确认收货，请勿撤销收货！");
@@ -254,7 +256,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             }
             if (CollUtil.isNotEmpty(successList)){
                 this.updateBatchById(successList);
-//                initInventoryDetail(successList);
+                initInventoryDetail(successList);
             }
             if (CollUtil.isNotEmpty(errList)){
                 return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已上架，请勿重复上架！");
@@ -276,19 +278,28 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         material.setOrderId(orderId);
         boolean isEnd = true;
         List<Material> materialList = selectList(material);
+        int counts = 0;
         if (CollUtil.isNotEmpty(materialList)){
             for (Material material1:materialList){
                 if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
                     isEnd = false;
                     break;
+                }else {
+                    counts += 1;
                 }
             }
         }
+        Receipt receipt = receiptService.getById(orderId);
         if (isEnd){
-            Receipt receipt = receiptService.getById(orderId);
             receipt.setStatus(MaterialStatusEnum.FIVE.getCode());
-            receiptService.updateById(receipt);
+        }else {
+            if (counts>0){
+                receipt.setStatus(MaterialStatusEnum.TWO.getCode());
+            }else {
+                receipt.setStatus(MaterialStatusEnum.ONE.getCode());
+            }
         }
+        receiptService.updateById(receipt);
     }
 
     /**

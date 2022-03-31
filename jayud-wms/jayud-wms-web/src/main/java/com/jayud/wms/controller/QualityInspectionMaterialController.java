@@ -6,6 +6,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.po.QualityInspectionMaterial;
+import com.jayud.wms.model.vo.QualityInspectionVO;
 import com.jayud.wms.service.IQualityInspectionMaterialService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -186,6 +187,19 @@ public class QualityInspectionMaterialController {
         } catch (Exception e) {
             logger.warn(e.toString());
         }
+    }
+
+
+    @ApiOperation("确认质检")
+    @PostMapping(path = "/comfirmQuality")
+    public BaseResult comfirmQuality(@RequestBody QualityInspectionVO qualityInspectionVO){
+        return qualityInspectionMaterialService.comfirmQuality(qualityInspectionVO);
+    }
+
+    @ApiOperation("取消质检")
+    @PostMapping(path = "/cancelQuality")
+    public BaseResult cancelQuality(@RequestBody QualityInspectionVO qualityInspectionVO){
+        return qualityInspectionMaterialService.comfirmQuality(qualityInspectionVO);
     }
 
 }

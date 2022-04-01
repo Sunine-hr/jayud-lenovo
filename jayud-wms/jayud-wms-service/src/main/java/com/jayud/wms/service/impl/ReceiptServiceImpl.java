@@ -263,6 +263,7 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         List<WmsReceiptAppend> wmsReceiptAppends = new ArrayList<>();
 
         for (WmsReceiptAppendForm wmsReceiptAppendForm : wmsReceiptAppendForms) {
+
             WmsReceiptAppend convert = ConvertUtil.convert(wmsReceiptAppendForm, WmsReceiptAppend.class);
 
             if (convert.getId() == null) {

@@ -250,4 +250,6 @@ public class ReceiptForm extends SysBaseEntity {
             }
         }
     }
+
+
 }

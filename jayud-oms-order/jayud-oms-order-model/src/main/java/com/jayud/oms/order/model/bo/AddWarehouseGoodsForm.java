@@ -44,6 +44,9 @@ public class AddWarehouseGoodsForm extends Model<AddWarehouseGoodsForm> {
     @ApiModelProperty(value = "货物名称")
     private String name;
 
+    @ApiModelProperty(value = "货品编号")
+    private String itemNo;
+
     @ApiModelProperty(value = "拣货下架库位")
     private String pickingOffShelfLocation;
 

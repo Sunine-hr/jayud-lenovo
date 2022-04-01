@@ -1,6 +1,7 @@
 package com.jayud.oms.order.model.bo;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -133,7 +134,7 @@ public class OmsOrderForm extends SysBaseEntity {
         if(StringUtils.isEmpty(custName)){
             return "客户不为空";
         }
-        if(StringUtils.isEmpty(bizType)){
+        if(CollectionUtil.isEmpty(bizTypeList)){
             return "业务类型不为空";
         }
         if(StringUtils.isEmpty(orgName)){

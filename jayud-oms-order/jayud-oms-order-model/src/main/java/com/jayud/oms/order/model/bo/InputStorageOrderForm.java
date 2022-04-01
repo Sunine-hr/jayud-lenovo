@@ -80,8 +80,8 @@ public class InputStorageOrderForm {
     @ApiModelProperty(value = "预计到货时间")
     private String estimatedArrivalTime;
 
-//    @ApiModelProperty(value = "快进快出商品对象集合")
-//    private List<AddWarehouseGoodsForm> fastGoodsFormList;
+    @ApiModelProperty(value = "商品对象集合")
+    private List<AddWarehouseGoodsForm> fastGoodsFormList;
 //
 //    @ApiModelProperty(value = "入库商品对象集合")
 //    private List<AddWarehouseGoodsForm> inGoodsFormList;

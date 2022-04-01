@@ -2,6 +2,7 @@ package com.jayud.wms.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.wms.model.po.Material;
 import com.jayud.wms.model.po.WmsReceiptAppend;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -78,5 +79,6 @@ public interface IWmsReceiptAppendService extends IService<WmsReceiptAppend> {
      **/
     List<LinkedHashMap<String, Object>> queryWmsReceiptAppendForExcel(Map<String, Object> paramMap);
 
+    List<WmsReceiptAppend> getByCondition(WmsReceiptAppend condition);
 
 }

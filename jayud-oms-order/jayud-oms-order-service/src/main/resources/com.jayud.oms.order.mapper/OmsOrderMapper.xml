@@ -198,7 +198,7 @@
         DELETE FROM  oms_order WHERE id = ${id}
     </delete>
 
-    `<update id="logicDel">
+    <update id="logicDel">
         UPDATE oms_order SET is_deleted = 1 ,update_by = #{username}, update_time = now()
         WHERE id = ${id} AND is_deleted = 0
     </update>
@@ -339,5 +339,14 @@
                     </if>
 
     </select>
+
+    <update id="updateOmsOrderById">
+        UPDATE oms_order SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
 
 </mapper>

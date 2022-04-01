@@ -305,6 +305,8 @@ public class SysRoleController {
         }
         //获取菜单租户id
         SysMenu pTenant = this.sysMenuService.getOne(new QueryWrapper<>(new SysMenu().setCode("p_tenant").setIsDeleted(false)));
+        SysMenu pMenuMgt = this.sysMenuService.getOne(new QueryWrapper<>(new SysMenu().setCode("p_menuMgt").setIsDeleted(false)));
+        SysMenu pSqlconfig = this.sysMenuService.getOne(new QueryWrapper<>(new SysMenu().setCode("p_sqlconfig").setIsDeleted(false)));
         SysRole role = this.sysRoleService.getById(rolesId);
 
         parentMenuIds.addAll(menuIds);
@@ -319,7 +321,29 @@ public class SysRoleController {
                     msg = "该用户不是超级管理员,已把租户菜单过滤掉";
                     tmps.removeAll(Arrays.asList(pTenant.getId()));
                 }
-                if (menuIds.size() <= 1) {
+                if (menuIds.size() < 1) {
+                    return BaseResult.ok(msg);
+                }
+            }
+        }
+        if (pMenuMgt != null) {
+            if (!CurrentUserUtil.getUserTenantCode().equals("10001")){
+                if (tmps.contains(pMenuMgt.getId())) {
+                    msg = "非10001租户，已过滤掉菜单管理";
+                    tmps.removeAll(Arrays.asList(pMenuMgt.getId()));
+                }
+                if (menuIds.size() < 1) {
+                    return BaseResult.ok(msg);
+                }
+            }
+        }
+        if (pSqlconfig != null) {
+            if (!CurrentUserUtil.getUserTenantCode().equals("10001")) {
+                if (tmps.contains(pSqlconfig.getId())) {
+                    msg = "非10001租户，已过滤掉sql配置管理";
+                    tmps.removeAll(Arrays.asList(pSqlconfig.getId()));
+                }
+                if (menuIds.size() < 1) {
                     return BaseResult.ok(msg);
                 }
             }

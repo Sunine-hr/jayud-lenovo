@@ -172,6 +172,7 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
     public HsCodeVO getHsCodeByCodeNo(String hsCodeNo) {
         QueryWrapper<HsCode> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(HsCode::getCodeNo,hsCodeNo);
+        queryWrapper.lambda().eq(HsCode::getVoided,0);
         HsCode hsCode = this.getOne(queryWrapper);
         return ConvertUtil.convert(hsCode,HsCodeVO.class);
     }
@@ -210,5 +211,13 @@ public class HsCodeServiceImpl extends ServiceImpl<HsCodeMapper, HsCode> impleme
             return CommonResult.success();
         }
         return CommonResult.error(444,"海关编码删除失败");
+    }
+
+    @Override
+    public HsCode getByCodeNo(String codeNo) {
+        QueryWrapper<HsCode> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(HsCode::getCodeNo,codeNo);
+        queryWrapper.lambda().eq(HsCode::getVoided,0);
+        return this.getOne(queryWrapper);
     }
 }

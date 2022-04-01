@@ -1,6 +1,10 @@
 package com.jayud.oms.order.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -118,6 +122,9 @@ public class OmsOrder extends SysBaseEntity {
     @ApiModelProperty(value = "多租户ID")
     private Long tenantId;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "操作时间")
     private LocalDateTime operationTime ;
 
@@ -127,8 +134,8 @@ public class OmsOrder extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "删除标志")
-    @TableLogic
-    private Boolean isDeleted;
+    private Integer isDeleted;
+
     @ApiModelProperty(value = "删除人")
     private Long deletedUserId;
 

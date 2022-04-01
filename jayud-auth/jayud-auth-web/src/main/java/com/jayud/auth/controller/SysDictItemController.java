@@ -6,6 +6,7 @@ import com.jayud.auth.model.po.SysDict;
 import com.jayud.common.exception.JayudBizException;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -91,6 +92,7 @@ public class SysDictItemController {
      **/
     @ApiOperation("新增")
     @PostMapping("/add")
+    @CacheEvict(value="sys:cache:dict", allEntries=true)
     public BaseResult add(@Valid @RequestBody SysDictItem sysDictItem) {
         sysDictItem.setIsEdit(null);
         if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
@@ -114,7 +116,7 @@ public class SysDictItemController {
             }
 
         }
-        this.sysDictItemService.checkUnique(sysDictItem);
+//        this.sysDictItemService.checkUnique(sysDictItem);
         sysDictItemService.save(sysDictItem);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
@@ -129,6 +131,7 @@ public class SysDictItemController {
      **/
     @ApiOperation("编辑")
     @PostMapping("/edit")
+    @CacheEvict(value="sys:cache:dict", allEntries=true)
     public BaseResult edit(@Valid @RequestBody SysDictItem sysDictItem) {
         sysDictItem.setIsEdit(null);
         if (StringUtils.isEmpty(sysDictItem.getItemText()) || StringUtils.isEmpty(sysDictItem.getItemValue())) {
@@ -152,6 +155,25 @@ public class SysDictItemController {
                 return BaseResult.error("数据字典不能修改");
             }
         }
+        SysDictItem tmp = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemText(sysDictItem.getItemText()).setIsDeleted(false)));
+        SysDictItem tmp1 = sysDictItemService.getOne(new QueryWrapper<>(new SysDictItem().setDictId(sysDictItem.getDictId()).setItemValue(sysDictItem.getItemValue()).setIsDeleted(false)));
+        if(null != tmp){
+            if(null == sysDictItem.getId()){
+                return BaseResult.error("该字典名称已存在");
+            }
+            if (!tmp.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该字典名称已存在");
+            }
+        }
+        if(null != tmp1){
+            if(null == sysDictItem.getId()){
+                return BaseResult.error("该字典值已存在");
+            }
+            if (!tmp1.getId().equals(sysDictItem.getId())) {
+                return BaseResult.error("该字典值已存在");
+            }
+        }
+
 
         this.sysDictItemService.update(null,
                 Wrappers.<SysDictItem>lambdaUpdate()

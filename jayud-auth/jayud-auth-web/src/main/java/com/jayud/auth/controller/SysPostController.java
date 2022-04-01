@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysPostForm;
 import com.jayud.auth.model.vo.SysPostVO;
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,6 +64,12 @@ public class SysPostController {
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
+        sysPost.setIsDeleted(false);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysPost.setTenantCode(null);
+        } else {
+            sysPost.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysPostService.selectPage(sysPost,currentPage,pageSize,req));
     }
 
@@ -78,6 +86,12 @@ public class SysPostController {
     @GetMapping("/selectList")
     public BaseResult<List<SysPost>> selectList(SysPost sysPost,
                                                 HttpServletRequest req) {
+        sysPost.setIsDeleted(false);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysPost.setTenantCode(null);
+        } else {
+            sysPost.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysPostService.selectList(sysPost));
     }
 

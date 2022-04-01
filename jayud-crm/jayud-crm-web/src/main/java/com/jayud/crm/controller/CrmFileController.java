@@ -1,7 +1,9 @@
 package com.jayud.crm.controller;
 
 import com.jayud.auth.model.po.SysDictItem;
+import com.jayud.common.utils.ConvertUtil;
 import com.jayud.crm.feign.SysDictClient;
+import com.jayud.crm.model.bo.CrmFileForm;
 import com.jayud.crm.model.bo.DeleteForm;
 import com.jayud.crm.model.bo.QueryCrmFile;
 import com.jayud.crm.model.constant.CrmDictCode;
@@ -217,8 +219,9 @@ public class CrmFileController {
 
     @ApiOperation("新增附件")
     @PostMapping(path = "/addFile")
-    public BaseResult addFile(@RequestParam("crmFiles")List<CrmFile> crmFiles,@RequestParam("business")Long business,@RequestParam("code")String code){
-        this.crmFileService.doFileProcessing(crmFiles,business,code);
+    public BaseResult addFile(@RequestBody QueryCrmFile queryCrmFile){
+        List<CrmFile> files = ConvertUtil.convertList(queryCrmFile.getCrmFileForm(), CrmFile.class);
+        this.crmFileService.doFileProcessing(files,queryCrmFile.getBusinessId(),queryCrmFile.getCode());
         return BaseResult.ok();
     }
 

@@ -61,6 +61,9 @@ public class SysLogForm extends SysBaseEntity {
     @ApiModelProperty(value = "耗时")
     private Long costTime;
 
+    @ApiModelProperty(value = "租户编码")
+    private String tenantCode;
+
     @ApiModelProperty(value = "创建时间")
     private List<String> creationTime;
 

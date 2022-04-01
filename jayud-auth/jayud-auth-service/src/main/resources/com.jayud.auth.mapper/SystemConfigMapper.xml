@@ -27,11 +27,12 @@
         <result column="is_deleted" property="isDeleted" />
         <result column="deleted_user_id" property="deletedUserId" />
         <result column="delete_user_name" property="deleteUserName" />
+        <result column="tenant_code" property="tenantCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, config_code, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, if_onl, remark, org_id, tenant_id, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name
+            id, config_code, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, if_onl, remark, org_id, tenant_id, create_by, create_time, update_by, update_time, is_deleted, deleted_user_id, delete_user_name,tenant_code
     </sql>
 
     <!-- 表名 -->
@@ -106,6 +107,10 @@
                 AND create_time = ${systemConfig.createTime}
             </if>
 
+            <if test="systemConfig.tenantCode != null and systemConfig.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{systemConfig.tenantCode},'%')
+            </if>
+
             <if test="systemConfig.createBy != null and systemConfig.createBy != ''">
                 AND create_by LIKE CONCAT('%',#{systemConfig.createBy},'%')
             </if>
@@ -174,6 +179,7 @@
             last_modify_user_name 'lastModifyUserName',
             last_modify_time 'lastModifyTime',
             is_deleted 'isDeleted',
+            tenant_code tenantCode,
             deleted_user_id 'deletedUserId',
             delete_user_name 'deleteUserName'
         FROM system_config
@@ -229,6 +235,9 @@
                     <if test="createUserName != null and createUserName != ''">
                         AND create_user_name LIKE CONCAT('%',#{createUserName}, '%')
                     </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+        </if>
                     <if test="lastModifyUserId != null ">
                         AND last_modify_user_id = #{lastModifyUserId}
                     </if>

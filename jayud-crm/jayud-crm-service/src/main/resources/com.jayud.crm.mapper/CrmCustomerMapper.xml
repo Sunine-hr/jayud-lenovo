@@ -692,9 +692,9 @@
         select id,cust_name custName,cust_name_abbr custNameAbbr,fsales_name fsalesName,fsales_id fsalesId,follower_name followerName,cust_code custCode,
         settlement_method settlementMethod
         from crm_customer c
-        where c.is_deleted = 0 and c.check_state_flag = 'Y'
+        where c.is_deleted = 0 and c.check_state_flag = 'Y' and c.is_cust = 1
         <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
-            AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
+            AND c.cust_name LIKE CONCAT('%',#{crmCustomerForm.custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{crmCustomerForm.custName}, '%')
         </if>
     </select>
 
@@ -702,7 +702,7 @@
         select id,cust_name custName,cust_name_abbr custNameAbbr,fsales_name fsalesName,fsales_id fsalesId,follower_name followerName,cust_code custCode,
         settlement_method settlementMethod
         from crm_customer c
-        where c.is_deleted = 0 and c.check_state_flag = 'Y'
+        where c.is_deleted = 0 and c.check_state_flag = 'Y' and c.is_cust = 1
         <if test="crmCustomerForm.custName != null and crmCustomerForm.custName != ''">
             AND c.cust_name LIKE CONCAT('%',#{custName}, '%') or c.cust_name_abbr LIKE CONCAT('%',#{custName}, '%')
         </if>

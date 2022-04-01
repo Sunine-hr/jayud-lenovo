@@ -1,5 +1,7 @@
 package com.jayud.auth.controller;
 
+import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -65,6 +67,12 @@ public class SystemConfigController {
                                                    @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                    HttpServletRequest req) {
+        systemConfig.setIsDeleted(false);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            systemConfig.setTenantCode(null);
+        } else {
+            systemConfig.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(PaginationBuilder.buildPageResult(systemConfigService.selectPage(systemConfig,currentPage,pageSize,req)));
     }
 
@@ -81,6 +89,12 @@ public class SystemConfigController {
     @GetMapping("/selectList")
     public BaseResult<List<SystemConfig>> selectList(SystemConfig systemConfig,
                                                 HttpServletRequest req) {
+        systemConfig.setIsDeleted(false);
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            systemConfig.setTenantCode(null);
+        } else {
+            systemConfig.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(systemConfigService.selectList(systemConfig));
     }
 

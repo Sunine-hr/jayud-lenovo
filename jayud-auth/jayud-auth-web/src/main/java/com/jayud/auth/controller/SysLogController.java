@@ -3,8 +3,10 @@ package com.jayud.auth.controller;
 import com.jayud.auth.model.bo.SysLogForm;
 import com.jayud.auth.model.vo.SysLogVO;
 import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.dto.QuerySysLogForm;
 import com.jayud.common.utils.ConvertUtil;
+import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,6 +66,11 @@ public class SysLogController {
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<SysLogVO>> selectPage(@RequestBody SysLogForm sysLogForm, HttpServletRequest req) {
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysLogForm.setTenantCode(null);
+        } else {
+            sysLogForm.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysLogService.selectPage(sysLogForm, sysLogForm.getCurrentPage(), sysLogForm.getPageSize(), req));
     }
 
@@ -89,6 +96,11 @@ public class SysLogController {
     @GetMapping("/selectList")
     public BaseResult<List<SysLog>> selectList(SysLog sysLog,
                                                HttpServletRequest req) {
+        if (CurrentUserUtil.hasRole(CommonConstant.SUPER_TENANT)) {
+            sysLog.setTenantCode(null);
+        } else {
+            sysLog.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        }
         return BaseResult.ok(sysLogService.selectList(sysLog));
     }
 

@@ -1,4 +1,4 @@
-package com.jayud.crm.model.bo;
+package com.jayud.oms.order.model.bo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

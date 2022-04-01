@@ -1,6 +1,7 @@
 package com.jayud.crm.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -88,7 +89,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         IPage<CrmCustomerForm> pageList = crmCustomerMapper.pageList(page, crmCustomerForm);
         if (CollUtil.isNotEmpty(pageList.getRecords())) {
             pageList.getRecords().forEach(crmCustomerForms -> {
-                crmCustomerForms.setCreateName(authClient.selectByUsername(crmCustomerForms.getCreateBy()).getResult().getUserName());
+//                crmCustomerForms.setCreateName(authClient.selectByUsername(crmCustomerForms.getCreateBy()).getResult().getUserName());
                 if (StrUtil.isNotBlank(crmCustomerForms.getServiceType())) {
                     crmCustomerForms.setServiceTypeList(Arrays.asList(crmCustomerForms.getServiceType().split(StrUtil.COMMA)));
                 } else {
@@ -146,7 +147,10 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         } else {
             return onlyResult;
         }
-        inteCustForm(crmCustomerForm);
+        if(null != crmCustomerForm.getFsalesId()){
+            inteCustForm(crmCustomerForm);
+        }
+
         if (CollUtil.isNotEmpty(crmCustomerForm.getServiceTypeList())) {
             crmCustomerForm.setServiceType(StringUtils.join(crmCustomerForm.getServiceTypeList(), StrUtil.COMMA));
         } else {
@@ -316,11 +320,14 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             List<CrmCustomerForm> customerList = selectList(crmCustomerForm);
             List<CrmCustomer> changeList = customerList.stream().filter(x -> !x.getIsSupplier()).collect(Collectors.toList());
             List<CrmCustomer> supplierList = customerList.stream().filter(x -> x.getIsSupplier()).collect(Collectors.toList());
-            comCustomerForm.setExitSupplierList(supplierList);
+            if(CollectionUtil.isNotEmpty(supplierList)){
+                comCustomerForm.setExitSupplierList(supplierList);
+            }
+
             if (CollUtil.isNotEmpty(changeList)) {
                 List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, true,false);
                 crmCustomerList.forEach(crmCustomer -> {
-                    crmCustomer.setCustCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
+                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
                 });
                 this.updateBatchById(crmCustomerList);
             }
@@ -528,11 +535,11 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
         }
         if (CollUtil.isNotEmpty(comCustomerForm.getExitSupplierList())) {
             List<String> supplierList = comCustomerForm.getExitSupplierList().stream().map(x -> x.getCustName()).collect(Collectors.toList());
-            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为供应商，请勿重复修改！";
+            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为供应商，请勿重复操作！";
         }
         if (CollUtil.isNotEmpty(comCustomerForm.getExitCustList())) {
             List<String> supplierList = comCustomerForm.getExitSupplierList().stream().map(x -> x.getCustName()).collect(Collectors.toList());
-            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为客户，请勿重复修改！";
+            errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为客户，请勿重复操作！";
         }
         if (StringUtils.isNotBlank(errString)) {
             return BaseResult.error(errString);
@@ -621,7 +628,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             if (CollUtil.isNotEmpty(changeList)) {
                 List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, false,true);
                 crmCustomerList.forEach(crmCustomer -> {
-                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_CUST_CODE));
+                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
                 });
                 this.updateBatchById(crmCustomerList);
             }
@@ -638,7 +645,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public CrmCustomer getCustomerByCustomerName(String custName) {
         QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(CrmCustomer::getCustName,custName);
-        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,0);
         queryWrapper.lambda().eq(CrmCustomer::getIsCust,1);
         return this.getOne(queryWrapper);
     }
@@ -647,7 +654,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public CrmCustomer getCustomerByUnCreditCode(String unCreditCode) {
         QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(CrmCustomer::getUnCreditCode,unCreditCode);
-        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,0);
         queryWrapper.lambda().eq(CrmCustomer::getIsCust,1);
         return this.getOne(queryWrapper);
     }
@@ -656,7 +663,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public CrmCustomer getCustomerBySupplierName(String custName) {
         QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(CrmCustomer::getCustName,custName);
-        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,0);
         queryWrapper.lambda().eq(CrmCustomer::getIsSupplier,1);
         return this.getOne(queryWrapper);
     }
@@ -665,7 +672,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
     public CrmCustomer getCustomerBySupplierUnCreditCode(String unCreditCode) {
         QueryWrapper<CrmCustomer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(CrmCustomer::getUnCreditCode,unCreditCode);
-        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,1);
+        queryWrapper.lambda().eq(CrmCustomer::getIsDeleted,0);
         queryWrapper.lambda().eq(CrmCustomer::getIsSupplier,1);
         return this.getOne(queryWrapper);
     }

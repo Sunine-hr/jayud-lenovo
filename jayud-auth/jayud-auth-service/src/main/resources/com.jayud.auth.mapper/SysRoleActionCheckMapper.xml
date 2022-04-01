@@ -77,7 +77,7 @@
     <select id="pageList" resultType="com.jayud.auth.model.vo.SysRoleActionCheckVO" parameterType="com.jayud.auth.model.bo.QueryForm">
         SELECT  s.id, s.role_id roleId, s.action_id actionId, s.action_code actionCode, s.check_level checkLevel,
         s.check_money checkMoney, s.remark, s.create_by createBy, s.create_time createTime, s.update_by updateBy, s.update_time updateTime, s.is_deleted isDeleted,
-        sr.role_name roleName,sm.title actionName
+        sr.role_name roleName,sm.title actionName,s.tenant_code tenantCode
         FROM sys_role_action_check s
         left join sys_menu sm on s.action_id = sm.id and sm.is_deleted = 0
         left join sys_role sr on s.role_id = sr.id and sr.is_deleted = 0
@@ -90,6 +90,9 @@
                 </if>
                 <if test="form.key == 'name' ">
                     sr.role_name like concat('%',#{form.condition},'%')
+                </if>
+                <if test="form.tenantCode != null and form.tenantCode != ''">
+                    AND s.tenant_code = #{form.tenantCode}
                 </if>
             </if>
 <!--            <if test="sysRoleActionCheck.roleId != null ">-->

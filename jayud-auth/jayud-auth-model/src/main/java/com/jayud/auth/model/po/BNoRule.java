@@ -71,6 +71,10 @@ public class BNoRule extends SysBaseEntity {
     @ApiModelProperty(value = "删除标记")
     private Integer isDeleted;
 
+    @ApiModelProperty(value = "多租户code")
+    private String tenantCode;
+
+
 
 
 

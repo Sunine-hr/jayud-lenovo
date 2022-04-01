@@ -1,4 +1,4 @@
-package com.jayud.wms.model.bo;
+package com.jayud.wms.model.vo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.jayud.common.entity.SysBaseEntity;
@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="收货单附加服务表对象", description="收货单附加服务表")
-public class WmsReceiptAppendForm extends SysBaseEntity {
+public class WmsReceiptAppendVO extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "收货单id")
@@ -34,11 +34,11 @@ public class WmsReceiptAppendForm extends SysBaseEntity {
     @ApiModelProperty(value = "单位")
     private String unit;
 
-    @ApiModelProperty(value = "单价")
-    private Double unitPrice;
-
     @ApiModelProperty(value = "总价")
     private Double totalPrices;
+
+    @ApiModelProperty(value = "单价")
+    private Double unitPrice;
 
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
@@ -48,22 +48,11 @@ public class WmsReceiptAppendForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "是否删除")
+    @TableLogic
     private Boolean isDeleted;
 
 
-    /**
-     * 计算合计数量
-     */
-//    public void calculateTotalQuantity() {
-//
-//        Double totalPrices = 0.0;
-//        for (NoticeMaterialForm noticeMaterialForm : noticeMaterialForms) {
-//
-//            totalPrices += noticeMaterialForm.getNum() * noticeMaterialForm.getVolume().doubleValue();
-//        }
-//
-//        this.totalPrices = totalPrices;
-//    }
-//
+
+
 
 }

@@ -46,6 +46,9 @@ public class WmsReceiptAppend extends SysBaseEntity {
     @ApiModelProperty(value = "总价")
     private Double totalPrices;
 
+    @ApiModelProperty(value = "单价")
+    private Double unitPrice;
+
     @ApiModelProperty(value = "租户编码")
     private String tenantCode;
 

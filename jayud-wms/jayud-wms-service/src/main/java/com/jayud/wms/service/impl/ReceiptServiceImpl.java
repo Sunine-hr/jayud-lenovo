@@ -683,8 +683,8 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 
     @Override
     public BaseResult convertQualit(DeleteForm deleteForm) {
-        if (CollUtil.isEmpty(deleteForm.getIds())){
-            return BaseResult.error(SysTips.IDS_ISEMPTY);
+        if (CollUtil.isEmpty(deleteForm.getNumberList())){
+            return BaseResult.error("数据为空！");
         }
         //查询出数据
         List<String> receiptNumberList = deleteForm.getNumberList();
@@ -740,6 +740,7 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
             qualityInspection.setId(null);
             qualityInspection.setUpdateBy("");
             qualityInspection.setUpdateTime(null);
+            qualityInspection.setDocumentType(receipt.getOrderType());
             qualityInspectionService.save(qualityInspection);
             LambdaQueryWrapper<Material> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(Material::getIsDeleted,false);

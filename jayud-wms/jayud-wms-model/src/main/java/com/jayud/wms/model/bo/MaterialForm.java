@@ -120,6 +120,14 @@ public class MaterialForm extends SysBaseEntity {
     @ApiModelProperty(value = "上传文件")
     private String description;
 
+    @ApiModelProperty(value = "库位ID")
+    private Long warehouseLocationId;
+
+    @ApiModelProperty(value = "库位编号")
+    private String warehouseLocationCode;
+
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
 
     public void checkParam() {
         if (StringUtils.isEmpty(this.containerNum)) {

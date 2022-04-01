@@ -114,6 +114,7 @@ public class ReceiptNotice extends SysBaseEntity {
 
     @ApiModelProperty(value = "主订单号")
     private String mainOrderNumber;
+
     @ApiModelProperty(value = "单位")
     private String unit;
 

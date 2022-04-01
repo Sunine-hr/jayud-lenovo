@@ -14,10 +14,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.wms.mapper.ReceiptMapper;
-import com.jayud.wms.model.bo.MaterialForm;
-import com.jayud.wms.model.bo.QualityMaterialForm;
-import com.jayud.wms.model.bo.QueryReceiptForm;
-import com.jayud.wms.model.bo.ReceiptForm;
+import com.jayud.wms.model.bo.*;
 import com.jayud.wms.model.enums.InboundOrderProStatusEnum;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
@@ -76,6 +73,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 
     @Autowired
     private IContainerService containerService;
+
+    @Autowired
+    public IWmsReceiptAppendService wmsReceiptAppendService;
 
 
     @Override
@@ -213,12 +213,12 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         //获取物理信息
         List<Material> materials = this.materialService.getByCondition(new Material().setOrderId(receiptVO.getId()).setIsDeleted(false));
         List<MaterialVO> materialList = ConvertUtil.convertList(materials, MaterialVO.class);
-        //获取物料sn信息
-        List<MaterialSn> materialSns = this.materialSnService.getByCondition(new MaterialSn().setOrderId(receiptVO.getId()).setIsDeleted(false));
-        List<MaterialSnVO> materialSnList = ConvertUtil.convertList(materialSns, MaterialSnVO.class);
+//        //获取物料sn信息
+//        List<MaterialSn> materialSns = this.materialSnService.getByCondition(new MaterialSn().setOrderId(receiptVO.getId()).setIsDeleted(false));
+//        List<MaterialSnVO> materialSnList = ConvertUtil.convertList(materialSns, MaterialSnVO.class);
 
         receiptVO.setMaterialForms(materialList);
-        receiptVO.setMaterialSnForms(materialSnList);
+//        receiptVO.setMaterialSnForms(materialSnList);
 
         return receiptVO;
     }
@@ -232,9 +232,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         form.calculateTotalQuantity();
 
         //物料超收策略
-        List<String> materialCodes = form.getMaterialForms().stream().map(e -> e.getMaterialCode()).collect(Collectors.toList());
-        Map<String, BigDecimal> overchargePolicyMap = this.wmsMaterialBasicInfoService.getOverchargePolicy(materialCodes);
-        form.checkOverchargePolicy(overchargePolicyMap);
+//        List<String> materialCodes = form.getMaterialForms().stream().map(e -> e.getMaterialCode()).collect(Collectors.toList());
+//        Map<String, BigDecimal> overchargePolicyMap = this.wmsMaterialBasicInfoService.getOverchargePolicy(materialCodes);
+//        form.checkOverchargePolicy(overchargePolicyMap);
 //        form.calculationStatus();
         Receipt receipt = ConvertUtil.convert(form, Receipt.class);
         Date date = new Date();
@@ -245,7 +245,7 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         List<Material> materials = new ArrayList<>();
         for (MaterialForm materialForm : materialForms) {
             materialForm.calculationStatus();
-            Material material = ConvertUtil.convert(materialForm, Material.class).setStatus(materialForm.getStatus()).setIsPutShelf(receipt.getIsPutShelf());
+            Material material = ConvertUtil.convert(materialForm, Material.class).setStatus(materialForm.getStatus());
             material.setOrderNum(receipt.getReceiptNum()).setOrderId(receipt.getId());
             if (materialForm.getId() == null) {
 //                if (material.getStatus().equals(MaterialStatusEnum.FOUR.getCode())) continue;
@@ -256,6 +256,24 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
             materials.add(material);
         }
         this.materialService.saveOrUpdateBatch(materials);
+
+
+        //收货单附加表
+        List<WmsReceiptAppendForm> wmsReceiptAppendForms = form.getWmsReceiptAppendForms();
+        List<WmsReceiptAppend> wmsReceiptAppends = new ArrayList<>();
+
+        for (WmsReceiptAppendForm wmsReceiptAppendForm : wmsReceiptAppendForms) {
+
+            WmsReceiptAppend convert = ConvertUtil.convert(wmsReceiptAppendForm, WmsReceiptAppend.class);
+
+            if (convert.getId() == null) {
+                convert.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+            } else {
+                convert.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(date);
+            }
+            wmsReceiptAppends.add(convert);
+        }
+        wmsReceiptAppendService.saveOrUpdateBatch(wmsReceiptAppends);
     }
 
     /**

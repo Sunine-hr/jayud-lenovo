@@ -3,6 +3,7 @@ package com.jayud.wms.controller;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.constant.SysTips;
@@ -10,6 +11,7 @@ import com.jayud.common.dto.QueryClientQualityMaterialForm;
 import com.jayud.common.dto.QueryClientReceiptForm;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QueryReceiptForm;
 import com.jayud.wms.model.bo.ReceiptForm;
@@ -58,6 +60,8 @@ public class ReceiptController {
     @Autowired
     public IWmsMaterialBasicInfoService wmsMaterialBasicInfoService;
 
+    @Autowired
+    private AuthClient authClient;
     /**
      * 分页查询数据
      *
@@ -179,7 +183,7 @@ public class ReceiptController {
 //    }
 
     /**
-     * 创建/编辑订单
+     * 创建/编辑订单   只有编辑
      */
     @ApiOperation("创建/编辑订单")
     @PostMapping(value = "/createOrder")
@@ -262,6 +266,18 @@ public class ReceiptController {
         }
         receiptService.cancel(id);
         return BaseResult.ok();
+    }
+
+
+    @ApiOperation("收货单部分下拉值")
+    @GetMapping(value = "/getReceiptDeliveryPaidType")
+    public BaseResult getReceiptOfGoodsAdviceOrderSourceType() {
+        //收货单部分下拉值
+        //收货单订单状态
+        BaseResult<List<SysDictItem>> wmsStorageReceivingNote = authClient.selectItemByDictCode("wms_storage_receiving_note");
+        Map<String, Object> map = new HashMap<>();
+        map.put("wmsStorageReceivingNote", wmsStorageReceivingNote);
+        return BaseResult.ok(map);
     }
 
 

@@ -264,32 +264,34 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
             Date date = new Date();
             Receipt receipt = ConvertUtil.convert(details, Receipt.class);
             //把数据转移到收货单
-            String receiptOrderNo = authClient.getOrder("receipt", new Date()).getResult();
+            BaseResult  baseResult = authClient.getOrderFeign("receipt", new Date());
+            HashMap data = (HashMap)baseResult.getResult();
+//            String receiptOrderNo = authClient.getOrder("receipt", new Date()).getResult();
             receipt.setIsPutShelf(false).setActualNum(0.0).setActualVolume(0.0)
                     .setActualWeight(0.0).setProcessFlag(null).setStatus(ReceiptStatusEnum.ONE.getCode()).setPlannedReceivingTime(details.getEstimatedArrivalTime())
-                    .setReceiptNum(receiptOrderNo).setId(null);
+                    .setReceiptNum(data.get("order").toString()).setId(null);
 
             this.receiptService.save(receipt);
 
             List<NoticeMaterialVO> noticeMaterialList = details.getNoticeMaterialForms();
             List<Material> materials = new ArrayList<>();
             for (NoticeMaterialVO noticeMaterialVO : noticeMaterialList) {
-                BigDecimal account = wmsOutboundOrderInfoToMaterialService.getDistributionAccount(noticeMaterialVO.getMaterialCode(), noticeMaterialVO.getUnit(), new BigDecimal(noticeMaterialVO.getNum()));
+//                BigDecimal account = wmsOutboundOrderInfoToMaterialService.getDistributionAccount(noticeMaterialVO.getMaterialCode(), noticeMaterialVO.getUnit(), new BigDecimal(noticeMaterialVO.getNum()));
                 Material material = ConvertUtil.convert(noticeMaterialVO, Material.class);
                 material.setId(null).setCreateTime(date).setCreateBy(CurrentUserUtil.getUsername()).setUpdateBy(null).setUpdateTime(null);
-                material.setStatus(MaterialStatusEnum.ONE.getCode()).setUnit("EA").setNum(account.doubleValue()).setActualNum(0.0).setIsPutShelf(false).setOrderNum(receiptOrderNo).setOrderId(receipt.getId());
+                material.setStatus(MaterialStatusEnum.ONE.getCode()).setUnit(material.getUnit()).setNum(material.getNum()).setActualNum(0.0).setIsPutShelf(false).setOrderNum(data.get("order").toString()).setOrderId(receipt.getId());
                 materials.add(material);
             }
             this.materialService.saveBatch(materials);
 
-            List<NoticeSnMaterialVO> noticeSnMaterialList = details.getNoticeSnMaterialForms();
-            List<MaterialSn> materialSns = new ArrayList<>();
-            for (NoticeSnMaterialVO noticeSnMaterialVO : noticeSnMaterialList) {
-                MaterialSn materialSn = ConvertUtil.convert(noticeSnMaterialVO, MaterialSn.class);
-                materialSn.setId(null).setCreateTime(date).setCreateBy(CurrentUserUtil.getUsername()).setUpdateBy(null).setUpdateTime(null);
-                materialSn.setStatus(MaterialSnStatusEnum.ONE.getCode()).setOrderNum(receiptOrderNo).setOrderId(receipt.getId());
-                materialSns.add(materialSn);
-            }
+//            List<NoticeSnMaterialVO> noticeSnMaterialList = details.getNoticeSnMaterialForms();
+//            List<MaterialSn> materialSns = new ArrayList<>();
+//            for (NoticeSnMaterialVO noticeSnMaterialVO : noticeSnMaterialList) {
+//                MaterialSn materialSn = ConvertUtil.convert(noticeSnMaterialVO, MaterialSn.class);
+//                materialSn.setId(null).setCreateTime(date).setCreateBy(CurrentUserUtil.getUsername()).setUpdateBy(null).setUpdateTime(null);
+//                materialSn.setStatus(MaterialSnStatusEnum.ONE.getCode()).setOrderNum(receiptOrderNo).setOrderId(receipt.getId());
+//                materialSns.add(materialSn);
+//            }
 //            this.materialSnService.saveBatch(materialSns);
 
             //收货通知单更改数据

@@ -68,18 +68,29 @@ public class QueryReceiptForm extends SysBaseEntity {
     @ApiModelProperty(value = "收货时间")
     private List<String> timeOfReceipt;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
 
-    //公司
-    private List<String> orgIds;
+    @ApiModelProperty(value = "单位")
+    private String unit;
 
-    //是否在这个体系内
-    private Boolean isCharge;
+    @ApiModelProperty(value = "车牌")
+    private String carBarnd;
 
-    //货主id
-    private List<String> owerIdList;
+    @ApiModelProperty(value = "车型")
+    private String carModel;
 
-    //仓库id
-    private List<String> warehouseIdList;
+    @ApiModelProperty(value = "司机")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
+
+    @ApiModelProperty(value = "客户code")
+    private String clientCode;
+
+    @ApiModelProperty(value = "单据类型")
+    private String orderType;
 
 
 }

@@ -3,6 +3,7 @@ package com.jayud.wms.model.vo;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
 import com.jayud.wms.model.enums.ReceiptStatusEnum;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -133,6 +134,34 @@ public class ReceiptVO extends SysBaseEntity {
     @ApiModelProperty(value = "订单状态明细 1：待收货：2：部分收货，3：完全收货，4：整单撤销）")
     private String statusDetails;
 
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrderNumber;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    @ApiModelProperty(value = "车牌")
+    private String carBarnd;
+
+    @ApiModelProperty(value = "车型")
+    private String carModel;
+
+    @ApiModelProperty(value = "司机")
+    private String carDriver;
+
+    @ApiModelProperty(value = "联系方式")
+    private String carRelation;
+
+    @ApiModelProperty(value = "客户code")
+    private String clientCode;
+
+    @ApiModelProperty(value = "入仓号集合")
+    private String inWarehouseNumberList;
+
+    public void setStatus(Integer status) {
+        this.status = status;
+        this.statusDetails = ReceiptStatusEnum.getDesc(status);
+    }
 
     public void calculationStatus() {
         if (this.actualNum.compareTo(this.totalNum) >= 0) {

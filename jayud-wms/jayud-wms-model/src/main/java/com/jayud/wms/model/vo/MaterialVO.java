@@ -111,6 +111,18 @@ public class MaterialVO extends SysBaseEntity {
     @ApiModelProperty(value = "上传文件")
     private String description;
 
+    @ApiModelProperty(value = "库区名称")
+    private String warehouseAreaName;
+
+    @ApiModelProperty(value = "库位ID")
+    private Long warehouseLocationId;
+
+    @ApiModelProperty(value = "库位编号")
+    private String warehouseLocationCode;
+
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
     public void setStatus(Integer status) {
         this.status = status;
         this.statusDesc = MaterialStatusEnum.getDesc(status);

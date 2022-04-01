@@ -48,7 +48,19 @@ public class WmsReceiptAppendForm extends SysBaseEntity {
     private Boolean isDeleted;
 
 
-
-
+    /**
+     * 计算合计数量
+     */
+//    public void calculateTotalQuantity() {
+//
+//        Double totalPrices = 0.0;
+//        for (NoticeMaterialForm noticeMaterialForm : noticeMaterialForms) {
+//
+//            totalPrices += noticeMaterialForm.getNum() * noticeMaterialForm.getVolume().doubleValue();
+//        }
+//
+//        this.totalPrices = totalPrices;
+//    }
+//
 
 }

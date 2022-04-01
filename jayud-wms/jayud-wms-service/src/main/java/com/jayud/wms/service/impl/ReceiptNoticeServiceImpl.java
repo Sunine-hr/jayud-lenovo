@@ -268,7 +268,7 @@ public class ReceiptNoticeServiceImpl extends ServiceImpl<ReceiptNoticeMapper, R
             HashMap data = (HashMap)baseResult.getResult();
 //            String receiptOrderNo = authClient.getOrder("receipt", new Date()).getResult();
             receipt.setIsPutShelf(false).setActualNum(0.0).setActualVolume(0.0)
-                    .setActualWeight(0.0).setProcessFlag(null).setStatus(ReceiptStatusEnum.ONE.getCode()).setPlannedReceivingTime(details.getEstimatedArrivalTime())
+                    .setActualWeight(0.0).setProcessFlag(null).setStatus(ReceiptStatusEnum.ONE.getCode()).setPlannedReceivingTime(details.getEstimatedArrivalTime()).setOrderType(details.getDocumentType())
                     .setReceiptNum(data.get("order").toString()).setId(null);
 
             this.receiptService.save(receipt);

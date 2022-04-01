@@ -1,6 +1,5 @@
 package com.jayud.wms.model.bo;
 
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,7 +14,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="收货单附加服务表对象", description="收货单附加服务表")
+@ApiModel(value = "收货单附加服务表对象", description = "收货单附加服务表")
 public class WmsReceiptAppendForm extends SysBaseEntity {
 
 
@@ -54,16 +53,14 @@ public class WmsReceiptAppendForm extends SysBaseEntity {
     /**
      * 计算合计数量
      */
-//    public void calculateTotalQuantity() {
-//
-//        Double totalPrices = 0.0;
-//        for (NoticeMaterialForm noticeMaterialForm : noticeMaterialForms) {
-//
-//            totalPrices += noticeMaterialForm.getNum() * noticeMaterialForm.getVolume().doubleValue();
-//        }
-//
-//        this.totalPrices = totalPrices;
-//    }
-//
+    public void calculateTotalQuantity() {
+        Double totalPrices = 0.0;
+        if (num != null && unitPrice != null) {
+            totalPrices = num * unitPrice;
+        }
+
+        this.totalPrices = totalPrices;
+    }
+
 
 }

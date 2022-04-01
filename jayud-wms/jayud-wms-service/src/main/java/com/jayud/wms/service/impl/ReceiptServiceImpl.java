@@ -26,6 +26,7 @@ import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.vo.MaterialSnVO;
 import com.jayud.wms.model.vo.MaterialVO;
 import com.jayud.wms.model.vo.ReceiptVO;
+import com.jayud.wms.model.vo.WmsReceiptAppendVO;
 import com.jayud.wms.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,7 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
     private AuthClient authClient;
 
     @Autowired
-    public IWmsReceiptAppendService wmsReceiptAppendService;
+    private IWmsReceiptAppendService wmsReceiptAppendService;
 
 
     @Override
@@ -222,16 +223,16 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         //获取物理信息
         List<Material> materials = this.materialService.getByCondition(new Material().setOrderId(receiptVO.getId()).setIsDeleted(false));
         List<MaterialVO> materialList = ConvertUtil.convertList(materials, MaterialVO.class);
-//        //获取物料sn信息
-//        List<MaterialSn> materialSns = this.materialSnService.getByCondition(new MaterialSn().setOrderId(receiptVO.getId()).setIsDeleted(false));
-//        List<MaterialSnVO> materialSnList = ConvertUtil.convertList(materialSns, MaterialSnVO.class);
+
+        WmsReceiptAppend wmsReceiptAppend = new WmsReceiptAppend();
+        wmsReceiptAppend.setOrderId(receiptVO.getId());
+        wmsReceiptAppend.setIsDeleted(false);
+        List<WmsReceiptAppend> wmsReceiptAppends = this.wmsReceiptAppendService.getByCondition(wmsReceiptAppend);
+        List<WmsReceiptAppendVO> wmsReceiptAppendList = ConvertUtil.convertList(wmsReceiptAppends, WmsReceiptAppendVO.class);
+
 
         receiptVO.setMaterialForms(materialList);
-        receiptVO.setWmsReceiptAppendForms(null);
-//        receiptVO.setMaterialSnForms(materialSnList);
-
-
-
+        receiptVO.setWmsReceiptAppendForms(wmsReceiptAppendList);
 
         return receiptVO;
     }
@@ -244,11 +245,6 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 
         form.calculateTotalQuantity();
 
-        //物料超收策略
-//        List<String> materialCodes = form.getMaterialForms().stream().map(e -> e.getMaterialCode()).collect(Collectors.toList());
-//        Map<String, BigDecimal> overchargePolicyMap = this.wmsMaterialBasicInfoService.getOverchargePolicy(materialCodes);
-//        form.checkOverchargePolicy(overchargePolicyMap);
-//        form.calculationStatus();
         Receipt receipt = ConvertUtil.convert(form, Receipt.class);
         Date date = new Date();
         receipt.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(date);
@@ -276,15 +272,19 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         List<WmsReceiptAppend> wmsReceiptAppends = new ArrayList<>();
 
         for (WmsReceiptAppendForm wmsReceiptAppendForm : wmsReceiptAppendForms) {
+            //计算总价
+            wmsReceiptAppendForm.calculateTotalQuantity();
+            WmsReceiptAppend wmsReceiptAppend = ConvertUtil.convert(wmsReceiptAppendForm, WmsReceiptAppend.class);
+            wmsReceiptAppend.setOrderNum(receipt.getReceiptNum());
+            wmsReceiptAppend.setOrderId(receipt.getId());
+            if (wmsReceiptAppend.getId() == null) {
 
-            WmsReceiptAppend convert = ConvertUtil.convert(wmsReceiptAppendForm, WmsReceiptAppend.class);
-
-            if (convert.getId() == null) {
-                convert.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
+                wmsReceiptAppend.setCreateBy(CurrentUserUtil.getUsername()).setCreateTime(date);
             } else {
-                convert.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(date);
+
+                wmsReceiptAppend.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(date);
             }
-            wmsReceiptAppends.add(convert);
+            wmsReceiptAppends.add(wmsReceiptAppend);
         }
         wmsReceiptAppendService.saveOrUpdateBatch(wmsReceiptAppends);
     }

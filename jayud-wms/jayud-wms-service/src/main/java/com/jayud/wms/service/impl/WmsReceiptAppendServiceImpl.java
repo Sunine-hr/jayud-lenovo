@@ -72,4 +72,9 @@ public class WmsReceiptAppendServiceImpl extends ServiceImpl<WmsReceiptAppendMap
         return this.baseMapper.queryWmsReceiptAppendForExcel(paramMap);
     }
 
+    @Override
+    public List<WmsReceiptAppend> getByCondition(WmsReceiptAppend condition) {
+        return this.baseMapper.selectList(new QueryWrapper<>(condition));
+    }
+
 }

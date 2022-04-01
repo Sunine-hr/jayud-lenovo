@@ -162,6 +162,14 @@
 
         </where>
     </sql>
+    <update id="delQcno">
+        UPDATE wms_receipt SET update_time=now(),update_by=#{username},qc_no=null
+        WHERE is_deleted = 0
+        AND receipt_num IN
+        <foreach item="orderNumber" collection="orderNumberList" open="(" separator=","  close=")" >
+            #{orderNumber}
+        </foreach>
+    </update>
 
     <select id="" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.Receipt">
         <include refid="selects"/>

@@ -40,4 +40,14 @@ public interface ReceiptMapper extends BaseMapper<Receipt> {
      * @return
      */
     List<LinkedHashMap<String, Object>> queryReceiptForExcel(@Param("receipt") QueryReceiptForm receipt);
+
+    /**
+     * @description 删除质检单编码
+     * @author  ciro
+     * @date   2022/4/1 13:43
+     * @param: orderNumberList
+     * @param: username
+     * @return: int
+     **/
+    int delQcno(@Param("orderNumberList") List<String> orderNumberList,@Param("username") String username);
 }

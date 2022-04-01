@@ -17,6 +17,7 @@ import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.mapper.QualityInspectionMapper;
 import com.jayud.wms.mapper.QualityInspectionMaterialMapper;
+import com.jayud.wms.mapper.ReceiptMapper;
 import com.jayud.wms.model.bo.*;
 import com.jayud.wms.model.enums.InboundOrderProStatusEnum;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
@@ -71,6 +72,8 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
 
     @Autowired
     private QualityInspectionMaterialMapper qualityInspectionMaterialMapper;
+    @Autowired
+    private ReceiptMapper receiptMapper;
 
     @Override
     public IPage<QualityInspectionVO> selectPage(QueryQualityInspectionForm queryQualityInspectionForm,
@@ -376,8 +379,10 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
             });
         }
         if (CollUtil.isNotEmpty(successList)){
+            List<String> numList = successList.stream().map(x->x.getReceiptNum()).collect(Collectors.toList());
             List<Long> idList = successList.stream().map(x->x.getId()).collect(Collectors.toList());
             this.baseMapper.logicDelByIds(idList,CurrentUserUtil.getUsername());
+            receiptMapper.delQcno(numList,CurrentUserUtil.getUsername());
             qualityInspectionMaterialMapper.logicDelByQualityIds(idList,CurrentUserUtil.getUsername());
         }
         if (CollUtil.isNotEmpty(errList)){

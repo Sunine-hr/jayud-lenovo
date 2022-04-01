@@ -15,6 +15,7 @@ import com.jayud.common.exception.ServiceException;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.mapper.ReceiptMapper;
 import com.jayud.wms.model.bo.*;
 import com.jayud.wms.model.enums.InboundOrderProStatusEnum;
@@ -78,6 +79,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 
     @Autowired
     private IContainerService containerService;
+
+    @Autowired
+    private AuthClient authClient;
 
 
     @Override
@@ -704,8 +708,10 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         for (Receipt receipt : receiptList){
             QualityInspection qualityInspection = new QualityInspection();
             BeanUtils.copyProperties(receipt,qualityInspection);
-            qualityInspection.setQcNo("");
-            receipt.setQcNo("");
+            BaseResult  baseResult = authClient.getOrderFeign("quality_inspection", new Date());
+            HashMap data = (HashMap)baseResult.getResult();
+            qualityInspection.setQcNo(data.get("order").toString());
+            receipt.setQcNo(data.get("order").toString());
             qualityInspection.setId(null);
             qualityInspection.setUpdateBy("");
             qualityInspection.setUpdateTime(null);

@@ -270,9 +270,9 @@ public class ReceiptController {
     }
 
 
-    @ApiOperation("收货单部分下拉值")
-    @GetMapping(value = "/getReceiptDeliveryPaidType")
-    public BaseResult getReceiptOfGoodsAdviceOrderSourceType() {
+    @ApiOperation("收货单订单状态下拉值")
+    @GetMapping(value = "/getReceivingOrderStatusType")
+    public BaseResult getReceivingOrderStatusType() {
         //收货单部分下拉值
         //收货单订单状态
         BaseResult<List<SysDictItem>> wmsStorageReceivingNote = authClient.selectItemByDictCode("wms_storage_receiving_note");
@@ -280,23 +280,6 @@ public class ReceiptController {
         map.put("wmsStorageReceivingNote", wmsStorageReceivingNote);
         return BaseResult.ok(map);
     }
-
-
-    @ApiOperation("收货单订单状态下拉值")
-    @GetMapping(value = "/getReceivingOrderStatusType")
-    public BaseResult getReceivingOrderStatusType() {
-        //收货单订单状态下拉值
-        List<LinkedHashMap<String, Object>> receivingOrderStatus = authService.queryDictByDictType("receivingOrderStatus");
-
-        receivingOrderStatus.stream().forEach(ro -> {
-            ro.put("value", Integer.parseInt(ro.get("value").toString()));
-
-        });
-        Map<String, Object> map = new HashMap<>();
-        map.put("receivingOrderStatus", receivingOrderStatus);
-        return BaseResult.ok(map);
-    }
-
 
     /**
      * 根据查询条件导出收货单

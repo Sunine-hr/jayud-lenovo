@@ -3,6 +3,7 @@ package com.jayud.wms.model.vo;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jayud.wms.model.bo.WmsReceiptAppendForm;
 import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
 import com.jayud.wms.model.enums.ReceiptStatusEnum;
 import com.jayud.common.entity.SysBaseEntity;
@@ -131,7 +132,11 @@ public class ReceiptVO extends SysBaseEntity {
     @ApiModelProperty(value = "物料sn信息")
     private List<MaterialSnVO> materialSnForms;
 
-    @ApiModelProperty(value = "订单状态明细 1：待收货：2：部分收货，3：完全收货，4：整单撤销）")
+    @ApiModelProperty(value = "收货单附加服务表对象")
+    private List<WmsReceiptAppendVO> wmsReceiptAppendForms;
+
+
+    @ApiModelProperty(value = "订单状态明细 1：待收货：2：部分收货，3：完全收货，4：整单撤销 5：待上架, 6:已上架）")
     private String statusDetails;
 
     @ApiModelProperty(value = "主订单号")

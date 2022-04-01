@@ -227,7 +227,11 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 //        List<MaterialSnVO> materialSnList = ConvertUtil.convertList(materialSns, MaterialSnVO.class);
 
         receiptVO.setMaterialForms(materialList);
+        receiptVO.setWmsReceiptAppendForms(null);
 //        receiptVO.setMaterialSnForms(materialSnList);
+
+
+
 
         return receiptVO;
     }

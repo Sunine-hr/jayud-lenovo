@@ -4,6 +4,7 @@ package com.jayud.wms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.common.BaseResult;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.QualityInspectionForm;
 import com.jayud.wms.model.bo.QueryQualityInspectionForm;
 import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
@@ -92,4 +93,13 @@ public interface IQualityInspectionService extends IService<QualityInspection> {
      * @return: com.jayud.common.BaseResult
      **/
     BaseResult saveDetail(QualityInspectionVO qualityInspectionVO);
+
+    /**
+     * @description 删除质检
+     * @author  ciro
+     * @date   2022/4/1 11:19
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult deleteIds(DeleteForm deleteForm);
 }

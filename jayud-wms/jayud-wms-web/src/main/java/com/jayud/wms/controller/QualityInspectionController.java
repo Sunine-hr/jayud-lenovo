@@ -10,6 +10,7 @@ import com.jayud.common.dto.QueryClientQualityInspectionForm;
 import com.jayud.common.result.BasePage;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.QualityInspectionForm;
 import com.jayud.wms.model.bo.QueryQualityInspectionForm;
 import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
@@ -332,6 +333,12 @@ public class QualityInspectionController {
     @PostMapping(value = "/saveDetail")
     public BaseResult saveDetail(@RequestBody QualityInspectionVO qualityInspectionVO){
         return qualityInspectionService.saveDetail(qualityInspectionVO);
+    }
+
+    @ApiOperation("删除质检集合")
+    @PostMapping(value = "/deleteIds")
+    public BaseResult deleteIds(@RequestBody DeleteForm deleteForm){
+        return qualityInspectionService.deleteIds(deleteForm);
     }
 
 

@@ -2,6 +2,8 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,10 +16,7 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.common.utils.StringUtils;
 import com.jayud.wms.mapper.ReceiptMapper;
-import com.jayud.wms.model.bo.MaterialForm;
-import com.jayud.wms.model.bo.QualityMaterialForm;
-import com.jayud.wms.model.bo.QueryReceiptForm;
-import com.jayud.wms.model.bo.ReceiptForm;
+import com.jayud.wms.model.bo.*;
 import com.jayud.wms.model.enums.InboundOrderProStatusEnum;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
@@ -27,6 +26,7 @@ import com.jayud.wms.model.vo.MaterialSnVO;
 import com.jayud.wms.model.vo.MaterialVO;
 import com.jayud.wms.model.vo.ReceiptVO;
 import com.jayud.wms.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +73,8 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
     private IShelfOrderTaskService shelfOrderTaskService;
     @Autowired
     private IWmsMaterialPackingSpecsService wmsMaterialPackingSpecsService;
+    @Autowired
+    private IQualityInspectionMaterialService qualityInspectionMaterialService;
 
     @Autowired
     private IContainerService containerService;
@@ -648,5 +650,83 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
                 log.warn("小于 status   3 已收货  ");
             }
         }
+    }
+
+    @Override
+    public BaseResult convertQualit(DeleteForm deleteForm) {
+        if (CollUtil.isEmpty(deleteForm.getIds())){
+            return BaseResult.error(SysTips.IDS_ISEMPTY);
+        }
+        //查询出数据
+        List<String> receiptNumberList = deleteForm.getNumberList();
+        LambdaQueryWrapper<Receipt> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Receipt::getIsDeleted,false);
+        lambdaQueryWrapper.in(Receipt::getReceiptNum,receiptNumberList);
+        List<Receipt> receiptList = this.list(lambdaQueryWrapper);
+        List<String> errList = new ArrayList<>();
+        List<Receipt> successList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(receiptList)){
+            //查询已生成质检
+            LambdaQueryWrapper<QualityInspection> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(QualityInspection::getIsDeleted,false);
+            queryWrapper.in(QualityInspection::getReceiptNum,receiptNumberList);
+            List<QualityInspection> qualityInspectionList = qualityInspectionService.list(queryWrapper);
+            receiptNumberList = qualityInspectionList.stream().map(x->x.getReceiptNum()).distinct().collect(Collectors.toList());
+            List<String> finalReceiptNumberList = receiptNumberList;
+            //过滤出未生成质检
+            receiptList.forEach(receipt -> {
+                if (finalReceiptNumberList.contains(receipt.getReceiptNum())){
+                    errList.add(receipt.getReceiptNum());
+                }else {
+                    successList.add(receipt);
+                }
+            });
+        }
+        if (CollUtil.isNotEmpty(successList)){
+            changeToQuality(receiptList);
+        }
+
+        if (CollUtil.isNotEmpty(errList)){
+            return BaseResult.error(org.apache.commons.lang3.StringUtils.join(errList,StrUtil.COMMA)+" 已转为质检单请勿重复提交！");
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
+    }
+
+    /**
+     * @description 转换数据
+     * @author  ciro
+     * @date   2022/4/1 13:28
+     * @param: receiptList
+     * @return: void
+     **/
+    private void changeToQuality(List<Receipt> receiptList){
+        List<QualityInspectionMaterial> materialList = new ArrayList<>();
+        for (Receipt receipt : receiptList){
+            QualityInspection qualityInspection = new QualityInspection();
+            BeanUtils.copyProperties(receipt,qualityInspection);
+            qualityInspection.setQcNo("");
+            receipt.setQcNo("");
+            qualityInspection.setId(null);
+            qualityInspection.setUpdateBy("");
+            qualityInspection.setUpdateTime(null);
+            qualityInspectionService.save(qualityInspection);
+            LambdaQueryWrapper<Material> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(Material::getIsDeleted,false);
+            lambdaQueryWrapper.eq(Material::getOrderId,receipt.getId());
+            List<Material> materials = materialService.list(lambdaQueryWrapper);
+            for (Material material : materials){
+                QualityInspectionMaterial qualityInspectionMaterial = new QualityInspectionMaterial();
+                BeanUtils.copyProperties(material,qualityInspectionMaterial);
+                qualityInspectionMaterial.setQualityInspectionId(qualityInspection.getId());
+                qualityInspectionMaterial.setId(null);
+                qualityInspectionMaterial.setUpdateBy("");
+                qualityInspectionMaterial.setUpdateTime(null);
+                materialList.add(qualityInspectionMaterial);
+            }
+        }
+        if (CollUtil.isNotEmpty(materialList)){
+            qualityInspectionMaterialService.saveBatch(materialList);
+        }
+        this.updateBatchById(receiptList);
     }
 }

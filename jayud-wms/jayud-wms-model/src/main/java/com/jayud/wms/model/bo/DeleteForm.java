@@ -18,5 +18,8 @@ public class DeleteForm{
     @ApiModelProperty(value = "所属仓库id")
     private List<Long> ids;
 
+    @ApiModelProperty(value = "编码集合")
+    private List<String> numberList;
+
 
 }

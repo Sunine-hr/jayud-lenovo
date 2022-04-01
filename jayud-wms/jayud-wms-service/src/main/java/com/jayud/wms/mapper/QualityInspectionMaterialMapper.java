@@ -42,4 +42,14 @@ public interface QualityInspectionMaterialMapper extends BaseMapper<QualityInspe
      */
     QualityInspectionMaterial findQualityInspectionMaterialOne(@Param("qualityInspectionMaterial") QueryQualityInspectionMaterialForm qualityInspectionMaterial);
 
+    /**
+     * @description 根据质检单id集合删除
+     * @author  ciro
+     * @date   2022/4/1 11:43
+     * @param: qualityIds
+     * @param: username
+     * @return: int
+     **/
+    int logicDelByQualityIds(@Param("qualityIds") List<Long> qualityIds,@Param("username") String username);
+
 }

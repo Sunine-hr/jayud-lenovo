@@ -3,6 +3,7 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.QueryReceiptForm;
 import com.jayud.wms.model.bo.ReceiptForm;
 import com.jayud.wms.model.po.Receipt;
@@ -114,5 +115,14 @@ public interface IReceiptService extends IService<Receipt> {
 
     //test
      void updateMaterial(QueryClientQualityMaterialForm form);
+
+     /**
+      * @description 转为质检
+      * @author  ciro
+      * @date   2022/4/1 11:12
+      * @param: deleteForm
+      * @return: com.jayud.common.BaseResult
+      **/
+    BaseResult convertQualit(DeleteForm deleteForm);
 
 }

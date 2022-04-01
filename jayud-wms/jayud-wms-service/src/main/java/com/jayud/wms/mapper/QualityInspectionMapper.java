@@ -36,4 +36,14 @@ public interface QualityInspectionMapper extends BaseMapper<QualityInspection> {
      * @return
      */
     List<LinkedHashMap<String, Object>> queryQualityInspectionForExcel(@Param("qualityInspection") QueryQualityInspectionForm qualityInspection);
+
+    /**
+     * @description 根据id集合逻辑删除
+     * @author  ciro
+     * @date   2022/4/1 11:39
+     * @param: ids
+     * @param: username
+     * @return: int
+     **/
+    int logicDelByIds(@Param("ids") List<Long> ids,@Param("username") String username);
 }

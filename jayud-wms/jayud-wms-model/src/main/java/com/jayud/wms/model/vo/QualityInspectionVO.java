@@ -121,7 +121,13 @@ public class QualityInspectionVO extends SysBaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
-        this.statusDesc = this.status == 1 ? "未质检" : "已质检";
+        if (this.status == 1){
+            this.statusDesc = "未质检";
+        }else if (this.status == 2){
+            this.statusDesc = "已质检";
+        }else if (this.status == 3){
+            this.statusDesc = "质检中";
+        }
     }
 
     public List<QualityInspectionMaterialVO> getMaterialForms() {

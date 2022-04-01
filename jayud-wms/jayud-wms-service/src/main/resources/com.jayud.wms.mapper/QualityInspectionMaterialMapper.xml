@@ -163,6 +163,14 @@
 
         </where>
     </sql>
+    <update id="logicDelByQualityIds">
+        UPDATE wms_quality_inspection_material  SET is_deleted = 1,update_time=now(),update_by=#{username}
+        WHERE is_deleted = 0
+        AND quality_inspection_id IN
+        <foreach item="id" collection="qualityIds" open="(" separator=","  close=")" >
+            #{id}
+        </foreach>
+    </update>
 
     <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.QualityInspectionMaterial">
         <include refid="selects"/>

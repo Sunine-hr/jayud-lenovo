@@ -16,10 +16,8 @@ import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.mapper.QualityInspectionMapper;
-import com.jayud.wms.model.bo.QualityInspectionForm;
-import com.jayud.wms.model.bo.QualityInspectionMaterialForm;
-import com.jayud.wms.model.bo.QueryQualityInspectionForm;
-import com.jayud.wms.model.bo.QueryQualityInspectionMaterialForm;
+import com.jayud.wms.mapper.QualityInspectionMaterialMapper;
+import com.jayud.wms.model.bo.*;
 import com.jayud.wms.model.enums.InboundOrderProStatusEnum;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.model.po.OrderTrack;
@@ -70,6 +68,9 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
     private IIncomingSeedingService incomingSeedingService;
     @Autowired
     private IShelfOrderService shelfOrderService;
+
+    @Autowired
+    private QualityInspectionMaterialMapper qualityInspectionMaterialMapper;
 
     @Override
     public IPage<QualityInspectionVO> selectPage(QueryQualityInspectionForm queryQualityInspectionForm,
@@ -351,8 +352,70 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
             });
             if (CollUtil.isNotEmpty(updateList)){
                 qualityInspectionMaterialService.updateBatchById(updateList);
+                changeQualityStatus(qualityInspection);
             }
         }
         return BaseResult.ok(SysTips.SUCCESS_MSG);
+    }
+
+    @Override
+    public BaseResult deleteIds(DeleteForm deleteForm) {
+        LambdaQueryWrapper<QualityInspection> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(QualityInspection::getIsDeleted,false);
+        lambdaQueryWrapper.in(QualityInspection::getId,deleteForm.getIds());
+        List<QualityInspection> qualityInspectionList = this.list(lambdaQueryWrapper);
+        List<String> errList = new ArrayList<>();
+        List<QualityInspection> successList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(qualityInspectionList)){
+            qualityInspectionList.forEach(qualityInspection -> {
+                if (qualityInspection.getStatus()!=1){
+                    errList.add(qualityInspection.getQcNo());
+                }else {
+                    successList.add(qualityInspection);
+                }
+            });
+        }
+        if (CollUtil.isNotEmpty(successList)){
+            List<Long> idList = successList.stream().map(x->x.getId()).collect(Collectors.toList());
+            this.baseMapper.logicDelByIds(idList,CurrentUserUtil.getUsername());
+            qualityInspectionMaterialMapper.logicDelByQualityIds(idList,CurrentUserUtil.getUsername());
+        }
+        if (CollUtil.isNotEmpty(errList)){
+            return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已质检或质检中，请勿删除！");
+        }
+        return BaseResult.ok(SysTips.SUCCESS_MSG);
+    }
+
+    /**
+     * @description 修改质检状态
+     * @author  ciro
+     * @date   2022/4/1 11:29
+     * @param: qualityInspection
+     * @return: void
+     **/
+    private void changeQualityStatus(QualityInspection qualityInspection){
+        LambdaQueryWrapper<QualityInspectionMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(QualityInspectionMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.in(QualityInspectionMaterial::getQualityInspectionId,qualityInspection.getId());
+        List<QualityInspectionMaterial> materialList = qualityInspectionMaterialService.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(materialList)){
+            int comfirmCount = 0;
+            int unComfirmCount = 0;
+            for (QualityInspectionMaterial material : materialList){
+                if (!material.getIsComfirm()){
+                    unComfirmCount += 1;
+                }else {
+                    comfirmCount += 1;
+                }
+            }
+            if (comfirmCount == materialList.size()){
+                qualityInspection.setStatus(2);
+            }else if (unComfirmCount == materialList.size()){
+                qualityInspection.setStatus(1);
+            }else {
+                qualityInspection.setStatus(3);
+            }
+            this.updateById(qualityInspection);
+        }
     }
 }

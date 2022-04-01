@@ -10,6 +10,7 @@ import com.jayud.common.dto.QueryClientQualityMaterialForm;
 import com.jayud.common.dto.QueryClientReceiptForm;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QueryReceiptForm;
 import com.jayud.wms.model.bo.ReceiptForm;
@@ -425,6 +426,12 @@ public class ReceiptController {
 
         receiptService.updateMaterial(form);
        return BaseResult.ok();
+    }
+
+    @ApiOperation("转为质检")
+    @PostMapping(value = "/convertQuality")
+    public BaseResult convertQuality(@RequestBody DeleteForm deleteForm){
+        return receiptService.convertQualit(deleteForm);
     }
 
 

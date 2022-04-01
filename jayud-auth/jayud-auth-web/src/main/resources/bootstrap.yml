@@ -2,7 +2,7 @@ spring:
   application:
     name: jayud-auth-web
   profiles:
-    active: dev
+    active: prod
   cloud:
     nacos:
       config:

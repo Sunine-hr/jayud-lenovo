@@ -41,7 +41,7 @@
 <!--        <module>jayud-report</module>-->
 <!--        <module>jayud-work-flow</module>-->
 
-<!--        <module>jayud-system</module>-->
+        <module>jayud-oms-order</module>
         <module>jayud-mybatisplus</module>
         <module>jayud-crm</module>
         <module>jayud-oms</module>

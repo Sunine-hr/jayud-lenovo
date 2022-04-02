@@ -170,16 +170,16 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
             materialService.updateById(material);
         });
         //查询收货单物料sn
-        List<MaterialSn> byCondition1 = materialSnService.getByCondition(new MaterialSn().setOrderId(id).setIsDeleted(false));
-        //删除收货单物料sn
-        byCondition1.stream().forEach(v -> {
-            MaterialSn materialSn = new MaterialSn();
-            materialSn.setId(v.getId());
-            materialSn.setUpdateBy(CurrentUserUtil.getUsername());
-            materialSn.setUpdateTime(new Date());
-            materialSn.setIsDeleted(true);
-            materialSnService.updateById(materialSn);
-        });
+//        List<MaterialSn> byCondition1 = materialSnService.getByCondition(new MaterialSn().setOrderId(id).setIsDeleted(false));
+//        //删除收货单物料sn
+//        byCondition1.stream().forEach(v -> {
+//            MaterialSn materialSn = new MaterialSn();
+//            materialSn.setId(v.getId());
+//            materialSn.setUpdateBy(CurrentUserUtil.getUsername());
+//            materialSn.setUpdateTime(new Date());
+//            materialSn.setIsDeleted(true);
+//            materialSnService.updateById(materialSn);
+//        });
         return true;
     }
 
@@ -253,7 +253,7 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         List<MaterialForm> materialForms = form.getMaterialForms();
         List<Material> materials = new ArrayList<>();
         for (MaterialForm materialForm : materialForms) {
-            materialForm.calculationStatus();
+//            materialForm.calculationStatus();
             Material material = ConvertUtil.convert(materialForm, Material.class).setStatus(materialForm.getStatus());
             material.setOrderNum(receipt.getReceiptNum()).setOrderId(receipt.getId());
             if (materialForm.getId() == null) {

@@ -163,6 +163,9 @@ public class ReceiptVO extends SysBaseEntity {
     @ApiModelProperty(value = "入仓号集合")
     private String inWarehouseNumberList;
 
+    @ApiModelProperty(value = "单据类型")
+    private String orderType;
+
     public void setStatus(Integer status) {
         this.status = status;
         this.statusDetails = ReceiptStatusEnum.getDesc(status);

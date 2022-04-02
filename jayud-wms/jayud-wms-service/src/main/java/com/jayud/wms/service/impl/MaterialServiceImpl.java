@@ -15,12 +15,9 @@ import com.jayud.wms.model.bo.InventoryDetailForm;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QualityMaterialForm;
 import com.jayud.wms.model.enums.ReceiptStatusEnum;
-import com.jayud.wms.model.po.Material;
+import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.mapper.MaterialMapper;
-import com.jayud.wms.model.po.Receipt;
-import com.jayud.wms.model.po.WarehouseArea;
-import com.jayud.wms.model.po.WarehouseLocation;
 import com.jayud.wms.model.vo.WarehouseAreaVO;
 import com.jayud.wms.service.*;
 import com.jayud.common.utils.ConvertUtil;
@@ -59,6 +56,9 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Autowired
     public IWarehouseAreaService warehouseAreaService;
+
+    @Autowired
+    public IWarehouseService warehouseService;
 
     @Override
     public IPage<Material> selectPage(Material material,
@@ -161,12 +161,12 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
-    public   List<Material>  findMaterialOne(Material material) {
+    public List<Material> findMaterialOne(Material material) {
         return this.baseMapper.findMaterialOne(material);
     }
 
     @Override
-    public   List<Material> findMaterialSNOne(QualityMaterialForm qualityMaterialForm) {
+    public List<Material> findMaterialSNOne(QualityMaterialForm qualityMaterialForm) {
         return this.baseMapper.findMaterialSNOne(qualityMaterialForm);
     }
 
@@ -178,29 +178,38 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResult confirmReceipt(DeleteForm deleteForm) {
-        if (CollUtil.isEmpty(deleteForm.getIds())){
+
+        List<MaterialForm> materialForms = deleteForm.getMaterialForms();
+
+        for (int i = 0; i < materialForms.size(); i++) {
+            Material materials = ConvertUtil.convert(materialForms.get(i), Material.class);
+            this.updateById(materials);
+        }
+        List<Long> collect = materialForms.stream().map(MaterialForm::getId).collect(Collectors.toList());
+
+        if (CollUtil.isEmpty(collect)) {
             return BaseResult.error(SysTips.IDS_ISEMPTY);
         }
         List<String> errList = new ArrayList<>();
         Material material = new Material();
-        material.setIds(deleteForm.getIds());
+        material.setIds(collect);
         List<Material> materialList = selectList(material);
         List<Material> successList = new ArrayList<>();
-        if (CollUtil.isNotEmpty(materialList)){
+        if (CollUtil.isNotEmpty(materialList)) {
             materialList.forEach(materials -> {
-                if (materials.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
+                if (materials.getStatus().equals(MaterialStatusEnum.THREE.getCode())) {
                     errList.add(materials.getMaterialCode());
-                }else {
+                } else {
                     materials.setStatus(MaterialStatusEnum.THREE.getCode());
                     successList.add(materials);
                 }
             });
         }
-        if (CollUtil.isNotEmpty(successList)){
+        if (CollUtil.isNotEmpty(successList)) {
             this.updateBatchById(successList);
             checkIsAllComfirmReceipt(successList.get(0).getOrderId());
         }
-        if (CollUtil.isNotEmpty(errList)){
+        if (CollUtil.isNotEmpty(errList)) {
             return BaseResult.error(StringUtils.join(errList, StrUtil.C_COMMA) + " 已确认收货，请勿重复确认！");
         }
         return BaseResult.ok(SysTips.SUCCESS_MSG);
@@ -209,34 +218,43 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResult cancelConfirmReceipt(DeleteForm deleteForm) {
-        if (CollUtil.isEmpty(deleteForm.getIds())){
+
+        List<MaterialForm> materialForms = deleteForm.getMaterialForms();
+
+        for (int i = 0; i < materialForms.size(); i++) {
+            Material materials = ConvertUtil.convert(materialForms.get(i), Material.class);
+            this.updateById(materials);
+        }
+        List<Long> collect = materialForms.stream().map(MaterialForm::getId).collect(Collectors.toList());
+
+        if (CollUtil.isEmpty(collect)) {
             return BaseResult.error(SysTips.IDS_ISEMPTY);
         }
         Material material = new Material();
-        material.setIds(deleteForm.getIds());
+        material.setIds(collect);
         List<Material> materialList = selectList(material);
         List<String> errList = new ArrayList<>();
         List<Material> successList = new ArrayList<>();
-        if (CollUtil.isNotEmpty(materialList)){
-            if (checkIsAllComfirm(materialList.get(0).getOrderId())){
+        if (CollUtil.isNotEmpty(materialList)) {
+            if (checkIsAllComfirm(materialList.get(0).getOrderId())) {
                 return BaseResult.error(SysTips.ALL_COMFIRM_CANCEL_ERR);
             }
             materialList.forEach(material1 -> {
                 //未确认收货
-                if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
+                if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())) {
                     errList.add(material1.getMaterialCode());
-                }else {
+                } else {
                     material1.setStatus(MaterialStatusEnum.FOUR.getCode());
                     successList.add(material1);
                 }
             });
         }
-        if (CollUtil.isNotEmpty(successList)){
+        if (CollUtil.isNotEmpty(successList)) {
             this.updateBatchById(successList);
             checkIsAllComfirmReceipt(successList.get(0).getOrderId());
         }
-        if (CollUtil.isNotEmpty(errList)){
-            return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 未确认收货，请勿撤销收货！");
+        if (CollUtil.isNotEmpty(errList)) {
+            return BaseResult.error(StringUtils.join(errList, StrUtil.C_COMMA) + " 未确认收货，请勿撤销收货！");
         }
         return BaseResult.ok(SysTips.SUCCESS_MSG);
     }
@@ -244,40 +262,67 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResult confirmPullShelf(DeleteForm deleteForm) {
-        if (CollUtil.isNotEmpty(deleteForm.getIds())) {
-            deleteForm.setIds(deleteForm.getIds().stream().filter(x->x!=null).distinct().collect(Collectors.toList()));
+
+        List<MaterialForm> materialForms = deleteForm.getMaterialForms();
+
+        for (int i = 0; i < materialForms.size(); i++) {
+            Material materials = ConvertUtil.convert(materialForms.get(i), Material.class);
+            materials.setWarehouseLocationCode(materialForms.get(i).getWarehouseLocationCode());
+            this.updateById(materials);
+        }
+        List<Long> collect = materialForms.stream().map(MaterialForm::getId).collect(Collectors.toList());
+
+
+        if (CollUtil.isNotEmpty(collect)) {
+            //去掉null
+//            deleteForm.setIds(deleteForm.getIds().stream().filter(x->x!=null).distinct().collect(Collectors.toList()));
+
+            List<Long> collect1 = collect.stream().filter(x -> x != null).distinct().collect(Collectors.toList());
+
             LambdaQueryWrapper<Material> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.in(Material::getId,deleteForm.getIds());
-            lambdaQueryWrapper.eq(Material::getIsDeleted,false);
-            List<Material> materialList = this.list(lambdaQueryWrapper);
+            lambdaQueryWrapper.in(Material::getId, collect1);
+            lambdaQueryWrapper.eq(Material::getIsDeleted, false);
+//            List<Material> materialList = this.list(lambdaQueryWrapper);
+
+            List<Material> materialList = ConvertUtil.convertList(deleteForm.getMaterialForms(), Material.class);
             List<Material> successList = new ArrayList<>();
             List<String> errList = new ArrayList<>();
-            if (CollUtil.isNotEmpty(materialList)){
+            if (CollUtil.isNotEmpty(materialList)) {
                 materialList.forEach(material1 -> {
                     boolean isChange = true;
-                    if (material1.getIsPutShelf() != null){
-                        if (material1.getIsPutShelf()){
+                    if (material1.getIsPutShelf() != null) {
+                        if (material1.getIsPutShelf()) {
                             errList.add(material1.getMaterialName());
                             isChange = false;
                         }
                     }
-                    if (isChange){
+                    if (isChange) {
                         material1.setIsPutShelf(true);
                         successList.add(material1);
                     }
                 });
             }
-            if (CollUtil.isNotEmpty(successList)){
+            if (CollUtil.isNotEmpty(successList)) {
                 this.updateBatchById(successList);
                 initInventoryDetail(successList);
+                //修改 订单货物信息状态
+
+                for (int i = 0; i < materialForms.size(); i++) {
+                    Material materials = ConvertUtil.convert(materialForms.get(i), Material.class);
+                    materials.setWarehouseLocationCode(materialForms.get(i).getWarehouseLocationCode());
+                    materials.setStatus(MaterialStatusEnum.six.getCode());
+                    this.updateById(materials);
+                }
+
+
                 //修改主订单 状态为已上架
                 Receipt receipt = receiptService.getById(successList.get(0).getOrderId());
                 receipt.setStatus(ReceiptStatusEnum.SIX.getCode());
                 receiptService.updateById(receipt);
 
             }
-            if (CollUtil.isNotEmpty(errList)){
-                return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已上架，请勿重复上架！");
+            if (CollUtil.isNotEmpty(errList)) {
+                return BaseResult.error(StringUtils.join(errList, StrUtil.C_COMMA) + " 已上架，请勿重复上架！");
             }
             return BaseResult.ok(SysTips.SUCCESS_MSG);
         }
@@ -286,34 +331,34 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     /**
      * @description 判断是否全部确认收货并修改为待上架
-     * @author  ciro
-     * @date   2022/3/29 14:00
+     * @author ciro
+     * @date 2022/3/29 14:00
      * @param: orderId   收货单id
      * @return: void
      **/
-    private void checkIsAllComfirmReceipt(Long orderId){
+    private void checkIsAllComfirmReceipt(Long orderId) {
         Material material = new Material();
         material.setOrderId(orderId);
         boolean isEnd = true;
         List<Material> materialList = selectList(material);
         int counts = 0;
-        if (CollUtil.isNotEmpty(materialList)){
-            for (Material material1:materialList){
-                if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())){
+        if (CollUtil.isNotEmpty(materialList)) {
+            for (Material material1 : materialList) {
+                if (!material1.getStatus().equals(MaterialStatusEnum.THREE.getCode())) {
                     isEnd = false;
                     break;
-                }else {
+                } else {
                     counts += 1;
                 }
             }
         }
         Receipt receipt = receiptService.getById(orderId);
-        if (isEnd){
+        if (isEnd) {
             receipt.setStatus(MaterialStatusEnum.FIVE.getCode());
-        }else {
-            if (counts>0){
+        } else {
+            if (counts > 0) {
                 receipt.setStatus(MaterialStatusEnum.TWO.getCode());
-            }else {
+            } else {
                 receipt.setStatus(MaterialStatusEnum.ONE.getCode());
             }
         }
@@ -322,28 +367,33 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     /**
      * @description 判断是否全部确认
-     * @author  ciro
-     * @date   2022/3/29 14:16
+     * @author ciro
+     * @date 2022/3/29 14:16
      * @param: orderId
      * @return: boolean
      **/
-    private boolean checkIsAllComfirm(Long orderId){
+    private boolean checkIsAllComfirm(Long orderId) {
         Receipt receipt = receiptService.getById(orderId);
-        if (receipt.getStatus().equals(MaterialStatusEnum.FIVE.getCode())){
+        if (receipt.getStatus().equals(MaterialStatusEnum.FIVE.getCode())) {
             return true;
         }
         return false;
     }
 
-    private void initInventoryDetail(List<Material> materialList){
+    private void initInventoryDetail(List<Material> materialList) {
         Receipt receipt = receiptService.getById(materialList.get(0).getOrderId());
         List<InventoryDetailForm> inventoryDetailForms = new ArrayList<>();
         LocalTime localTime = LocalTime.now();
         materialList.forEach(material -> {
             InventoryDetailForm detailForm = new InventoryDetailForm();
+
+            QueryWrapper<Warehouse> warehouseQueryWrapper = new QueryWrapper<>();
+            warehouseQueryWrapper.lambda().eq(Warehouse::getId,receipt.getWarehouseId());
+            warehouseQueryWrapper.lambda().eq(Warehouse::getIsDeleted, 0);
+            Warehouse one = warehouseService.getOne(warehouseQueryWrapper);
             //仓库
             detailForm.setWarehouseId(receipt.getWarehouseId());
-            detailForm.setWarehouseCode(receipt.getWarehouseCode());
+            detailForm.setWarehouseCode(one.getCode());
             detailForm.setWarehouseName(receipt.getWarehouse());
             //货主
             detailForm.setOwerId(receipt.getSupplierId());
@@ -352,7 +402,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
             //库位  根据库位编号查询库位id
             QueryWrapper<WarehouseLocation> warehouseLocationQueryWrapper = new QueryWrapper<>();
-            warehouseLocationQueryWrapper.lambda().ne(WarehouseLocation::getCode, material.getWarehouseLocationCode());
+            warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getCode, material.getWarehouseLocationCode());
             warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getIsDeleted, 0);
             WarehouseLocation warehouseLocationOne = warehouseLocationService.getOne(warehouseLocationQueryWrapper);
 
@@ -362,7 +412,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             //库区
             //根据库位查询库区信息
             QueryWrapper<WarehouseArea> warehouseAreaQueryWrapper = new QueryWrapper<>();
-            warehouseAreaQueryWrapper.lambda().ne(WarehouseArea::getId, warehouseLocationOne.getWarehouseAreaId());
+            warehouseAreaQueryWrapper.lambda().eq(WarehouseArea::getId, warehouseLocationOne.getWarehouseAreaId());
             warehouseAreaQueryWrapper.lambda().eq(WarehouseArea::getIsDeleted, 0);
             WarehouseArea warehouseAreaOne = warehouseAreaService.getOne(warehouseAreaQueryWrapper);
 
@@ -388,14 +438,14 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             detailForm.setCustomField3(material.getColumnThree());
             //入仓号
             detailForm.setInWarehouseNumber(material.getInWarehouseNumber());
-            if (material.getWeight() == null){
+            if (material.getWeight() == null) {
                 detailForm.setWeight(new BigDecimal(0));
-            }else {
+            } else {
                 detailForm.setWeight(material.getWeight());
             }
-            if (material.getVolume() == null){
+            if (material.getVolume() == null) {
                 detailForm.setWeight(new BigDecimal(0));
-            }else {
+            } else {
                 detailForm.setVolume(material.getVolume());
             }
             detailForm.setUnit(material.getUnit());

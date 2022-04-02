@@ -168,7 +168,7 @@
         UPDATE wms_receipt SET update_time=now(),update_by=#{username},qc_no=null
         WHERE is_deleted = 0
         AND receipt_num IN
-        <foreach item="orderNumber" collection="orderNumberList" open="(" separator=","  close=")" >
+        <foreach item="orderNumber" collection="orderNumberList" open="(" separator="," close=")">
             #{orderNumber}
         </foreach>
     </update>
@@ -182,51 +182,51 @@
             resultType="com.jayud.wms.model.vo.ReceiptVO">
 
         SELECT
-            r.id,
-            r.warehouse_id,
-            r.warehouse,
-            r.ower_id,
-            r.ower,
-            r.receipt_notice_num,
-            r.receipt_num,
-            r.supplier_id,
-            r.supplier,
-            r.order_source_code,
-            r.order_source,
-            r.planned_receiving_time,
-            r.total_num,
-            r.total_weight,
-            r.total_volume,
-            r.actual_num,
-            r.actual_weight,
-            r.actual_volume,
-            r.receiver,
-            r.STATUS,
-            r.receiving_time,
-            r.column_one,
-            r.column_two,
-            r.column_three,
-            r.is_put_shelf,
-            r.tenant_code,
-            r.remark,
-            r.is_deleted,
-            r.create_by,
-            r.create_time,
-            r.update_by,
-            r.update_time,
-            r.process_flag,
-            r.qc_no,
-            r.main_order_number,
-            r.order_type,
-            r.unit,
-            r.car_barnd,
-            r.car_model,
-            r.client_code,
-            group_concat( wm.in_warehouse_number ) inWarehouseNumberList
-            FROM
-            wms_receipt r
-            LEFT JOIN wms_material wm on r.id=wm.order_id
-         <where>
+        r.id,
+        r.warehouse_id,
+        r.warehouse,
+        r.ower_id,
+        r.ower,
+        r.receipt_notice_num,
+        r.receipt_num,
+        r.supplier_id,
+        r.supplier,
+        r.order_source_code,
+        r.order_source,
+        r.planned_receiving_time,
+        r.total_num,
+        r.total_weight,
+        r.total_volume,
+        r.actual_num,
+        r.actual_weight,
+        r.actual_volume,
+        r.receiver,
+        r.STATUS,
+        r.receiving_time,
+        r.column_one,
+        r.column_two,
+        r.column_three,
+        r.is_put_shelf,
+        r.tenant_code,
+        r.remark,
+        r.is_deleted,
+        r.create_by,
+        r.create_time,
+        r.update_by,
+        r.update_time,
+        r.process_flag,
+        r.qc_no,
+        r.main_order_number,
+        r.order_type,
+        r.unit,
+        r.car_barnd,
+        r.car_model,
+        r.client_code,
+        group_concat( wm.in_warehouse_number ) inWarehouseNumberList
+        FROM
+        wms_receipt r
+        LEFT JOIN wms_material wm on r.id=wm.order_id
+        <where>
             r.is_deleted=0
             and wm.is_deleted=0
             <if test="receipt.id != null ">
@@ -238,18 +238,20 @@
             <if test="receipt.status != null ">
                 AND r.status = #{receipt.status}
             </if>
+            <if test="receipt.supplierId != null ">
+                AND r.supplier_id = #{receipt.supplierId}
+            </if>
+            <if test="receipt.orderType != null ">
+                AND r.order_type = #{receipt.orderType}
+            </if>
 
-             <if test="receipt.orderType != null ">
-                 AND r.order_type = #{receipt.orderType}
-             </if>
+            <if test="receipt.carBarnd != null ">
+                AND r.car_barnd = #{receipt.carBarnd}
+            </if>
 
-             <if test="receipt.carBarnd != null ">
-                 AND r.car_barnd = #{receipt.carBarnd}
-             </if>
-
-             <if test="receipt.mainOrderNumber != null ">
-                 AND r.main_order_number = #{receipt.mainOrderNumber}
-             </if>
+            <if test="receipt.mainOrderNumber != null ">
+                AND r.main_order_number = #{receipt.mainOrderNumber}
+            </if>
 
             <if test="receipt.receiptNum != null and receipt.receiptNum != ''">
                 AND r.receipt_num LIKE CONCAT('%',#{receipt.receiptNum}, '%')
@@ -264,7 +266,7 @@
             </if>
 
         </where>
-        group by  r.receipt_num
+        group by r.receipt_num
         ORDER BY r.create_time DESC
 
     </select>

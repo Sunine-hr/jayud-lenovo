@@ -17,6 +17,7 @@ public enum MaterialStatusEnum {
     THREE(3, "已收货"),
     FOUR(4, "撤销收货"),
     FIVE(5, "待上架"),
+    six(6, "已上架"),
     ;
     /**
      * 编码

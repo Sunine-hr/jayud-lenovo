@@ -197,15 +197,16 @@ public class ReceiptController {
         //TODO 远程调用容器
 //        List<Container> containers = containerService.getEnableByWarehouseId(form.getWarehouseId());
         //查询某个仓库都有哪些库位
-/*        WarehouseLocation warehouseLocation = new WarehouseLocation();
-        warehouseLocation.setId(form.getWarehouseId());
-        warehouseLocation.setIsDeleted(1);
-        List<WarehouseLocationVO> warehouseLocationVOS = warehouseLocationService.selectList(warehouseLocation);*/
+//        WarehouseLocation warehouseLocation = new WarehouseLocation();
+//        warehouseLocation.setWarehouseId(form.getWarehouseId());
+//        warehouseLocation.setIsDeleted(0);
+//        warehouseLocation.setStatus(1);
+//        List<WarehouseLocationVO> warehouseLocationVOS = warehouseLocationService.selectList(warehouseLocation);
 
 
 //        Map<String, Container> containerMap = containers.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e));
 //        form.checkContainer(containerMap);
-//        receiptService.createOrder(form);
+        receiptService.createOrder(form);
         return BaseResult.ok();
     }
 

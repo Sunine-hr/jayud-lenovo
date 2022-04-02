@@ -35,6 +35,7 @@ public class QueryWarehouseLocationForm extends SysBaseEntity {
     @ApiModelProperty(value = "所属仓库货架Code")
     private String shelfCode;
 
+
     @ApiModelProperty(value = "库位编号")
     @TableField("`code`")
     private String code;

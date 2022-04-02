@@ -39,11 +39,16 @@
             wl.id, wl.warehouse_id, wl.warehouse_area_id, wl.code, wl.type, wl.type_desc, wl.row, wl.column_num, wl.layers, wl.length, wl.wide, wl.high, wl.is_mixing, wl.is_in_frozen, wl.is_out_frozen, wl.tenant_code, wl.remark, wl.is_deleted, wl.create_by, wl.create_time, wl.update_by, wl.update_time, wl.status, wl.mixing_strategy_id, wl.mixing_strategy, wl.route_sorting,h.name warehouseName,wa.name warehouseAreaName,wl.shelf_id,wl.shelf_code
     </sql>
 
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_Listone">
+            wl.id, wl.warehouse_id, wl.warehouse_area_id, wl.code, wl.type, wl.type_desc, wl.row, wl.column_num, wl.layers, wl.length, wl.wide, wl.high, wl.is_mixing, wl.is_in_frozen, wl.is_out_frozen, wl.tenant_code, wl.remark, wl.is_deleted, wl.create_by, wl.create_time, wl.update_by, wl.update_time, wl.status, wl.mixing_strategy_id, wl.mixing_strategy, wl.route_sorting,wl.shelf_id,wl.shelf_code
+    </sql>
+
     <!-- 表名 -->
     <sql id="tname">wms_warehouse_location </sql>
 
     <sql id="selects">
-        SELECT <include refid="Base_Column_List"/>
+        SELECT <include refid="Base_Column_Listone"/>
         FROM <include refid="tname"/> wl
 
         <where>

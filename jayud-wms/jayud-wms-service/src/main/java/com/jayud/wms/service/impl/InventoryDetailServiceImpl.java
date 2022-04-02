@@ -130,11 +130,11 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         }
         list.forEach(detail -> {
             //货主 + 仓库 + 库区 + 库位 + 容器 + 物料，确认库位的库存信息
-            Long owerId = detail.getOwerId();//货主ID
-            String owerCode = detail.getOwerCode();//货主编号
-            if(ObjectUtil.isEmpty(owerCode)){
-                throw new IllegalArgumentException("货主不能为空");
-            }
+//            Long owerId = detail.getOwerId();//货主ID
+//            String owerCode = detail.getOwerCode();//货主编号
+//            if(ObjectUtil.isEmpty(owerCode)){
+//                throw new IllegalArgumentException("货主不能为空");
+//            }
             Long warehouseId = detail.getWarehouseId();//仓库ID
             String warehouseCode = detail.getWarehouseCode();//仓库编号
             if(ObjectUtil.isEmpty(warehouseCode)){
@@ -152,9 +152,9 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             }
             Long containerId = detail.getContainerId();//容器id
             String containerCode = detail.getContainerCode();//容器号
-            if(ObjectUtil.isEmpty(containerCode)){
-                throw new IllegalArgumentException("容器不能为空");
-            }
+//            if(ObjectUtil.isEmpty(containerCode)){
+//                throw new IllegalArgumentException("容器不能为空");
+//            }
             Long materialId = detail.getMaterialId();//物料ID
             String materialCode = detail.getMaterialCode();//物料编号
             if(ObjectUtil.isEmpty(materialCode)){
@@ -177,8 +177,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
 
             QueryWrapper<InventoryDetail> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(InventoryDetail::getOwerId, owerId);
-            queryWrapper.lambda().eq(InventoryDetail::getOwerCode, owerCode);
+//            queryWrapper.lambda().eq(InventoryDetail::getOwerId, owerId);
+//            queryWrapper.lambda().eq(InventoryDetail::getOwerCode, owerCode);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseId, warehouseId);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseCode, warehouseCode);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseAreaId, warehouseAreaId);

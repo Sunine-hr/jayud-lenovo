@@ -1,5 +1,6 @@
 package com.jayud.oms.order.model.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,27 +26,35 @@ public class OmsOrderEntryTemplateForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "型号")
+    @ExcelProperty("型号")
     private String itemModel;
 
     @ApiModelProperty(value = "名称")
+    @ExcelProperty("名称")
     private String itemName;
 
     @ApiModelProperty(value = "品牌")
+    @ExcelProperty("品牌")
     private String itemBrand;
 
     @ApiModelProperty(value = "产地")
+    @ExcelProperty("产地")
     private String itemOrigin;
 
     @ApiModelProperty(value = "商品描述")
+    @ExcelProperty("商品描述")
     private String itemNotes;
 
     @ApiModelProperty(value = "数量")
+    @ExcelProperty("数量")
     private BigDecimal qty;
 
     @ApiModelProperty(value = "单位")
+    @ExcelProperty("单位")
     private String unit;
 
     @ApiModelProperty(value = "海关编码")
+    @ExcelProperty("海关编码")
     private String customsCode;
 
 

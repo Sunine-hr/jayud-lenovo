@@ -14,6 +14,7 @@ import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.InventoryDetailForm;
 import com.jayud.wms.model.bo.MaterialForm;
 import com.jayud.wms.model.bo.QualityMaterialForm;
+import com.jayud.wms.model.enums.ReceiptStatusEnum;
 import com.jayud.wms.model.po.Material;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.mapper.MaterialMapper;
@@ -269,6 +270,11 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             if (CollUtil.isNotEmpty(successList)){
                 this.updateBatchById(successList);
                 initInventoryDetail(successList);
+                //修改主订单 状态为已上架
+                Receipt receipt = receiptService.getById(successList.get(0).getOrderId());
+                receipt.setStatus(ReceiptStatusEnum.SIX.getCode());
+                receiptService.updateById(receipt);
+
             }
             if (CollUtil.isNotEmpty(errList)){
                 return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已上架，请勿重复上架！");

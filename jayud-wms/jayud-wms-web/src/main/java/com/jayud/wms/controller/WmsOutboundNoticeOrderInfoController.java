@@ -53,7 +53,7 @@ public class WmsOutboundNoticeOrderInfoController {
      * @param: req
      * @return: com.jyd.component.commons.result.Result<com.jyd.component.commons.utils.CommonPageResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.model.vo.WmsOutboundNoticeOrderInfoVO>>>
      **/
-    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
+//    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
     public BaseResult<CommonPageResult<WmsOutboundNoticeOrderInfoVO>> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
@@ -193,7 +193,7 @@ public class WmsOutboundNoticeOrderInfoController {
     }
 
 
-    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
+//    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("根据通知单编码查询详情")
     @GetMapping(value = "/queryByCode")
     public BaseResult<WmsOutboundNoticeOrderInfoVO> queryByCode(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO){

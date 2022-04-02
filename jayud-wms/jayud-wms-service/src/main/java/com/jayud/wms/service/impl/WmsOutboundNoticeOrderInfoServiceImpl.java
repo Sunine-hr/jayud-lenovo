@@ -57,9 +57,9 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
                                                           Integer currentPage,
                                                           Integer pageSize,
                                                           HttpServletRequest req){
-        if (wmsOutboundNoticeOrderInfoVO.getOwerIdList().isEmpty()||wmsOutboundNoticeOrderInfoVO.getOwerIdList().isEmpty()){
-            return new Page<>();
-        }
+//        if (wmsOutboundNoticeOrderInfoVO.getOwerIdList().isEmpty()||wmsOutboundNoticeOrderInfoVO.getOwerIdList().isEmpty()){
+//            return new Page<>();
+//        }
         Page<WmsOutboundNoticeOrderInfoVO> page=new Page<WmsOutboundNoticeOrderInfoVO>(currentPage,pageSize);
         IPage<WmsOutboundNoticeOrderInfoVO> pageList= wmsOutboundNoticeOrderInfoMapper.pageList(page, wmsOutboundNoticeOrderInfoVO);
         return pageList;
@@ -89,11 +89,6 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
         List<WmsOutboundNoticeOrderInfoVO> list = wmsOutboundNoticeOrderInfoMapper.list(wmsOutboundNoticeOrderInfoVO);
         if (!list.isEmpty()){
             wmsOutboundNoticeOrderInfoVO = list.get(0);
-            //获取物料信息
-            WmsOutboundNoticeOrderInfoToMaterialVO wmsOutboundNoticeOrderInfoToMaterialVO = new WmsOutboundNoticeOrderInfoToMaterialVO();
-            wmsOutboundNoticeOrderInfoToMaterialVO.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
-            List<WmsOutboundNoticeOrderInfoToMaterialVO> materialVOList = wmsOutboundNoticeOrderInfoToMaterialService.selectList(wmsOutboundNoticeOrderInfoToMaterialVO);
-            wmsOutboundNoticeOrderInfoVO.setThisMaterialList(materialVOList);
             return wmsOutboundNoticeOrderInfoVO;
         }
         return null;

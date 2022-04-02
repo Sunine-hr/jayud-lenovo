@@ -82,17 +82,21 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         List<String> lasetMaterList = materialList.stream().map(x->String.valueOf(x.getInventoryDetailId())).collect(Collectors.toList());
         List<WmsOutboundNoticeOrderInfoToMaterialVO> thisMaterialList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList();
         Map<String,WmsOutboundNoticeOrderInfoToMaterialVO> materialMap = new HashMap<>(20);
+        Map<String,WmsOutboundNoticeOrderInfoToMaterialVO> lastMaterialMap = new HashMap<>(20);
         //本次货品id
         List<String> detailIdList = thisMaterialList.stream().map(x->String.valueOf(x.getInventoryDetailId())).distinct().collect(Collectors.toList());
-        if (detailIdList.size() != lasetMaterList.size()){
+        if (detailIdList.size() != lasetMaterList.size() && lasetMaterList.size()!=0){
             return BaseResult.error("存在重复货品，请检查后提交！");
         }
         thisMaterialList.forEach(x->{
             materialMap.put(String.valueOf(x.getInventoryDetailId()),x);
         });
+        materialList.forEach(x->{
+            lastMaterialMap.put(String.valueOf(x.getInventoryDetailId()),x);
+        });
         List<String> delLists = ListUtils.getDiff(detailIdList,lasetMaterList);
         List<String> saveLists = ListUtils.getDiff(lasetMaterList,detailIdList);
-        List<String> updateLists = ListUtils.getDiff(detailIdList,lasetMaterList);
+        List<String> updateLists = ListUtils.getSame(detailIdList,lasetMaterList);
         if (CollUtil.isNotEmpty(delLists)){
             List<String> delIdList = new ArrayList<>();
             delLists.forEach(detailId -> {
@@ -103,13 +107,20 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         if (CollUtil.isNotEmpty(saveLists)){
             List<WmsOutboundNoticeOrderInfoToMaterial> materials = new ArrayList<>();
             saveLists.forEach(detailId -> {
-                materials.add(materialMap.get(detailId));
+                WmsOutboundNoticeOrderInfoToMaterialVO vo = materialMap.get(detailId);
+                vo.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
+                materials.add(vo);
             });
             this.saveBatch(materials);
         }
         if (CollUtil.isNotEmpty(updateLists)){
             List<WmsOutboundNoticeOrderInfoToMaterial> materials = new ArrayList<>();
             saveLists.forEach(detailId -> {
+                WmsOutboundNoticeOrderInfoToMaterialVO vo = materialMap.get(detailId);
+                WmsOutboundNoticeOrderInfoToMaterialVO lastVo = lastMaterialMap.get(detailId);
+                vo.setId(lastVo.getId());
+                vo.setCreateBy(lastVo.getCreateBy());
+                vo.setCreateTime(lastVo.getCreateTime());
                 materials.add(materialMap.get(detailId));
             });
             this.updateBatchById(materials);

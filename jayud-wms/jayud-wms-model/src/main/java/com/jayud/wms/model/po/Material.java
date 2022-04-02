@@ -66,7 +66,7 @@ public class Material extends SysBaseEntity {
     @ApiModelProperty(value = "容器号")
     private String containerNum;
 
-    @ApiModelProperty(value = "收货状态(1:未收,2:收货中,3:已收货,4:撤销)")
+    @ApiModelProperty(value = "收货状态(1:待收货,2:待上架,3:已上架,4:撤销)")
     private Integer status;
 
     @ApiModelProperty(value = "外部订单号")

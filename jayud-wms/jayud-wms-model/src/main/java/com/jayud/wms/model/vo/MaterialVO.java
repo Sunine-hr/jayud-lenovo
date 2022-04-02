@@ -63,10 +63,10 @@ public class MaterialVO extends SysBaseEntity {
     @ApiModelProperty(value = "容器号")
     private String containerNum;
 
-    @ApiModelProperty(value = "收货状态(1:未收,2:收货中,3:已收货,4:撤销)")
+    @ApiModelProperty(value = "收货状态(1:未收货,2:收货中,3:已收货,4:撤销5:待上架)")
     private Integer status;
 
-    @ApiModelProperty(value = "收货状态(1:未收,2:收货中,3:已收货,4:撤销)")
+    @ApiModelProperty(value = "收货状态(1:未收货,2:收货中,3:已收货,4:撤销5:待上架)")
     private String statusDesc;
 
     @ApiModelProperty(value = "外部订单号")

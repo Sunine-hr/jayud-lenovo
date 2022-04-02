@@ -45,8 +45,7 @@
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>
         FROM <include refid="tname"/> wl
-        left join warehouse h on h.id = wl.warehouse_id and h.is_deleted = 0
-        left join warehouse_area wa on wa.id = wl.warehouse_area_id and wa.is_deleted = 0
+
         <where>
             wl.is_deleted = 0
             <if test="warehouseLocation.warehouseId != null ">

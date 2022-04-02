@@ -9,6 +9,7 @@ import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.QueryClientReceiptNoticeForm;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.fegin.CrmClient;
 import com.jayud.wms.model.bo.QueryReceiptNoticeForm;
 import com.jayud.wms.model.bo.ReceiptNoticeForm;
 import com.jayud.wms.model.enums.ReceiptNoticeStatusEnum;
@@ -57,6 +58,9 @@ public class ReceiptNoticeController {
     @Autowired
     public IWmsOwerInfoService wmsOwerInfoService;
 
+
+    @Autowired
+    private CrmClient crmClient;
     /**
      * 分页查询数据
      *
@@ -293,6 +297,16 @@ public class ReceiptNoticeController {
 
 
 
+    @ApiOperation("客户下拉")
+    @GetMapping("/client/crmCustomerList")
+    public BaseResult crmCustomerList() {
 
+        //客户下拉
+        BaseResult baseResult = crmClient.selectListFeign();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("baseResult", baseResult);
+        return BaseResult.ok(map);
+    }
 
 }

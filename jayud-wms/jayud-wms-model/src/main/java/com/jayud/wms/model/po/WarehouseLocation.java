@@ -104,6 +104,7 @@ public class WarehouseLocation extends SysBaseEntity {
     @ApiModelProperty(value = "库位容量")
     private BigDecimal locationCapacity;
 
+
     @ApiModelProperty(value = "库位id集合")
     @TableField(exist = false)
     private List<Long> locationIdList;

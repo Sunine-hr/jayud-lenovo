@@ -95,6 +95,14 @@ public class CrmCustomerController {
                                                         HttpServletRequest req) {
         return BaseResult.ok(crmCustomerService.selectList(crmCustomerForm));
     }
+    @ApiOperation("列表查询数据")
+    @PostMapping("/api/selectListFeign")
+    public BaseResult  selectListFeign() {
+        CrmCustomerForm crmCustomerForm1 = new CrmCustomerForm();
+        crmCustomerForm1.setCheckStateFlag("Y");
+        crmCustomerForm1.setIsDeleted(false);
+        return BaseResult.ok(crmCustomerService.selectList(crmCustomerForm1));
+    }
 
 
     /**

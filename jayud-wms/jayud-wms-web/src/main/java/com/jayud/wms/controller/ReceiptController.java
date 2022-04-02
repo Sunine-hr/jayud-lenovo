@@ -18,6 +18,7 @@ import com.jayud.wms.model.bo.QueryReceiptForm;
 import com.jayud.wms.model.bo.ReceiptForm;
 import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.vo.ReceiptVO;
+import com.jayud.wms.model.vo.WarehouseLocationVO;
 import com.jayud.wms.model.vo.WmsMaterialBasicInfoVO;
 import com.jayud.wms.service.*;
 import io.swagger.annotations.Api;
@@ -63,6 +64,9 @@ public class ReceiptController {
 
     @Autowired
     private AuthClient authClient;
+
+    @Autowired
+    public IWarehouseLocationService warehouseLocationService;
     /**
      * 分页查询数据
      *
@@ -192,9 +196,16 @@ public class ReceiptController {
 //        form.checkParam();
         //TODO 远程调用容器
 //        List<Container> containers = containerService.getEnableByWarehouseId(form.getWarehouseId());
+        //查询某个仓库都有哪些库位
+/*        WarehouseLocation warehouseLocation = new WarehouseLocation();
+        warehouseLocation.setId(form.getWarehouseId());
+        warehouseLocation.setIsDeleted(1);
+        List<WarehouseLocationVO> warehouseLocationVOS = warehouseLocationService.selectList(warehouseLocation);*/
+
+
 //        Map<String, Container> containerMap = containers.stream().collect(Collectors.toMap(e -> e.getCode(), e -> e));
 //        form.checkContainer(containerMap);
-        receiptService.createOrder(form);
+//        receiptService.createOrder(form);
         return BaseResult.ok();
     }
 

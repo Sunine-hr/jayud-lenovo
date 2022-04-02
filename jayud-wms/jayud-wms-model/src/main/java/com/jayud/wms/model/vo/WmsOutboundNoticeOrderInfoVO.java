@@ -1,5 +1,6 @@
 package com.jayud.wms.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,15 +42,18 @@ public class WmsOutboundNoticeOrderInfoVO extends WmsOutboundNoticeOrderInfo {
 
     private List<String> orgIds;
 
+    @JsonProperty(value = "isCharge")
     private Boolean isCharge;
 
     private List<String> owerIdList;
 
     private List<String> warehouseIdList;
 
+    @JsonProperty(value = "isAuto")
     @ApiModelProperty(value = "是否自动")
     Boolean isAuto;
 
+    @JsonProperty(value = "isEndPacking")
     @ApiModelProperty(value = "是否拣货下架结束")
     Boolean isEndPacking;
 

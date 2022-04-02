@@ -200,8 +200,18 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
                 if (materials.getStatus().equals(MaterialStatusEnum.THREE.getCode())) {
                     errList.add(materials.getMaterialCode());
                 } else {
-                    materials.setStatus(MaterialStatusEnum.THREE.getCode());
-                    successList.add(materials);
+                    boolean isAdd = false;
+                    if (materials.getIsPutShelf()!=null){
+                        if (!materials.getIsPutShelf()){
+                            isAdd = true;
+                        }
+                    }else {
+                        isAdd = true;
+                    }
+                    if(isAdd){
+                        materials.setStatus(MaterialStatusEnum.THREE.getCode());
+                        successList.add(materials);
+                    }
                 }
             });
         }

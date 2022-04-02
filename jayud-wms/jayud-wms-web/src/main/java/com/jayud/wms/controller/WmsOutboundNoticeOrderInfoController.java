@@ -53,14 +53,16 @@ public class WmsOutboundNoticeOrderInfoController {
      * @param: req
      * @return: com.jyd.component.commons.result.Result<com.jyd.component.commons.utils.CommonPageResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.model.vo.WmsOutboundNoticeOrderInfoVO>>>
      **/
-    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
+//    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<CommonPageResult<IPage<WmsOutboundNoticeOrderInfoVO>>> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
+    public BaseResult<CommonPageResult<WmsOutboundNoticeOrderInfoVO>> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
                                                                                     @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                                                     HttpServletRequest req) {
-        return BaseResult.ok(new CommonPageResult(wmsOutboundNoticeOrderInfoService.selectPage(wmsOutboundNoticeOrderInfoVO,currentPage,pageSize,req)));
+        IPage<WmsOutboundNoticeOrderInfoVO> iPage = wmsOutboundNoticeOrderInfoService.selectPage(wmsOutboundNoticeOrderInfoVO,currentPage,pageSize,req);
+        CommonPageResult<WmsOutboundNoticeOrderInfoVO> result= new CommonPageResult<WmsOutboundNoticeOrderInfoVO>(iPage);
+        return BaseResult.ok(result);
     }
 
     /**
@@ -191,7 +193,7 @@ public class WmsOutboundNoticeOrderInfoController {
     }
 
 
-    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
+//    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("根据通知单编码查询详情")
     @GetMapping(value = "/queryByCode")
     public BaseResult<WmsOutboundNoticeOrderInfoVO> queryByCode(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO){

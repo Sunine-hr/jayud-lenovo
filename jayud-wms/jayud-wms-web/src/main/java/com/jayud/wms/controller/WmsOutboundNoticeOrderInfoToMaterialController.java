@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.common.result.BasePage;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfoToMaterial;
@@ -171,6 +172,15 @@ public class WmsOutboundNoticeOrderInfoToMaterialController {
     @PostMapping(path = "/getInventoryMetailDetailList")
     public BaseResult<List<WmsOutboundNoticeOrderInfoToMaterialVO>> getInventoryMetailDetailList(@RequestBody InventoryDetail inventoryDetail){
         return BaseResult.ok(wmsOutboundNoticeOrderInfoToMaterialService.getInventoryMetailDetailList(inventoryDetail));
+    }
+
+    @ApiOperation("获取货品信息")
+    @PostMapping(path = "/selectInvenDetail")
+    public BaseResult<BasePage<WmsOutboundNoticeOrderInfoToMaterialVO>> selectInvenDetail(WmsOutboundNoticeOrderInfoToMaterialVO material,
+                                                                                          @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
+                                                                                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                                                          HttpServletRequest req){
+        return BaseResult.ok(wmsOutboundNoticeOrderInfoToMaterialService.selectInvenDetail(material, currentPage, pageSize));
     }
 
 }

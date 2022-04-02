@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 public class WmsOutboundNoticeOrderInfo extends SysBaseEntity {
 
 
-    @ApiModelProperty(value = "出库通知单号")
+    @ApiModelProperty(value = "出仓通知单号")
     private String orderNumber;
 
     @ApiModelProperty(value = "仓库id")
@@ -140,6 +140,9 @@ public class WmsOutboundNoticeOrderInfo extends SysBaseEntity {
 
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
+
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrder;
 
 
 

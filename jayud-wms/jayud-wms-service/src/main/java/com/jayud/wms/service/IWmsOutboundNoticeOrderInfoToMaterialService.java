@@ -3,6 +3,8 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
+import com.jayud.common.result.BasePage;
 import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfoToMaterial;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO;
@@ -62,7 +64,7 @@ public interface IWmsOutboundNoticeOrderInfoToMaterialService extends IService<W
      * @param: wmsOutboundNoticeOrderInfoVO
      * @return: void
      **/
-    void saveMaterial(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO);
+    BaseResult saveMaterial(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO);
 
     /**
      * @description 根据出库单编号删除
@@ -82,5 +84,14 @@ public interface IWmsOutboundNoticeOrderInfoToMaterialService extends IService<W
      **/
     List<WmsOutboundNoticeOrderInfoToMaterialVO> getInventoryMetailDetailList(InventoryDetail inventoryDetail);
 
-
+    /**
+     * @description 查询货品数据
+     * @author  ciro
+     * @date   2022/4/2 13:47
+     * @param: material
+     * @param: currentPage
+     * @param: pageSize
+     * @return: com.jayud.common.result.BasePage<com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO>
+     **/
+    BasePage<WmsOutboundNoticeOrderInfoToMaterialVO> selectInvenDetail(WmsOutboundNoticeOrderInfoToMaterialVO material,Integer currentPage,Integer pageSize);
 }

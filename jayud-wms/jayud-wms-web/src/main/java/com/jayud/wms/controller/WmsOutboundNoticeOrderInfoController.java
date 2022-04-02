@@ -56,11 +56,13 @@ public class WmsOutboundNoticeOrderInfoController {
     @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("分页查询数据")
     @GetMapping("/selectPage")
-    public BaseResult<CommonPageResult<IPage<WmsOutboundNoticeOrderInfoVO>>> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
+    public BaseResult<CommonPageResult<WmsOutboundNoticeOrderInfoVO>> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
                                                                                     @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                                                     HttpServletRequest req) {
-        return BaseResult.ok(new CommonPageResult(wmsOutboundNoticeOrderInfoService.selectPage(wmsOutboundNoticeOrderInfoVO,currentPage,pageSize,req)));
+        IPage<WmsOutboundNoticeOrderInfoVO> iPage = wmsOutboundNoticeOrderInfoService.selectPage(wmsOutboundNoticeOrderInfoVO,currentPage,pageSize,req);
+        CommonPageResult<WmsOutboundNoticeOrderInfoVO> result= new CommonPageResult<WmsOutboundNoticeOrderInfoVO>(iPage);
+        return BaseResult.ok(result);
     }
 
     /**

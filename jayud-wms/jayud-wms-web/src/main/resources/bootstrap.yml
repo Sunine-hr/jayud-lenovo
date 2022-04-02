@@ -2,7 +2,7 @@ spring:
   application:
     name: jayud-wms-web
   profiles:
-    active: prod
+    active: dev
   cloud:
     nacos:
       config:

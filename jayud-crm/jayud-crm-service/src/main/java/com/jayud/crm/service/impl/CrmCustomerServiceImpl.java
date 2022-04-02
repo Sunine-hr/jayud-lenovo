@@ -628,7 +628,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             if (CollUtil.isNotEmpty(changeList)) {
                 List<CrmCustomer> crmCustomerList = tranferCust(changeList, false, false,true);
                 crmCustomerList.forEach(crmCustomer -> {
-                    crmCustomer.setSupplierCode(codeUtils.getCodeByRule(CodeNumber.CRM_SUPPLIER_CODE));
+                    crmCustomer.setCustCode(codeUtils.getCodeByRule(CodeNumber.CRM_CUST_CODE));
                 });
                 this.updateBatchById(crmCustomerList);
             }

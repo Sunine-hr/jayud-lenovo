@@ -6,6 +6,7 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.WmsOutboundOrderInfo;
 import com.jayud.wms.model.vo.OutboundOrderNumberVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO;
@@ -50,8 +51,8 @@ public class WmsOutboundOrderInfoController {
      * @return
      */
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<CommonPageResult<IPage<WmsOutboundOrderInfoVO>>> selectPage(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO,
+    @PostMapping("/selectPage")
+    public BaseResult<CommonPageResult<IPage<WmsOutboundOrderInfoVO>>> selectPage(@RequestBody WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO,
                                                                               @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                                               @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                                               HttpServletRequest req) {
@@ -205,7 +206,7 @@ public class WmsOutboundOrderInfoController {
      * @param: wmsOutboundOrderInfoVO
      * @return: com.jyd.component.commons.result.Result<com.jayud.model.vo.WmsOutboundOrderInfoVO>
      **/
-    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
+//    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("根据通知单编码查询详情")
     @GetMapping(value = "/queryByCode")
     public BaseResult<WmsOutboundOrderInfoVO> queryByCode(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO){
@@ -274,7 +275,17 @@ public class WmsOutboundOrderInfoController {
         return wmsOutboundOrderInfoService.delByIdAndOrderNumber(delList);
     }
 
+    @ApiOperation("保存数据")
+    @PostMapping("saveInfo")
+    public BaseResult saveInfo(@RequestBody  WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO){
+        return wmsOutboundOrderInfoService.saveInfo(wmsOutboundOrderInfoVO);
+    }
 
+    @ApiOperation("删除数据")
+    @PostMapping("delOrder")
+    public BaseResult delOrder(@RequestBody DeleteForm deleteForm){
+        return wmsOutboundOrderInfoService.delOrder(deleteForm);
+    }
 
 
 

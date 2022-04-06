@@ -106,11 +106,11 @@
                 AND wooi.ower_name LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.owerName},'%')
             </if>
 
-            <if test="wmsOutboundOrderInfoVO.documentType != null ">
+            <if test="wmsOutboundOrderInfoVO.documentType != null and wmsOutboundOrderInfoVO.documentType != ''">
                 AND wooi.document_type = ${wmsOutboundOrderInfoVO.documentType}
             </if>
 
-            <if test="wmsOutboundOrderInfoVO.orderSourceType != null ">
+            <if test="wmsOutboundOrderInfoVO.orderSourceType != null and wmsOutboundOrderInfoVO.orderSourceType != ''">
                 AND wooi.order_source_type = ${wmsOutboundOrderInfoVO.orderSourceType}
             </if>
 
@@ -218,6 +218,10 @@
             </if>
             <if test="wmsOutboundOrderInfoVO.carRelation != null and wmsOutboundOrderInfoVO.carRelation != ''">
                 AND wooi.car_relation LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.carRelation},'%')
+            </if>
+            <if test="wmsOutboundOrderInfoVO.theDeliveryTime !=null and wmsOutboundOrderInfoVO.theDeliveryTime.size > 0">
+                AND  DATE_FORMAT( wooi.plan_delivery_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[0]}
+                AND DATE_FORMAT( wooi.plan_delivery_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[1]}
             </if>
         </where>
 
@@ -417,6 +421,10 @@
     <update id="delWaveRelation">
         UPDATE wms_outbound_order_info SET wave_number = null ,update_by=#{username},update_time=now()
         WHERE is_deleted = 0 AND wave_number = #{waveOrderNumber}
+    </update>
+    <update id="logicDelById">
+        UPDATE wms_outbound_order_info SET is_deleted = 1 ,update_by=#{username},update_time=now()
+        WHERE is_deleted = 0 AND id = #{id}
     </update>
 
 

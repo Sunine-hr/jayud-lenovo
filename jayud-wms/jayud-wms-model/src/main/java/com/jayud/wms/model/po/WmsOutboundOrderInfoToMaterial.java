@@ -114,6 +114,14 @@ public class WmsOutboundOrderInfoToMaterial extends SysBaseEntity {
     @ApiModelProperty(value = "库存明细id")
     private Long inventoryDetailId;
 
+    @ApiModelProperty(value = "卡板id")
+    private Long containerId;
+
+    @ApiModelProperty(value = "卡板编码")
+    private String containerCode;
+
+    @ApiModelProperty(value = "图片地址")
+    private String imgUrl;
 
 
 

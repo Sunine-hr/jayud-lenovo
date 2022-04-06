@@ -3,6 +3,7 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -17,6 +18,7 @@ import com.jayud.wms.mapper.WmsOutboundOrderInfoMapper;
 import com.jayud.wms.mapper.WmsOutboundOrderInfoToDistributionMaterialMapper;
 import com.jayud.wms.mapper.WmsOutboundOrderInfoToMaterialMapper;
 import com.jayud.wms.mapper.WmsWaveOrderInfoMapper;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.bo.InventoryDetailForm;
 import com.jayud.wms.model.constant.AllocationStrategyConstant;
 import com.jayud.wms.model.constant.CodeConStants;
@@ -73,6 +75,10 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
     private IWarehouseLocationService warehouseLocationService;
 
     @Autowired
+    private IWmsOutboundOrderInfoToServiceService wmsOutboundOrderInfoToServiceService;
+
+
+    @Autowired
     private WmsOutboundOrderInfoMapper wmsOutboundOrderInfoMapper;
     @Autowired
     private WmsOutboundOrderInfoToMaterialMapper wmsOutboundOrderInfoToMaterialMapper;
@@ -118,7 +124,10 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
     @Transactional(rollbackFor = Exception.class)
     public BaseResult transferOut(OutboundOrderNumberVO outboundOrderNumberVO) {
         List<String> errorList = new ArrayList<>();
+        List<String> closeErrList = new ArrayList<>();
         WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO = new WmsOutboundNoticeOrderInfoVO();
+        List<WmsOutboundOrderInfo> addInfoList = new ArrayList<>();
+        List<WmsOutboundOrderInfoToMaterial> addMaterialList = new ArrayList<>();
         for (String orderNumber : outboundOrderNumberVO.getOrderNumberList()){
             wmsOutboundNoticeOrderInfoVO.setOrderNumber(orderNumber);
             if (checkExitOutbound(wmsOutboundNoticeOrderInfoVO.getOrderNumber())){
@@ -126,34 +135,37 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
                 continue;
             }
             WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVos = wmsOutboundNoticeOrderInfoService.queryByCode(wmsOutboundNoticeOrderInfoVO);
-            wmsOutboundNoticeOrderInfoVos.setOrderStatusType(NoticeOrdertSatus.TO_OUT.getType());
-            wmsOutboundNoticeOrderInfoService.updateById(wmsOutboundNoticeOrderInfoVos);
+            if (!isAllClock(wmsOutboundNoticeOrderInfoVos.getThisMaterialList())){
+                closeErrList.add(orderNumber);
+                continue;
+            }
+            wmsOutboundNoticeOrderInfoVos.setOrderStatusType("2");
             WmsOutboundOrderInfo wmsOutboundOrderInfo = new WmsOutboundOrderInfo();
             BeanUtils.copyProperties(wmsOutboundNoticeOrderInfoVos,wmsOutboundOrderInfo);
-            wmsOutboundOrderInfo.setId(null);
-            wmsOutboundOrderInfo.clearUpdate();
             wmsOutboundOrderInfo.clearCreate();
-            wmsOutboundOrderInfo.setOrderNumber(codeUtils.getCodeByRule(CodeConStants.OUTBOUND_ORDER_NUMBER));
+            wmsOutboundOrderInfo.clearUpdate();
+            wmsOutboundOrderInfo.setId(null);
             wmsOutboundOrderInfo.setNoticeOrderNumber(wmsOutboundNoticeOrderInfoVos.getOrderNumber());
-            List<WmsOutboundOrderInfoToMaterial> materialList = wmsOutboundOrderInfoToMaterialService.transferOut(wmsOutboundOrderInfo.getNoticeOrderNumber(),wmsOutboundOrderInfo.getOrderNumber());
-            wmsOutboundOrderInfo.setAllCount(getMaterialCount(materialList));
-            wmsOutboundOrderInfo.setAllHeight(getAllHeight(materialList));
-            wmsOutboundOrderInfo.setOrderStatusType(OutboundOrdertSatus.UNASSIGNED.getType());
-            this.save(wmsOutboundOrderInfo);
-            if (outboundOrderNumberVO.getIsAuto() != null){
-                if (outboundOrderNumberVO.getIsAuto()){
-                    //自动分配
-                    outboundOrderNumberVO.setIsAuto(true);
-                    outboundOrderNumberVO.setIsEndPacking(outboundOrderNumberVO.getIsEndPacking());
-                    List<String> orderNumberList = new ArrayList<>();
-                    orderNumberList.add(wmsOutboundOrderInfo.getOrderNumber());
-                    outboundOrderNumberVO.setOrderNumberList(orderNumberList);
-                    this.allocateInventory(outboundOrderNumberVO);
-                }
-            }
+            wmsOutboundOrderInfo.setOrderNumber(codeUtils.getCodeByRule(CodeConStants.OUTBOUND_ORDER_NUMBER));
+//            wmsOutboundOrderInfo.setOrderNumber();
+            addMaterialList.addAll(changeMaterial(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundNoticeOrderInfoVos.getThisMaterialList()));
+            addInfoList.add(wmsOutboundOrderInfo);
         }
+        if (CollUtil.isNotEmpty(addInfoList)){
+            this.saveBatch(addInfoList);
+        }
+        if (CollUtil.isNotEmpty(addMaterialList)){
+            wmsOutboundOrderInfoToMaterialService.saveBatch(addMaterialList);
+        }
+        String errMsg = "";
         if (!errorList.isEmpty()){
-            return BaseResult.error(StringUtils.join(errorList,",")+"已转为出库单，请勿重复生成出库单！");
+            errMsg += StringUtils.join(errorList,",")+"已转为出库单，请勿重复生成出库单！";
+        }
+        if (!closeErrList.isEmpty()){
+            errMsg += StringUtils.join(closeErrList,",")+"缺货中！";
+        }
+        if (StringUtils.isNotBlank(errMsg)){
+            return BaseResult.error(errMsg);
         }
         return BaseResult.ok(SysTips.CHANGE_OUTBOUND_ORDER_SUCCESS);
     }
@@ -167,17 +179,10 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             wmsOutboundOrderInfoToMaterialVO.setOrderNumber(wmsOutboundOrderInfoVO.getOrderNumber());
             List<WmsOutboundOrderInfoToMaterialVO> thisMaterialList = wmsOutboundOrderInfoToMaterialService.selectList(wmsOutboundOrderInfoToMaterialVO);
             wmsOutboundOrderInfoVO.setThisMaterialList(thisMaterialList);
-
-            List<Long> orderMaterialIds = new ArrayList<>();
-            if(CollUtil.isNotEmpty(thisMaterialList)){
-                List<Long> ids = thisMaterialList.stream().map(w -> w.getId()).collect(Collectors.toList());
-                orderMaterialIds.addAll(ids);
-            }else{
-                orderMaterialIds.add(0L);
-            }
-
-            List<WmsOutboundOrderInfoToDistributionMaterialVO> thisDistributionMaterialList = wmsOutboundOrderInfoToDistributionMaterialService.selectListByOrderMaterialIds(orderMaterialIds);
-            wmsOutboundOrderInfoVO.setThisDistributionMaterialList(thisDistributionMaterialList);
+            WmsOutboundOrderInfoToService wmsOutboundOrderInfoToService = new WmsOutboundOrderInfoToService();
+            wmsOutboundOrderInfoToService.setOrderNumber(wmsOutboundOrderInfoVO.getOrderNumber());
+            List<WmsOutboundOrderInfoToService> serviceList = wmsOutboundOrderInfoToServiceService.selectList(wmsOutboundOrderInfoToService);
+            wmsOutboundOrderInfoVO.setServiceList(serviceList);
         }
 
         return wmsOutboundOrderInfoVO;
@@ -833,6 +838,57 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
 
     }
 
+    @Override
+    public BaseResult saveInfo(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO) {
+        changComfirm(wmsOutboundOrderInfoVO);
+        WmsOutboundOrderInfo wmsOutboundOrderInfo =  new WmsOutboundOrderInfo();
+        BeanUtils.copyProperties(wmsOutboundOrderInfoVO,wmsOutboundOrderInfo);
+        if (CollUtil.isNotEmpty(wmsOutboundOrderInfoVO.getThisMaterialList())){
+            List<WmsOutboundOrderInfoToMaterial> materialList = new ArrayList<>();
+            wmsOutboundOrderInfoVO.getThisMaterialList().forEach(materal -> {
+                WmsOutboundOrderInfoToMaterial materials = new WmsOutboundOrderInfoToMaterial();
+                BeanUtils.copyProperties(materal,materials);
+                materialList.add(materials);
+            });
+        }
+        wmsOutboundOrderInfoToServiceService.saveService(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundOrderInfoVO.getServiceList());
+        allOut(wmsOutboundOrderInfo);
+        this.updateById(wmsOutboundOrderInfo);
+        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+    }
+
+    @Override
+    public BaseResult delOrder(DeleteForm deleteForm) {
+        LambdaQueryWrapper<WmsOutboundOrderInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfo::getIsDeleted,false);
+        lambdaQueryWrapper.in(WmsOutboundOrderInfo::getOrderNumber,deleteForm.getNumberList());
+        List<WmsOutboundOrderInfo> infoList = this.list(lambdaQueryWrapper);
+        List<String> errList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(infoList)){
+            for (WmsOutboundOrderInfo info : infoList){
+                if (info.getOrderStatusType() == 4){
+                    errList.add(info.getOrderNumber());
+                    continue;
+                }
+                LambdaQueryWrapper<WmsOutboundOrderInfoToMaterial> lambdaQueryWrapper1 = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper1.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
+                lambdaQueryWrapper1.eq(WmsOutboundOrderInfoToMaterial::getOrderNumber,info.getOrderNumber());
+                List<WmsOutboundOrderInfoToMaterial> materialList = wmsOutboundOrderInfoToMaterialService.list(lambdaQueryWrapper1);
+                if (CollUtil.isNotEmpty(materialList)){
+                    Map<Long,BigDecimal> msg = materialList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getRequirementAccount()));
+                    inventoryDetailService.canceloutputAllocationByIds(msg);
+                    //删除物料
+                    wmsOutboundOrderInfoToMaterialMapper.delByOrderNumber(info.getOrderNumber(),CurrentUserUtil.getUsername());
+                }
+                this.baseMapper.logicDelById(info.getId(),CurrentUserUtil.getUsername());
+            }
+        }
+        if (CollUtil.isNotEmpty(errList)){
+            return BaseResult.error(StringUtils.join(errList, StrUtil.C_COMMA)+" 已出库，请勿删除！");
+        }
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
     /**
      * @description 判断是否分配波次
      * @author  ciro
@@ -853,6 +909,81 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             isWave = true;
         }
         return isWave;
+    }
+
+    private List<WmsOutboundOrderInfoToMaterial> changeMaterial(String orderNumber,List<WmsOutboundNoticeOrderInfoToMaterialVO> noticeMaterialList){
+        List<WmsOutboundOrderInfoToMaterial> materialList = new ArrayList<>();
+        noticeMaterialList.forEach(noticeMaterial -> {
+            WmsOutboundOrderInfoToMaterial material = new WmsOutboundOrderInfoToMaterial();
+            BeanUtils.copyProperties(noticeMaterial,material);
+            material.clearCreate();
+            material.clearUpdate();
+            material.setId(null);
+            material.setOrderNumber(orderNumber);
+            material.setRequirementAccount(noticeMaterial.getAccount());
+            material.setDistributionAccount(noticeMaterial.getAccount());
+            materialList.add(material);
+        });
+        return materialList;
+    }
+
+
+    /**
+     * @description 判断是否全部锁定
+     * @author  ciro
+     * @date   2022/4/6 11:58
+     * @param: noticeMaterialList
+     * @return: boolean
+     **/
+    public boolean isAllClock(List<WmsOutboundNoticeOrderInfoToMaterialVO> noticeMaterialList){
+        Map<Long,BigDecimal> accountMap = noticeMaterialList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getAccount()));
+        if (inventoryDetailService.outputAllocationByMsg(accountMap).isSuccess()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void changComfirm(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO){
+        LambdaQueryWrapper<WmsOutboundOrderInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getOrderNumber,wmsOutboundOrderInfoVO.getOrderNumber());
+        List<WmsOutboundOrderInfoToMaterial> lastMaterList = wmsOutboundOrderInfoToMaterialService.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(lastMaterList)){
+            List<String> lastComfirIdList = lastMaterList.stream().filter(x->x.getStatusType() == 4).map(x->String.valueOf(x.getId())).collect(Collectors.toList());
+            List<String> thisComfirIdList = wmsOutboundOrderInfoVO.getThisMaterialList().stream().filter(x->x.getStatusType() == 4).map(x->String.valueOf(x.getId())).collect(Collectors.toList());
+            for (String id:thisComfirIdList){
+                if (!lastComfirIdList.contains(id)){
+                    wmsOutboundOrderInfoVO.setComfirmId(CurrentUserUtil.getUserId());
+                    wmsOutboundOrderInfoVO.setComfirmName(CurrentUserUtil.getUserRealName());
+                }
+            }
+        }
+    }
+
+    /**
+     * @description 全部出库
+     * @author  ciro
+     * @date   2022/4/6 17:59
+     * @param: info
+     * @return: void
+     **/
+    private void allOut(WmsOutboundOrderInfo info){
+        LambdaQueryWrapper<WmsOutboundOrderInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getOrderNumber,info.getOrderNumber());
+        List<WmsOutboundOrderInfoToMaterial> materialList = wmsOutboundOrderInfoToMaterialService.list(lambdaQueryWrapper);
+        boolean isAll = true;
+        for (WmsOutboundOrderInfoToMaterial material : materialList){
+            if(material.getStatusType() != 4){
+                isAll = false;
+                break;
+            }
+        }
+        if (isAll){
+            info.setOrderStatusType(4);
+        }
+
     }
 
 

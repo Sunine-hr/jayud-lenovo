@@ -78,52 +78,45 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         WmsOutboundNoticeOrderInfoToMaterialVO materialVO = new WmsOutboundNoticeOrderInfoToMaterialVO();
         materialVO.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
         List<WmsOutboundNoticeOrderInfoToMaterialVO> materialList = selectList(materialVO);
-        //上次货品id
-        List<String> lasetMaterList = materialList.stream().map(x->String.valueOf(x.getInventoryDetailId())).collect(Collectors.toList());
-        List<WmsOutboundNoticeOrderInfoToMaterialVO> thisMaterialList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList();
-        Map<String,WmsOutboundNoticeOrderInfoToMaterialVO> materialMap = new HashMap<>(20);
-        Map<String,WmsOutboundNoticeOrderInfoToMaterialVO> lastMaterialMap = new HashMap<>(20);
+
         //本次货品id
-        List<String> detailIdList = thisMaterialList.stream().map(x->String.valueOf(x.getInventoryDetailId())).distinct().collect(Collectors.toList());
-        if (detailIdList.size() != lasetMaterList.size() && lasetMaterList.size()!=0){
+        List<String> detailIdList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().map(x->String.valueOf(x.getInventoryDetailId())).distinct().collect(Collectors.toList());
+        List<String> finalIdList = detailIdList.stream().distinct().collect(Collectors.toList());
+        if (detailIdList.size() != finalIdList.size()){
             return BaseResult.error("存在重复货品，请检查后提交！");
         }
-        thisMaterialList.forEach(x->{
-            materialMap.put(String.valueOf(x.getInventoryDetailId()),x);
-        });
-        materialList.forEach(x->{
-            lastMaterialMap.put(String.valueOf(x.getInventoryDetailId()),x);
-        });
-        List<String> delLists = ListUtils.getDiff(detailIdList,lasetMaterList);
-        List<String> saveLists = ListUtils.getDiff(lasetMaterList,detailIdList);
-        List<String> updateLists = ListUtils.getSame(detailIdList,lasetMaterList);
-        if (CollUtil.isNotEmpty(delLists)){
-            List<String> delIdList = new ArrayList<>();
-            delLists.forEach(detailId -> {
-                delIdList.add(String.valueOf(materialMap.get(detailId).getId()));
-            });
-            wmsOutboundNoticeOrderInfoToMaterialMapper.delteByOrderNumberAndMaterialCode(wmsOutboundNoticeOrderInfoVO.getOrderNumber(), null,delIdList, CurrentUserUtil.getUsername());
+        List<String> thisIdList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().filter(x->x.getId() != null).map(x->String.valueOf(x.getId())).collect(Collectors.toList());
+        List<String> lastIdList = materialList.stream().map(x->String.valueOf(x.getId())).collect(Collectors.toList());
+        //删除
+        List<String> delLists = ListUtils.getDiff(thisIdList,lastIdList);
+        if (CollUtil.isNotEmpty(delLists)) {
+            wmsOutboundNoticeOrderInfoToMaterialMapper.delteByOrderNumberAndMaterialCode(null, null, delLists, CurrentUserUtil.getUsername());
         }
-        if (CollUtil.isNotEmpty(saveLists)){
-            List<WmsOutboundNoticeOrderInfoToMaterial> materials = new ArrayList<>();
-            saveLists.forEach(detailId -> {
-                WmsOutboundNoticeOrderInfoToMaterialVO vo = materialMap.get(detailId);
-                vo.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
-                materials.add(vo);
+        //修改
+        List<WmsOutboundNoticeOrderInfoToMaterialVO> updateMaterialList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().filter(x->x.getId()!=null).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(updateMaterialList)){
+            List<WmsOutboundNoticeOrderInfoToMaterial> updateList = new ArrayList<>();
+            updateMaterialList.forEach(materials->{
+                WmsOutboundNoticeOrderInfoToMaterial material = new WmsOutboundNoticeOrderInfoToMaterial();
+                BeanUtils.copyProperties(materials,material);
+                updateList.add(material);
             });
-            this.saveBatch(materials);
+            this.updateBatchById(updateList);
         }
-        if (CollUtil.isNotEmpty(updateLists)){
-            List<WmsOutboundNoticeOrderInfoToMaterial> materials = new ArrayList<>();
-            saveLists.forEach(detailId -> {
-                WmsOutboundNoticeOrderInfoToMaterialVO vo = materialMap.get(detailId);
-                WmsOutboundNoticeOrderInfoToMaterialVO lastVo = lastMaterialMap.get(detailId);
-                vo.setId(lastVo.getId());
-                vo.setCreateBy(lastVo.getCreateBy());
-                vo.setCreateTime(lastVo.getCreateTime());
-                materials.add(materialMap.get(detailId));
+        //新增
+        List<WmsOutboundNoticeOrderInfoToMaterialVO> saveMaterialList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().filter(x->x.getId()==null).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(saveMaterialList)){
+            List<WmsOutboundNoticeOrderInfoToMaterial> saveList = new ArrayList<>();
+            saveMaterialList.forEach(materials->{
+                WmsOutboundNoticeOrderInfoToMaterial material = new WmsOutboundNoticeOrderInfoToMaterial();
+                BeanUtils.copyProperties(materials,material);
+                material.clearCreate();
+                material.clearUpdate();
+                material.setId(null);
+                material.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
+                saveList.add(material);
             });
-            this.updateBatchById(materials);
+            this.saveBatch(saveList);
         }
         return BaseResult.ok();
     }
@@ -168,6 +161,9 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         InventoryDetail inventoryDetail = new InventoryDetail();
         if (StringUtils.isNotBlank(material.getInWarehouseNumber())){
             inventoryDetail.setInWarehouseNumber(material.getInWarehouseNumber());
+        }
+        if (StringUtils.isNotBlank(material.getWarehouseCode())){
+            inventoryDetail.setWarehouseCode(material.getWarehouseCode());
         }
         if (StringUtils.isNotBlank(material.getOwerCode())){
             inventoryDetail.setOwerCode(material.getOwerCode());

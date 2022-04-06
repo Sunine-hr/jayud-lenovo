@@ -11,6 +11,7 @@ import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.common.BaseResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,4 +135,23 @@ public interface IInventoryDetailService extends IService<InventoryDetail> {
      * @return
      */
     BaseResult selectInventoryReport(QueryShelfOrderTaskForm queryShelfOrderTaskForm);
+
+
+    /**
+     * @description 出库分配
+     * @author  ciro
+     * @date   2022/4/6 13:41
+     * @param: msg
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult outputAllocationByMsg(Map<Long, BigDecimal> msg);
+
+    /**
+     * @description 根据id集合取消分配
+     * @author  ciro
+     * @date   2022/4/6 17:26
+     * @param: msg
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult canceloutputAllocationByIds(Map<Long,BigDecimal> msg);
 }

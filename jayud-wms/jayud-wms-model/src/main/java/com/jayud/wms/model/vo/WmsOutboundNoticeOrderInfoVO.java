@@ -57,4 +57,7 @@ public class WmsOutboundNoticeOrderInfoVO extends WmsOutboundNoticeOrderInfo {
     @ApiModelProperty(value = "是否拣货下架结束")
     Boolean isEndPacking;
 
+    @ApiModelProperty(value = "发货时间")
+    private List<String> theDeliveryTime;
+
 }

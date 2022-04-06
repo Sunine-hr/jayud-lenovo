@@ -48,14 +48,13 @@ public class InventoryDetailController {
     /**
      * 物料库存查询
      */
-    @SysDataPermission(clazz = InventoryDetail.class)
     @ApiOperation("物料库存查询")
     @GetMapping("/selectMaterialPage")
     public BaseResult<CommonPageResult<IPage<InventoryDetail>>> selectMaterialPage(InventoryDetail inventoryDetail,
-                                                                               @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                                               @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                                               HttpServletRequest req) {
-        return BaseResult.ok(new CommonPageResult(inventoryDetailService.selectMaterialPage(inventoryDetail,currentPage,pageSize,req)));
+                                                                                   @RequestParam(name = "currentPage", defaultValue = "1") Integer currentPage,
+                                                                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                                                   HttpServletRequest req) {
+        return BaseResult.ok(new CommonPageResult(inventoryDetailService.selectMaterialPage(inventoryDetail, currentPage, pageSize, req)));
     }
 
     /**
@@ -90,57 +89,55 @@ public class InventoryDetailController {
     /**
      * 分页查询数据
      *
-     * @param inventoryDetail   查询条件
+     * @param inventoryDetail 查询条件
      * @return
      */
-    @SysDataPermission(clazz = InventoryDetail.class)
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<CommonPageResult<IPage<InventoryDetail>>> selectPage(InventoryDetail inventoryDetail,
-                                                @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-                                                HttpServletRequest req) {
-        return BaseResult.ok(new CommonPageResult(inventoryDetailService.selectPage(inventoryDetail,currentPage,pageSize,req)));
+    @PostMapping("/selectPage")
+    public BaseResult<CommonPageResult<IPage<InventoryDetail>>> selectPage(@RequestBody InventoryDetail inventoryDetail,
+                                                                           HttpServletRequest req) {
+        return BaseResult.ok(new CommonPageResult(inventoryDetailService.selectPage(inventoryDetail, inventoryDetail.getCurrentPage(), inventoryDetail.getPageSize(), req)));
     }
 
     /**
      * 分页查询数据Feign
      *
-     * @param paramMap   查询条件
+     * @param paramMap 查询条件
      * @return
      */
     @ApiOperation("分页查询数据Feign")
     @PostMapping("/selectPageByFeign")
     public BaseResult<CommonPageResult<IPage<InventoryDetail>>> selectPageByFeign(@RequestBody Map<String, Object> paramMap,
-                                                                       HttpServletRequest req) {
+                                                                                  HttpServletRequest req) {
         InventoryDetail inventoryDetail = BeanUtil.fillBeanWithMap(paramMap, new InventoryDetail(), false);
-        return BaseResult.ok(new CommonPageResult(inventoryDetailService.selectPage(inventoryDetail,inventoryDetail.getCurrentPage(), inventoryDetail.getPageSize(),req)));
+        return BaseResult.ok(new CommonPageResult(inventoryDetailService.selectPage(inventoryDetail, inventoryDetail.getCurrentPage(), inventoryDetail.getPageSize(), req)));
     }
 
     /**
      * 列表查询数据
      *
-     * @param inventoryDetail   查询条件
+     * @param inventoryDetail 查询条件
      * @return
      */
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<InventoryDetail>> selectList(InventoryDetail inventoryDetail,
-                                                HttpServletRequest req) {
+                                                        HttpServletRequest req) {
         return BaseResult.ok(inventoryDetailService.selectList(inventoryDetail));
     }
 
     /**
-    * 根据id查询
-    * @param id
-    */
+     * 根据id查询
+     *
+     * @param id
+     */
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<InventoryDetail> queryById(@RequestParam(name="id",required=true) int id) {
+    public BaseResult<InventoryDetail> queryById(@RequestParam(name = "id", required = true) int id) {
         InventoryDetail inventoryDetail = inventoryDetailService.getById(id);
 
-        if(ObjectUtil.isEmpty(inventoryDetail)){
+        if (ObjectUtil.isEmpty(inventoryDetail)) {
             throw new IllegalArgumentException("库存明细不存在！");//(Ps：测试OpenFeign的异常情况)
         }
         return BaseResult.ok(inventoryDetail);
@@ -157,26 +154,26 @@ public class InventoryDetailController {
     public void exportInventoryDetail(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
-                "主键",
-                "仓库名称",
-                "货主",
-                "库位编号",
-                "库位状态",
-                "物料编号",
-                "物料名称",
-                "物料类别",
-                "现有量",
-                "可用量",
-                "分配量",
-                "拣货量",
-                "物料规格",
-                "容器号",
-                "批次号",
-                "生产日期",
-                "备注1",
-                "备注2",
-                "备注3",
-                "上架时间"
+                    "主键",
+                    "仓库名称",
+                    "货主",
+                    "库位编号",
+                    "库位状态",
+                    "物料编号",
+                    "物料名称",
+                    "物料类别",
+                    "现有量",
+                    "可用量",
+                    "分配量",
+                    "拣货量",
+                    "物料规格",
+                    "容器号",
+                    "批次号",
+                    "生产日期",
+                    "备注1",
+                    "备注2",
+                    "备注3",
+                    "上架时间"
             );
             List<LinkedHashMap<String, Object>> dataList = inventoryDetailService.queryInventoryDetailForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "库存明细", response);
@@ -186,11 +183,11 @@ public class InventoryDetailController {
     }
 
     /**
-    * 入库
-    **/
+     * 入库
+     **/
     @ApiOperation("入库")
     @PostMapping("/input")
-    public BaseResult input(@Valid @RequestBody List<InventoryDetailForm> list){
+    public BaseResult input(@Valid @RequestBody List<InventoryDetailForm> list) {
         return inventoryDetailService.input(list);
     }
 
@@ -199,7 +196,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("出库分配")
     @PostMapping("/outputAllocation")
-    public BaseResult outputAllocation(@Valid @RequestBody List<InventoryDetailForm> list){
+    public BaseResult outputAllocation(@Valid @RequestBody List<InventoryDetailForm> list) {
         return inventoryDetailService.outputAllocation(list);
     }
 
@@ -208,7 +205,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("库存调整")
     @PostMapping("/adjustment")
-    public BaseResult adjustment(@Valid @RequestBody InventoryAdjustmentForm bo){
+    public BaseResult adjustment(@Valid @RequestBody InventoryAdjustmentForm bo) {
         return inventoryDetailService.adjustment(bo);
     }
 
@@ -217,7 +214,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("库存移动")
     @PostMapping("/movement")
-    public BaseResult movement(@Valid @RequestBody List<InventoryMovementForm> list){
+    public BaseResult movement(@Valid @RequestBody List<InventoryMovementForm> list) {
         return inventoryDetailService.movement(list);
 
     }
@@ -227,7 +224,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("撤销出库分配")
     @PostMapping("/cancelOutputAllocation")
-    public BaseResult cancelOutputAllocation(@Valid @RequestBody List<InventoryDetailForm> list){
+    public BaseResult cancelOutputAllocation(@Valid @RequestBody List<InventoryDetailForm> list) {
         return inventoryDetailService.cancelOutputAllocation(list);
     }
 
@@ -236,7 +233,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("生成拣货")
     @PostMapping("/generatePicking")
-    public BaseResult generatePicking(@Valid @RequestBody List<InventoryDetailForm> list){
+    public BaseResult generatePicking(@Valid @RequestBody List<InventoryDetailForm> list) {
         return inventoryDetailService.generatePicking(list);
     }
 
@@ -245,7 +242,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("撤销拣货")
     @PostMapping("/cancelPicking")
-    public BaseResult cancelPicking(@Valid @RequestBody List<InventoryDetailForm> list){
+    public BaseResult cancelPicking(@Valid @RequestBody List<InventoryDetailForm> list) {
         return inventoryDetailService.cancelPicking(list);
     }
 
@@ -254,7 +251,7 @@ public class InventoryDetailController {
      */
     @ApiOperation("出库")
     @PostMapping("/output")
-    public BaseResult output(@Valid @RequestBody List<InventoryDetailForm> list){
+    public BaseResult output(@Valid @RequestBody List<InventoryDetailForm> list) {
         return inventoryDetailService.output(list);
     }
 

@@ -83,10 +83,10 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                                         Integer pageSize,
                                         HttpServletRequest req){
         AuthUserDetail authUserDetail = CurrentUserUtil.getUserDetail();
-        List<String> owerIdList = sysUserOwerPermissionService.getOwerIdByUserId(String.valueOf(authUserDetail.getId()));
-        List<String> warehouseIdList = sysUserWarehousePermissionService.getWarehouseIdByUserId(String.valueOf(authUserDetail.getId()));
-        inventoryDetail.setOwerIdList(owerIdList);
-        inventoryDetail.setWarehouseIdList(warehouseIdList);
+//        List<String> owerIdList = sysUserOwerPermissionService.getOwerIdByUserId(String.valueOf(authUserDetail.getId()));
+//        List<String> warehouseIdList = sysUserWarehousePermissionService.getWarehouseIdByUserId(String.valueOf(authUserDetail.getId()));
+//        inventoryDetail.setOwerIdList(owerIdList);
+//        inventoryDetail.setWarehouseIdList(warehouseIdList);
 
         Page<InventoryDetail> page=new Page<InventoryDetail>(pageNo, pageSize);
         IPage<InventoryDetail> pageList= inventoryDetailMapper.pageList(page, inventoryDetail);

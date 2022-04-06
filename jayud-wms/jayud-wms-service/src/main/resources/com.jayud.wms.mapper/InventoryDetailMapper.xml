@@ -41,11 +41,16 @@
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
         <result column="route_sorting" property="routeSorting" />
+        <result column="in_warehouse_number" property="inWarehouseNumber" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
+        <result column="unit" property="unit" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id.id, id.ower_id, id.ower_code, id.ower_name, id.warehouse_id, id.warehouse_code, id.warehouse_name, id.warehouse_area_id, id.warehouse_area_code, id.warehouse_area_name, id.warehouse_location_id, id.warehouse_location_code, id.warehouse_location_status, id.warehouse_location_status2, id.container_id, id.container_code, id.material_id, id.material_code, id.material_name, id.material_type_id, id.material_type, id.material_specification, id.batch_code, id.material_production_date, id.custom_field1, id.custom_field2, id.custom_field3, id.existing_count, id.allocation_count, id.picking_count, id.remark, id.is_deleted, id.create_by, id.create_time, id.update_by, id.update_time
+        id.id, id.ower_id, id.ower_code, id.ower_name, id.warehouse_id, id.warehouse_code, id.warehouse_name, id.warehouse_area_id, id.warehouse_area_code, id.warehouse_area_name, id.warehouse_location_id, id.warehouse_location_code, id.warehouse_location_status, id.warehouse_location_status2, id.container_id, id.container_code, id.material_id, id.material_code, id.material_name, id.material_type_id, id.material_type, id.material_specification, id.batch_code, id.material_production_date, id.custom_field1, id.custom_field2, id.custom_field3,
+         id.existing_count, id.allocation_count, id.picking_count, id.remark, id.is_deleted, id.create_by, id.create_time, id.update_by, id.update_time,id.in_warehouse_number,id.weight,id.volume,id.unit
     </sql>
 
     <!-- 表名 -->
@@ -423,18 +428,7 @@
         <if test="inventoryDetail.materialSpecification != null and materialSpecification != ''">
             AND material_specification LIKE CONCAT('%',#{inventoryDetail.materialSpecification},'%')
         </if>
-        <if test="inventoryDetail.owerIdList !=null and  inventoryDetail.owerIdList.size > 0 ">
-            and ower_id in
-            <foreach item="id" collection="inventoryDetail.owerIdList" open="(" separator=","  close=")" >
-                #{id}
-            </foreach>
-        </if>
-        <if test="inventoryDetail.warehouseIdList!=null  and inventoryDetail.warehouseIdList.size > 0">
-            and warehouse_id in
-            <foreach item="id" collection="inventoryDetail.warehouseIdList" open="(" separator=","  close=")" >
-                #{id}
-            </foreach>
-        </if>
+
         <if test="inventoryDetail.inWarehouseNumber != null and inventoryDetail.inWarehouseNumber != ''">
             AND in_warehouse_number LIKE CONCAT('%',#{inventoryDetail.inWarehouseNumber},'%')
         </if>

@@ -27,4 +27,5 @@ file:
     - application/vnd.openxmlformats-officedocument.wordprocessingml.document
     #压缩包
     - application/octet-stream
-  base-url: http://test.oms.jayud.com:9448
+  #base-url: http://test.oms.jayud.com:9448
+  base-url: http://192.168.3.212:8888

@@ -37,12 +37,16 @@
         <result column="in_warehouse_number" property="inWarehouseNumber" />
         <result column="warehouse_location_id" property="warehouseLocationId" />
         <result column="warehouse_location_code" property="warehouseLocationCode" />
+        <result column="inventory_detail_id" property="inventoryDetailId" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
+        <result column="img_url" property="imgUrl" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         wooitm.id, wooitm.order_number, wooitm.material_id, wooitm.material_code, wooitm.material_name,wooitm.material_specification, wooitm.requirement_account,wooitm.distribution_account, wooitm.unit, wooitm.external_number, wooitm.external_line_number, wooitm.batch_code, wooitm.material_production_date, wooitm.custom_field1, wooitm.custom_field2, wooitm.custom_field3,wooitm.status_type, wooitm.remark, wooitm.is_deleted, wooitm.create_by, wooitm.create_time, wooitm.update_by, wooitm.update_time,
-        wooitm.out_warehouse_number,wooitm.in_warehouse_number,wooitm.weight,wooitm.volume,wooitm.warehouse_location_id,wooitm.warehouse_location_code
+        wooitm.out_warehouse_number,wooitm.in_warehouse_number,wooitm.weight,wooitm.volume,wooitm.warehouse_location_id,wooitm.warehouse_location_code,wooitm.inventory_detail_id,wooitm.container_id,wooitm.container_code,wooitm.img_url,
     </sql>
 
     <!-- 表名 -->

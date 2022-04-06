@@ -2,6 +2,7 @@ package com.jayud.wms.model.vo;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfoToMaterial;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -63,6 +64,7 @@ public class WmsOutboundNoticeOrderInfoToMaterialVO extends WmsOutboundNoticeOrd
     @ApiModelProperty(value = "拣货量")
     private BigDecimal pickingCount;
 
+    @JsonProperty(value = "inWarehouseTime")
     @ApiModelProperty(value = "上架时间")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

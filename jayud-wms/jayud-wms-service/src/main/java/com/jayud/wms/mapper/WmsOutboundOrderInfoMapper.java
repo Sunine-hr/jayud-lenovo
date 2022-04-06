@@ -103,4 +103,14 @@ public interface WmsOutboundOrderInfoMapper extends BaseMapper<WmsOutboundOrderI
      * @return: java.util.List<com.jayud.model.vo.WmsOutboundOrderInfoVO>
      **/
     List<WmsOutboundOrderInfoVO> selectUnStockToWaveList(@Param("wmsOutboundOrderInfoVO") WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO);
+
+    /**
+     * @description 根据id逻辑删除
+     * @author  ciro
+     * @date   2022/4/6 17:50
+     * @param: id
+     * @param: username
+     * @return: int
+     **/
+    int logicDelById(@Param("id") Long id,@Param("username") String username);
 }

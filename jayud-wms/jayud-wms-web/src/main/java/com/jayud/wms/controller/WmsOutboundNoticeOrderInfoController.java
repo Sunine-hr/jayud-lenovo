@@ -7,6 +7,7 @@ import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfo;
+import com.jayud.wms.model.vo.WmsOutboundNoticeDictVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO;
 import com.jayud.wms.service.IWmsOutboundNoticeOrderInfoService;
 import io.swagger.annotations.Api;
@@ -55,8 +56,8 @@ public class WmsOutboundNoticeOrderInfoController {
      **/
 //    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<CommonPageResult<WmsOutboundNoticeOrderInfoVO>> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
+    @PostMapping("/selectPage")
+    public BaseResult<CommonPageResult<WmsOutboundNoticeOrderInfoVO>> selectPage(@RequestBody WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
                                                                                     @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                                                     HttpServletRequest req) {
@@ -231,6 +232,12 @@ public class WmsOutboundNoticeOrderInfoController {
         });
 
         return BaseResult.ok(SysTips.ADD_SUCCESS);
+    }
+
+    @ApiOperation("获取字典数据")
+    @PostMapping("/getDictmsg")
+    public BaseResult<WmsOutboundNoticeDictVO> getDictmsg(){
+        return BaseResult.ok(wmsOutboundNoticeOrderInfoService.getDictmsg());
     }
 
 }

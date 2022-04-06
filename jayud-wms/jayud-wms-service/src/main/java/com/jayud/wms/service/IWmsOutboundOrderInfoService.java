@@ -3,6 +3,7 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.WmsOutboundOrderInfo;
 import com.jayud.wms.model.vo.OutboundOrderNumberVO;
@@ -202,5 +203,23 @@ public interface IWmsOutboundOrderInfoService extends IService<WmsOutboundOrderI
      * @return: void
      **/
     void finishOrder(List<String> orderNumberList);
+
+    /**
+     * @description 保存信息
+     * @author  ciro
+     * @date   2022/4/6 16:24
+     * @param: wmsOutboundOrderInfoVO
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult saveInfo(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO);
+
+    /**
+     * @description 删除订单
+     * @author  ciro
+     * @date   2022/4/6 17:18
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult delOrder(DeleteForm deleteForm);
 
 }

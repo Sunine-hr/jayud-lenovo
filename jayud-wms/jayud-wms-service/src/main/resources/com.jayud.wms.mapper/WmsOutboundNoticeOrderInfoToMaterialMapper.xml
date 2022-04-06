@@ -34,12 +34,15 @@
         <result column="in_warehouse_number" property="inWarehouseNumber" />
         <result column="warehouse_location_id" property="warehouseLocationId" />
         <result column="warehouse_location_code" property="warehouseLocationCode" />
+        <result column="inventory_detail_id" property="inventoryDetailId" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         wonoitm.id, wonoitm.order_number, wonoitm.material_id, wonoitm.material_code, wonoitm.material_name,wonoitm.material_specification, wonoitm.account, wonoitm.unit, wonoitm.external_number, wonoitm.external_line_number, wonoitm.batch_code, wonoitm.material_production_date, wonoitm.custom_field1, wonoitm.custom_field2, wonoitm.custom_field3, wonoitm.remark, wonoitm.is_deleted, wonoitm.create_by, wonoitm.create_time, wonoitm.update_by, wonoitm.update_time,
-        wonoitm.out_warehouse_number,wonoitm.in_warehouse_number,wonoitm.weight,wonoitm.volume,wonoitm.warehouse_location_id,wonoitm.warehouse_location_code
+        wonoitm.out_warehouse_number,wonoitm.in_warehouse_number,wonoitm.weight,wonoitm.volume,wonoitm.warehouse_location_id,wonoitm.warehouse_location_code,wonoitm.inventory_detail_id,wonoitm.container_id,wonoitm.container_code
     </sql>
 
     <!-- 表名 -->

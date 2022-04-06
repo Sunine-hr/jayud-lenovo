@@ -7,12 +7,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.mapper.WmsOutboundNoticeOrderInfoMapper;
 import com.jayud.wms.model.constant.CodeConStants;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfo;
 import com.jayud.wms.model.vo.OutboundOrderNumberVO;
+import com.jayud.wms.model.vo.WmsOutboundNoticeDictVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO;
 import com.jayud.wms.service.IWmsOutboundNoticeOrderInfoService;
@@ -52,6 +55,9 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
     @Autowired
     private CodeUtils codeUtils;
 
+    @Autowired
+    private AuthClient authClient;
+
     @Override
     public IPage<WmsOutboundNoticeOrderInfoVO> selectPage(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
                                                           Integer currentPage,
@@ -89,6 +95,11 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
         List<WmsOutboundNoticeOrderInfoVO> list = wmsOutboundNoticeOrderInfoMapper.list(wmsOutboundNoticeOrderInfoVO);
         if (!list.isEmpty()){
             wmsOutboundNoticeOrderInfoVO = list.get(0);
+            //获取物料信息
+            WmsOutboundNoticeOrderInfoToMaterialVO wmsOutboundNoticeOrderInfoToMaterialVO = new WmsOutboundNoticeOrderInfoToMaterialVO();
+            wmsOutboundNoticeOrderInfoToMaterialVO.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
+            List<WmsOutboundNoticeOrderInfoToMaterialVO> materialVOList = wmsOutboundNoticeOrderInfoToMaterialService.selectList(wmsOutboundNoticeOrderInfoToMaterialVO);
+            wmsOutboundNoticeOrderInfoVO.setThisMaterialList(materialVOList);
             return wmsOutboundNoticeOrderInfoVO;
         }
         return null;
@@ -165,6 +176,36 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
             info.setAllVolume(allVolume);
             this.updateById(info);
         }
+    }
+
+    @Override
+    public WmsOutboundNoticeDictVO getDictmsg() {
+        WmsOutboundNoticeDictVO wmsOutboundNoticeDictVO = new WmsOutboundNoticeDictVO();
+        BaseResult<List<SysDictItem>> documentResult = authClient.selectItemByDictCode("outboundNoticeDocumentType");
+        if (documentResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setOrderTypeDict(documentResult.getResult());
+        }
+        BaseResult<List<SysDictItem>> unitResult = authClient.selectItemByDictCode("outboundNoticeOrderUnitType");
+        if (unitResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setUnitDict(unitResult.getResult());
+        }
+        BaseResult<List<SysDictItem>> carTypeResult = authClient.selectItemByDictCode("outboundNoticeOrderCarType");
+        if (carTypeResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setCarTypeDict(carTypeResult.getResult());
+        }
+        BaseResult<List<SysDictItem>> noticeOrderStatusTypeResult = authClient.selectItemByDictCode("outboundNoticeOrderStatusType");
+        if (noticeOrderStatusTypeResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setStatusTypeDict(noticeOrderStatusTypeResult.getResult());
+        }
+        BaseResult<List<SysDictItem>> orderStatusTypeResult = authClient.selectItemByDictCode("outboundOrderStatusType");
+        if (orderStatusTypeResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setOrderStatusTypeDict(orderStatusTypeResult.getResult());
+        }
+        BaseResult<List<SysDictItem>> serviceTypeResult = authClient.selectItemByDictCode("outboundOrderServiceType");
+        if (serviceTypeResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setServiceTypeDict(serviceTypeResult.getResult());
+        }
+        return wmsOutboundNoticeDictVO;
     }
 
     private boolean checkMaterial(List<WmsOutboundNoticeOrderInfoToMaterialVO> materialVOList){

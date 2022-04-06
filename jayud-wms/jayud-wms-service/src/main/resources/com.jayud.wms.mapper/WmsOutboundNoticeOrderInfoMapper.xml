@@ -97,11 +97,11 @@
                 AND wonoi.ower_name LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.owerName},'%')
             </if>
 
-            <if test="wmsOutboundNoticeOrderInfoVO.documentType != null ">
+            <if test="wmsOutboundNoticeOrderInfoVO.documentType != null and wmsOutboundNoticeOrderInfoVO.documentType != ''">
                 AND wonoi.document_type = ${wmsOutboundNoticeOrderInfoVO.documentType}
             </if>
 
-            <if test="wmsOutboundNoticeOrderInfoVO.orderSourceType != null ">
+            <if test="wmsOutboundNoticeOrderInfoVO.orderSourceType != null and wmsOutboundNoticeOrderInfoVO.orderSourceType != ''">
                 AND wonoi.order_source_type = ${wmsOutboundNoticeOrderInfoVO.orderSourceType}
             </if>
 
@@ -153,7 +153,7 @@
                 AND wonoi.confirm_time = ${wmsOutboundNoticeOrderInfoVO.confirmTime}
             </if>
 
-            <if test="wmsOutboundNoticeOrderInfoVO.orderStatusType != null ">
+            <if test="wmsOutboundNoticeOrderInfoVO.orderStatusType != null and wmsOutboundNoticeOrderInfoVO.orderStatusType != ''">
                 AND wonoi.order_status_type = ${wmsOutboundNoticeOrderInfoVO.orderStatusType}
             </if>
 
@@ -204,7 +204,13 @@
             <if test="wmsOutboundNoticeOrderInfoVO.carRelation != null and wmsOutboundNoticeOrderInfoVO.carRelation != ''">
                 AND wonoi.car_relation LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.carRelation},'%')
             </if>
-
+            <if test="wmsOutboundNoticeOrderInfoVO.mainOrder != null and wmsOutboundNoticeOrderInfoVO.mainOrder != ''">
+                AND wonoi.main_order LIKE CONCAT('%',#{wmsOutboundNoticeOrderInfoVO.mainOrder},'%')
+            </if>
+            <if test="wmsOutboundNoticeOrderInfoVO.theDeliveryTime !=null and wmsOutboundNoticeOrderInfoVO.theDeliveryTime.size > 0">
+                AND  DATE_FORMAT( wonoi.plan_delivery_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundNoticeOrderInfoVO.theDeliveryTime[0]}
+                AND DATE_FORMAT( wonoi.plan_delivery_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundNoticeOrderInfoVO.theDeliveryTime[1]}
+            </if>
             ORDER BY
                 wonoi.create_time DESC
         </where>

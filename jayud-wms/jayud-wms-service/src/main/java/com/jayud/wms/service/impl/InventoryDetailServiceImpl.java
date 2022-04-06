@@ -3,6 +3,7 @@ package com.jayud.wms.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +22,7 @@ import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.vo.InventoryReportVO;
 import com.jayud.wms.service.*;
 import com.jayud.wms.utils.CodeUtils;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1401,6 +1403,49 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     public BaseResult selectInventoryReport(QueryShelfOrderTaskForm queryShelfOrderTaskForm) {
         List<InventoryReportVO> inventoryReportVOS = this.baseMapper.selectInventoryReport(queryShelfOrderTaskForm);
         return BaseResult.ok(inventoryReportVOS);
+    }
+
+    @Override
+    public BaseResult outputAllocationByMsg(Map<Long, BigDecimal> msg) {
+        List<Long> ids = msg.entrySet().stream().map(x->x.getKey()).collect(Collectors.toList());
+        LambdaQueryWrapper<InventoryDetail> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(InventoryDetail::getIsDeleted,false);
+        lambdaQueryWrapper.in(InventoryDetail::getId,ids);
+        List<InventoryDetail> detailList = this.list(lambdaQueryWrapper);
+        boolean isSuccess = true;
+        if (CollUtil.isNotEmpty(detailList)) {
+            for (InventoryDetail detail : detailList) {
+                if (detail.getWarehouseLocationStatus() == 0 && detail.getWarehouseLocationStatus2() == 0) {
+                    //现有量大于需分配数量
+                    if (detail.getUsableCount().compareTo(msg.get(detail.getId())) > -1) {
+                        detail.setAllocationCount(detail.getAllocationCount().add(msg.get(detail.getId())));
+                    } else {
+                        isSuccess = false;
+                    }
+                    if (!isSuccess) {
+                        return BaseResult.error();
+                    }
+                }
+            }
+            this.updateBatchById(detailList);
+        }
+        return BaseResult.ok();
+    }
+
+    @Override
+    public BaseResult canceloutputAllocationByIds(Map<Long,BigDecimal> msg) {
+        List<Long> ids = msg.entrySet().stream().map(x->x.getKey()).collect(Collectors.toList());
+        LambdaQueryWrapper<InventoryDetail> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(InventoryDetail::getIsDeleted,false);
+        lambdaQueryWrapper.in(InventoryDetail::getId,ids);
+        List<InventoryDetail> detailList = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(detailList)){
+            detailList.forEach(detail->{
+                detail.setAllocationCount(detail.getAllocationCount().subtract(msg.get(detail.getId())));
+            });
+            this.updateBatchById(detailList);
+        }
+        return null;
     }
 
 }

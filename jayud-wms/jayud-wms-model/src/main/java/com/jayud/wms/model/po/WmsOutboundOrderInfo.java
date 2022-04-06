@@ -58,10 +58,10 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     private String owerName;
 
     @ApiModelProperty(value = "单据类型(1采购入库单-原材料仓,2生产领料退货单-原材料仓,3半成品入库单-半成品仓,4生产领料退货单-半成品仓,5成品生产入库单-成品仓,6销售退货入库单)")
-    private Integer documentType;
+    private String documentType;
 
     @ApiModelProperty(value = "订单来源(1ERP下发,2EMS下发,3手工创建)")
-    private Integer orderSourceType;
+    private String orderSourceType;
 
     @ApiModelProperty(value = "外部订单号1")
     private String externalOrderNumberFirst;

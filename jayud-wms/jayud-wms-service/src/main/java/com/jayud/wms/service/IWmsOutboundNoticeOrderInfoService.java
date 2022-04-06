@@ -4,6 +4,7 @@ package com.jayud.wms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfo;
+import com.jayud.wms.model.vo.WmsOutboundNoticeDictVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoVO;
 import com.jayud.common.BaseResult;
 
@@ -93,5 +94,14 @@ public interface IWmsOutboundNoticeOrderInfoService extends IService<WmsOutbound
      * @return: void
      **/
     void changeAllAccount(String orderNumber);
+
+    /**
+     * @description 获取字典数据
+     * @author  ciro
+     * @date   2022/4/6 10:15
+     * @param:
+     * @return: com.jayud.wms.model.vo.WmsOutboundNoticeDictVO
+     **/
+    WmsOutboundNoticeDictVO getDictmsg();
 
 }

@@ -108,7 +108,7 @@ public class CrmCustomerFollowController {
     @ApiOperation("新增")
     @PostMapping("/add")
     public BaseResult add(@Valid @RequestBody CrmCustomerFollowForm crmCustomerFollowForm ){
-        crmCustomerFollowForm.checkParam();
+//        crmCustomerFollowForm.checkParam();
         return crmCustomerFollowService.saveOrUpdateCrmCustomerFollow(crmCustomerFollowForm);
     }
 

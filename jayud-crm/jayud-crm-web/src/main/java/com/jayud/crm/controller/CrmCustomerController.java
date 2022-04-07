@@ -216,7 +216,6 @@ public class CrmCustomerController {
      * @return: com.jayud.common.BaseResult
      **/
     @ApiOperation("逻辑删除")
-    @ApiImplicitParam(name = "id", value = "主键id", dataType = "Long", required = true)
     @GetMapping("/logicDel")
     public BaseResult logicDel(@RequestParam("id") Long id,@RequestParam("isSupplier") Integer isSupplier) {
 

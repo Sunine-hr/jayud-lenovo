@@ -65,11 +65,14 @@ public class CrmCustomerFollowForm extends SysBaseEntity {
     private String contactTimeString;
 
     public void setContactTimeString(String contactTimeString) {
-        this.contactTimeString = contactTimeString;
-        String dateStr = "2021-09-03 21:00:00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime parsedDate = LocalDateTime.parse(contactTimeString, formatter);
-        this.contactTime =parsedDate ;
+        if(StringUtils.isNotEmpty(contactTimeString)){
+            this.contactTimeString = contactTimeString;
+            String dateStr = "2021-09-03 21:00:00";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime parsedDate = LocalDateTime.parse(contactTimeString, formatter);
+            this.contactTime =parsedDate ;
+        }
+
     }
 
 

@@ -300,6 +300,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public List<SysMenu> getByIds(List<Integer> actionIds) {
         QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(SysBaseEntity::getId,actionIds);
+        queryWrapper.lambda().eq(SysMenu::getIsDeleted,0);
         return this.baseMapper.selectList(queryWrapper);
     }
 

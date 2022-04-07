@@ -1,5 +1,7 @@
 package com.jayud.auth.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.model.bo.CheckForm;
@@ -83,7 +85,22 @@ public class SysRoleActionCheckServiceImpl extends ServiceImpl<SysRoleActionChec
     public void saveSysRoleActionCheck(SysRoleActionCheckForm sysRoleActionCheck) {
         SysUserVO systemUserByName = sysUserService.getSystemUserByName(CurrentUserUtil.getUsername());
 
-        List<SysMenu> sysMenus = sysMenuService.getByIds(sysRoleActionCheck.getActionId());
+        //查询同角色同级别是否存在数据
+        List<Integer> integers = new ArrayList<>();
+        for (Integer integer : sysRoleActionCheck.getActionId()) {
+            QueryWrapper<SysRoleActionCheck> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(SysRoleActionCheck::getActionId,integer);
+            queryWrapper.lambda().eq(SysRoleActionCheck::getRoleId,sysRoleActionCheck.getRoleId());
+            queryWrapper.lambda().eq(SysRoleActionCheck::getCheckLevel,sysRoleActionCheck.getCheckLevel());
+            queryWrapper.lambda().eq(SysRoleActionCheck::getIsDeleted,0);
+            List<SysRoleActionCheck> list = this.list(queryWrapper);
+            if(CollectionUtil.isEmpty(list)){
+                integers.add(integer);
+            }
+        }
+
+
+        List<SysMenu> sysMenus = sysMenuService.getByIds(integers);
         List<SysRoleActionCheck> systemRoleActionChecks = new ArrayList<>();
         for (SysMenu sysMenu : sysMenus) {
             SysRoleActionCheck roleActionCheck = new SysRoleActionCheck();

@@ -95,6 +95,9 @@
         <if test="sysMenu.title != null and sysMenu.title != ''">
             and sm.title like concat('%',#{sysMenu.title},'%')
         </if>
+        <if test="sysMenu.code != null and sysMenu.code != ''">
+            and sm.code like concat('%',#{sysMenu.code},'%')
+        </if>
         <if test="sysMenu.childrenIds!=null and sysMenu.childrenIds.size()>0">
             AND sm.`id` IN
             <foreach item="item" index="index" collection="sysMenu.childrenIds" open="(" separator="," close=")">

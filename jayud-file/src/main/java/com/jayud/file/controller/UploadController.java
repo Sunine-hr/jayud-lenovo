@@ -6,6 +6,7 @@ import com.jayud.common.ApiResult;
 import com.jayud.file.service.UploadService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/file")
 @Api(value = "上传接口", tags = "上传接口")
+@Slf4j
 public class UploadController {
     @Autowired
     private UploadService uploadService;
@@ -64,10 +66,12 @@ public class UploadController {
         if (file.isEmpty()) {
             return ApiResult.error(1, "上传文件内容为空!");
         }
+        log.warn("111111111111111");
         try {
             String fileName = file.getOriginalFilename();
             assert fileName != null;
             JSONObject jsonObject = uploadService.upLoadFile(file);
+            log.warn("jsonObject");
             return ApiResult.ok(jsonObject);
         } catch (Exception e) {
             logger.error("upload file Exception!", e);

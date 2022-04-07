@@ -538,7 +538,7 @@ public class CrmCustomerServiceImpl extends ServiceImpl<CrmCustomerMapper, CrmCu
             errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为供应商，请勿重复操作！";
         }
         if (CollUtil.isNotEmpty(comCustomerForm.getExitCustList())) {
-            List<String> supplierList = comCustomerForm.getExitSupplierList().stream().map(x -> x.getCustName()).collect(Collectors.toList());
+            List<String> supplierList = comCustomerForm.getExitCustList().stream().map(x -> x.getCustName()).collect(Collectors.toList());
             errString = StringUtils.join(supplierList, StrUtil.C_COMMA) + " 已转为客户，请勿重复操作！";
         }
         if (StringUtils.isNotBlank(errString)) {

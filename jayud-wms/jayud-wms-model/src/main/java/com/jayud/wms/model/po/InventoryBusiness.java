@@ -37,13 +37,13 @@ public class InventoryBusiness extends SysBaseEntity {
     @ApiModelProperty(value = "原库存明细ID")
     private Long inventoryDetailId;
 
-    @ApiModelProperty(value = "货主ID")
+    @ApiModelProperty(value = "(客户)(货主ID)")
     private Long owerId;
 
-    @ApiModelProperty(value = "货主编号")
+    @ApiModelProperty(value = "(客户)货主编号")
     private String owerCode;
 
-    @ApiModelProperty(value = "货主名称")
+    @ApiModelProperty(value = "(客户)货主名称")
     private String owerName;
 
     @ApiModelProperty(value = "原仓库ID")
@@ -157,8 +157,9 @@ public class InventoryBusiness extends SysBaseEntity {
     @TableField(exist = false)
     private List<String> warehouseIdList;
 
-
-
+    @TableField(exist = false)
+    @ApiModelProperty(value = "创建时间集合")
+    private List<String> creationTime;
 
 
 }

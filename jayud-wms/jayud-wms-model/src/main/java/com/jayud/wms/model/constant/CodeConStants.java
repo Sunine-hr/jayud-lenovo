@@ -52,7 +52,7 @@ public interface CodeConStants {
     String INVENTORY_BUSINESS_CODE = "inventory_business_code";
 
     /**
-     * 分配策略
+     * 分配策略X
      */
     String ALLOCATION_STRATEGY = "allocation_strategy";
 

@@ -13,6 +13,7 @@ import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.wms.mapper.InventoryCheckDetailMapper;
 import com.jayud.wms.model.bo.InventoryCheckDetailPostForm;
 import com.jayud.wms.model.constant.CodeConStants;
+import com.jayud.wms.model.enums.InventoryCheckDetailEnum;
 import com.jayud.wms.model.po.*;
 import com.jayud.wms.service.*;
 import com.jayud.wms.utils.CodeUtils;
@@ -62,17 +63,17 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
     @Override
     public IPage<InventoryCheckDetail> selectPage(InventoryCheckDetail inventoryCheckDetail,
-                                        Integer pageNo,
-                                        Integer pageSize,
-                                        HttpServletRequest req){
+                                                  Integer pageNo,
+                                                  Integer pageSize,
+                                                  HttpServletRequest req) {
 
-        Page<InventoryCheckDetail> page=new Page<InventoryCheckDetail>(pageNo, pageSize);
-        IPage<InventoryCheckDetail> pageList= inventoryCheckDetailMapper.pageList(page, inventoryCheckDetail);
+        Page<InventoryCheckDetail> page = new Page<InventoryCheckDetail>(pageNo, pageSize);
+        IPage<InventoryCheckDetail> pageList = inventoryCheckDetailMapper.pageList(page, inventoryCheckDetail);
         return pageList;
     }
 
     @Override
-    public List<InventoryCheckDetail> selectList(InventoryCheckDetail inventoryCheckDetail){
+    public List<InventoryCheckDetail> selectList(InventoryCheckDetail inventoryCheckDetail) {
         return inventoryCheckDetailMapper.list(inventoryCheckDetail);
     }
 
@@ -80,7 +81,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
     @Transactional(rollbackFor = Exception.class)
     public InventoryCheckDetail saveOrUpdateInventoryCheckDetail(InventoryCheckDetail inventoryCheckDetail) {
         Long id = inventoryCheckDetail.getId();
-        if(ObjectUtil.isEmpty(id)){
+        if (ObjectUtil.isEmpty(id)) {
             //新增 --> add 创建人、创建时间
             inventoryCheckDetail.setCreateBy(CurrentUserUtil.getUsername());
             inventoryCheckDetail.setCreateTime(new Date());
@@ -94,7 +95,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             //    throw new IllegalArgumentException("编号已存在，操作失败");
             //}
 
-        }else{
+        } else {
             //修改 --> update 更新人、更新时间
             inventoryCheckDetail.setUpdateBy(CurrentUserUtil.getUsername());
             inventoryCheckDetail.setUpdateTime(new Date());
@@ -117,7 +118,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
     @Transactional(rollbackFor = Exception.class)
     public void delInventoryCheckDetail(int id) {
         InventoryCheckDetail inventoryCheckDetail = this.baseMapper.selectById(id);
-        if(ObjectUtil.isEmpty(inventoryCheckDetail)){
+        if (ObjectUtil.isEmpty(inventoryCheckDetail)) {
             throw new IllegalArgumentException("库存盘点明细表不存在，无法删除");
         }
         //逻辑删除 -->update 修改人、修改时间、是否删除
@@ -134,6 +135,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
     /**
      * 盘点明细新增
+     *
      * @param inventoryCheckDetail
      * @return
      */
@@ -147,7 +149,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
         Long warehouseId = inventoryCheckDetail.getWarehouseId();
         Warehouse warehouse = warehouseService.getById(warehouseId);
-        if(ObjectUtil.isEmpty(warehouse)){
+        if (ObjectUtil.isEmpty(warehouse)) {
             throw new IllegalArgumentException("仓库不存在");
         }
         String warehouseCode = warehouse.getCode();
@@ -158,7 +160,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
         Long containerId = inventoryCheckDetail.getContainerId();
         String containerCode = inventoryCheckDetail.getContainerCode();
-        if(ObjectUtil.isEmpty(containerCode)){
+        if (ObjectUtil.isEmpty(containerCode)) {
             throw new IllegalArgumentException("容器号不能为空");
         }
         QueryWrapper<Container> containerQueryWrapper = new QueryWrapper<>();
@@ -167,7 +169,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
         containerQueryWrapper.lambda().eq(Container::getIsDeleted, 0);
         containerQueryWrapper.lambda().groupBy(Container::getCode);
         Container container = containerService.getOne(containerQueryWrapper);
-        if(ObjectUtil.isEmpty(container)){
+        if (ObjectUtil.isEmpty(container)) {
             throw new IllegalArgumentException("容器不存在");
         }
         containerId = container.getId();
@@ -176,7 +178,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
         Long warehouseLocationId = inventoryCheckDetail.getWarehouseLocationId();//库位ID
         String warehouseLocationCode = inventoryCheckDetail.getWarehouseLocationCode();//库位编号
-        if(ObjectUtil.isEmpty(warehouseLocationCode)){
+        if (ObjectUtil.isEmpty(warehouseLocationCode)) {
             throw new IllegalArgumentException("库位编号不能为空");
         }
         QueryWrapper<WarehouseLocation> warehouseLocationQueryWrapper = new QueryWrapper<>();
@@ -185,7 +187,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
         warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getIsDeleted, 0);
         warehouseLocationQueryWrapper.lambda().groupBy(WarehouseLocation::getCode);
         WarehouseLocation warehouseLocation = warehouseLocationService.getOne(warehouseLocationQueryWrapper);
-        if(ObjectUtil.isEmpty(warehouseLocation)){
+        if (ObjectUtil.isEmpty(warehouseLocation)) {
             throw new IllegalArgumentException("库位编号不存在");
         }
         warehouseLocationId = warehouseLocation.getId();
@@ -194,7 +196,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
         Long warehouseAreaId = warehouseLocation.getWarehouseAreaId();
         WarehouseArea warehouseArea = warehouseAreaService.getById(warehouseAreaId);
-        if(ObjectUtil.isEmpty(warehouseArea)){
+        if (ObjectUtil.isEmpty(warehouseArea)) {
             throw new IllegalArgumentException("仓库库区不存在");
         }
         String warehouseAreaCode = warehouseArea.getCode();
@@ -211,7 +213,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
         wmsMaterialBasicInfoQueryWrapper.lambda().eq(WmsMaterialBasicInfo::getIsDeleted, 0);
         wmsMaterialBasicInfoQueryWrapper.lambda().groupBy(WmsMaterialBasicInfo::getMaterialCode);
         WmsMaterialBasicInfo wmsMaterialBasicInfo = wmsMaterialBasicInfoService.getOne(wmsMaterialBasicInfoQueryWrapper);
-        if(ObjectUtil.isEmpty(wmsMaterialBasicInfo)){
+        if (ObjectUtil.isEmpty(wmsMaterialBasicInfo)) {
             throw new IllegalArgumentException("物料编号不存在");
         }
         materialId = wmsMaterialBasicInfo.getId();
@@ -222,15 +224,15 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
         Long materialTypeId = wmsMaterialBasicInfo.getMaterialTypeId();
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("id",materialTypeId);
+        paramMap.put("id", materialTypeId);
         List<LinkedHashMap<String, Object>> materialTypeInfoMaterialTypeIdOne = materialTypeInfoService.findMaterialTypeInfoMaterialTypeIdOne(paramMap);
 
         Map<String, Object> paramMapOne = new HashMap<>();
-        paramMapOne.put("id",materialTypeInfoMaterialTypeIdOne.get(0).get("id"));
-        paramMapOne.put("materialTypeName",materialTypeInfoMaterialTypeIdOne.get(0).get("materialTypeName"));
-        paramMapOne.put("materialTypeCode",materialTypeInfoMaterialTypeIdOne.get(0).get("materialTypeCode"));
+        paramMapOne.put("id", materialTypeInfoMaterialTypeIdOne.get(0).get("id"));
+        paramMapOne.put("materialTypeName", materialTypeInfoMaterialTypeIdOne.get(0).get("materialTypeName"));
+        paramMapOne.put("materialTypeCode", materialTypeInfoMaterialTypeIdOne.get(0).get("materialTypeCode"));
 
-        Map<String, Object> materialTypeInfo =paramMapOne;
+        Map<String, Object> materialTypeInfo = paramMapOne;
         String materialTypeName = MapUtil.getStr(materialTypeInfo, "materialTypeName");
         inventoryCheckDetail.setMaterialTypeId(materialTypeId);
         inventoryCheckDetail.setMaterialType(materialTypeName);
@@ -238,7 +240,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
         Long owerId = wmsMaterialBasicInfo.getOwerId();
         WmsOwerInfo wmsOwerInfo = wmsOwerInfoService.getById(owerId);
-        if(ObjectUtil.isEmpty(wmsOwerInfo)){
+        if (ObjectUtil.isEmpty(wmsOwerInfo)) {
             throw new IllegalArgumentException("货主不存在");
         }
         String owerCode = wmsOwerInfo.getOwerCode();
@@ -252,6 +254,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
     /**
      * 盘点明细确认过账(勾选n个)
+     *
      * @param form
      * @return
      */
@@ -261,15 +264,15 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
         //处理 正常、盘盈、盘亏
         Long inventoryCheckId = form.getInventoryCheckId();//库存盘点ID
         List<InventoryCheckDetail> details = form.getDetails();//库存盘点明细
-        if(ObjectUtil.isEmpty(inventoryCheckId)){
+        if (ObjectUtil.isEmpty(inventoryCheckId)) {
             throw new IllegalArgumentException("盘点明细，库存盘点ID不能为空");
         }
-        if(CollUtil.isEmpty(details)){
+        if (CollUtil.isEmpty(details)) {
             throw new IllegalArgumentException("盘点明细，不能为空");
         }
         //(货主 + 仓库 + 库区 + 库位 + 容器 + 物料) + (批次号 + 生产日期 + 字段1 + 字段2 + 字段3) -> 确定唯一组合值
         List<String> collect = details.stream()
-                .map(k -> (k.getOwerCode()+"_"+k.getWarehouseCode()+"_"+k.getWarehouseAreaCode()+"_"+k.getWarehouseLocationCode()+"_"+k.getContainerCode()+"_"+k.getMaterialCode()+"_"+k.getBatchCode()+"_"+k.getMaterialProductionDate()+"_"+k.getCustomField1()+"_"+k.getCustomField2()+"_"+k.getCustomField3()))
+                .map(k -> (k.getOwerCode() + "_" + k.getWarehouseCode() + "_" + k.getWarehouseAreaCode() + "_" + k.getWarehouseLocationCode() + "_" + k.getContainerCode() + "_" + k.getMaterialCode() + "_" + k.getBatchCode() + "_" + k.getMaterialProductionDate() + "_" + k.getCustomField1() + "_" + k.getCustomField2() + "_" + k.getCustomField3()))
                 .collect(Collectors.toList());
         long count = collect.stream().distinct().count();
         if (collect.size() != count) {
@@ -277,7 +280,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
         }
         //CheckStatus 明细盘点状态(1未盘点、2已盘点、3已过账)
         boolean present = details.stream().filter(m -> m.getCheckStatus().equals(3)).findAny().isPresent();
-        if(present){
+        if (present) {
             throw new IllegalArgumentException("存在已过账的盘点明细，不能再次过账");
         }
 
@@ -295,34 +298,34 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             Long owerId = inventoryCheckDetail.getOwerId();//货主
             String owerCode = inventoryCheckDetail.getOwerCode();
             String owerName = inventoryCheckDetail.getOwerName();
-            if(ObjectUtil.isEmpty(owerCode)){
+            if (ObjectUtil.isEmpty(owerCode)) {
                 throw new IllegalArgumentException("货主不能为空");
             }
             Long warehouseId = inventoryCheckDetail.getWarehouseId();//仓库
             String warehouseCode = inventoryCheckDetail.getWarehouseCode();
             String warehouseName = inventoryCheckDetail.getWarehouseName();
-            if(ObjectUtil.isEmpty(warehouseCode)){
+            if (ObjectUtil.isEmpty(warehouseCode)) {
                 throw new IllegalArgumentException("仓库不能为空");
             }
             Long warehouseAreaId = inventoryCheckDetail.getWarehouseAreaId();//库区
             String warehouseAreaCode = inventoryCheckDetail.getWarehouseAreaCode();
             String warehouseAreaName = inventoryCheckDetail.getWarehouseAreaName();
-            if(ObjectUtil.isEmpty(warehouseAreaCode)){
+            if (ObjectUtil.isEmpty(warehouseAreaCode)) {
                 throw new IllegalArgumentException("库区不能为空");
             }
             Long warehouseLocationId = inventoryCheckDetail.getWarehouseLocationId();//库位
             String warehouseLocationCode = inventoryCheckDetail.getWarehouseLocationCode();
-            if(ObjectUtil.isEmpty(warehouseLocationCode)){
+            if (ObjectUtil.isEmpty(warehouseLocationCode)) {
                 throw new IllegalArgumentException("库位不能为空");
             }
             Long containerId = inventoryCheckDetail.getContainerId();//容器
             String containerCode = inventoryCheckDetail.getContainerCode();
-            if(ObjectUtil.isEmpty(containerCode)){
+            if (ObjectUtil.isEmpty(containerCode)) {
                 throw new IllegalArgumentException("容器不能为空");
             }
             Long materialId = inventoryCheckDetail.getMaterialId();//物料
             String materialCode = inventoryCheckDetail.getMaterialCode();
-            if(ObjectUtil.isEmpty(materialCode)){
+            if (ObjectUtil.isEmpty(materialCode)) {
                 throw new IllegalArgumentException("物料不能为空");
             }
             //(批次号 + 生产日期 + 字段1 + 字段2 + 字段3)
@@ -333,31 +336,30 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             String customField3 = inventoryCheckDetail.getCustomField3();//自定义字段3
 
 
-
             BigDecimal inventoryCount = inventoryCheckDetail.getInventoryCount();//库存数量
             BigDecimal checkCount = inventoryCheckDetail.getCheckCount();//盘点数量
 
-            if(ObjectUtil.isEmpty(inventoryCount) || ObjectUtil.isEmpty(checkCount)){
+            if (ObjectUtil.isEmpty(inventoryCount) || ObjectUtil.isEmpty(checkCount)) {
                 throw new IllegalArgumentException("库存数量 或 盘点数量，不能为空");
             }
-            if(inventoryCount.compareTo(new BigDecimal("0")) < 0){
+            if (inventoryCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("库存数量不能小于0");
             }
-            if(checkCount.compareTo(new BigDecimal("0")) < 0){
+            if (checkCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("盘点数量不能小于0");
             }
 
-            if(ObjectUtil.isEmpty(inventoryCheckId1) && ObjectUtil.isEmpty(inventoryDetailId)){
+            if (ObjectUtil.isEmpty(inventoryCheckId1) && ObjectUtil.isEmpty(inventoryDetailId)) {
                 //新增的盘点明细  相当于 盘盈
                 inventoryAddProfit.add(inventoryCheckDetail);
-            }else{
-                if(inventoryCount.compareTo(checkCount) == 0){
+            } else {
+                if (inventoryCount.compareTo(checkCount) == 0) {
                     //库存数量 = 盘点数量，正常
                     inventoryNormal.add(inventoryCheckDetail);
-                }else if(inventoryCount.compareTo(checkCount) < 0){
+                } else if (inventoryCount.compareTo(checkCount) < 0) {
                     //库存数量 < 盘点数量，盘盈
                     inventoryProfit.add(inventoryCheckDetail);
-                }else if(inventoryCount.compareTo(checkCount) > 0){
+                } else if (inventoryCount.compareTo(checkCount) > 0) {
                     //库存数量 > 盘点数量，盘亏
                     inventoryLosses.add(inventoryCheckDetail);
                 }
@@ -400,19 +402,19 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
-            if(ObjectUtil.isNotEmpty(batchCode)){
+            if (ObjectUtil.isNotEmpty(batchCode)) {
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
             }
-            if(ObjectUtil.isNotEmpty(materialProductionDate)){
+            if (ObjectUtil.isNotEmpty(materialProductionDate)) {
                 queryWrapper.lambda().eq(InventoryDetail::getMaterialProductionDate, materialProductionDate);
             }
-            if(ObjectUtil.isNotEmpty(customField1)){
+            if (ObjectUtil.isNotEmpty(customField1)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField1, customField1);
             }
-            if(ObjectUtil.isNotEmpty(customField2)){
+            if (ObjectUtil.isNotEmpty(customField2)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField2, customField2);
             }
-            if(ObjectUtil.isNotEmpty(customField3)){
+            if (ObjectUtil.isNotEmpty(customField3)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField3, customField3);
             }
             queryWrapper.lambda().groupBy(InventoryDetail::getOwerCode, InventoryDetail::getWarehouseCode, InventoryDetail::getWarehouseAreaCode,
@@ -422,16 +424,16 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
             BigDecimal checkCount = inventoryCheckDetail.getCheckCount();
             BigDecimal inventoryCount = inventoryCheckDetail.getInventoryCount();
-            if(inventoryCount.compareTo(new BigDecimal("0")) < 0){
+            if (inventoryCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("新增的盘点明细，库存数量不能为小于0");
             }
             BigDecimal subtract = checkCount.subtract(inventoryCount);//盘点数量 - 库存数量
-            if(subtract.compareTo(new BigDecimal("0")) < 0){
+            if (subtract.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("新增的盘点明细，盘点数量不能小于库存数量");
             }
             BigDecimal originalExistingCount = new BigDecimal("0");
             BigDecimal toOperationCount = new BigDecimal("0");
-            if(ObjectUtil.isEmpty(inventoryDetail)){
+            if (ObjectUtil.isEmpty(inventoryDetail)) {
                 //inventoryDetail 不存在，代表新增
                 inventoryDetail = ConvertUtil.convert(inventoryCheckDetail, InventoryDetail.class);
                 inventoryDetail.setId(null);
@@ -442,7 +444,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
                 originalExistingCount = new BigDecimal("0");
                 toOperationCount = subtract;
-            }else{
+            } else {
                 //inventoryDetail 存在，代表累加
                 BigDecimal existingCount = inventoryDetail.getExistingCount();
                 BigDecimal add = existingCount.add(subtract);
@@ -455,9 +457,9 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
                 toOperationCount = subtract;
             }
 
-            String key = inventoryDetail.getOwerCode()+"_"+inventoryDetail.getWarehouseCode()+"_"+inventoryDetail.getWarehouseAreaCode()+"_"
-                    +inventoryDetail.getWarehouseLocationCode()+"_"+inventoryDetail.getContainerCode()+"_"+inventoryDetail.getMaterialCode()+"_"
-                    +inventoryDetail.getBatchCode()+"_"+inventoryDetail.getMaterialProductionDate()+"_"+inventoryDetail.getCustomField1()+"_"+inventoryDetail.getCustomField2()+"_"+inventoryDetail.getCustomField3();
+            String key = inventoryDetail.getOwerCode() + "_" + inventoryDetail.getWarehouseCode() + "_" + inventoryDetail.getWarehouseAreaCode() + "_"
+                    + inventoryDetail.getWarehouseLocationCode() + "_" + inventoryDetail.getContainerCode() + "_" + inventoryDetail.getMaterialCode() + "_"
+                    + inventoryDetail.getBatchCode() + "_" + inventoryDetail.getMaterialProductionDate() + "_" + inventoryDetail.getCustomField1() + "_" + inventoryDetail.getCustomField2() + "_" + inventoryDetail.getCustomField3();
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("originalExistingCount", originalExistingCount);//原数量(原现有量)
             jsonObject.set("toWarehouseLocationId", inventoryDetail.getWarehouseLocationId());//目标库位ID
@@ -470,7 +472,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             addDetailList.add(inventoryDetail);
         });
         //新增盘盈，保存库存明细
-        if(CollUtil.isNotEmpty(addDetailList)){
+        if (CollUtil.isNotEmpty(addDetailList)) {
             boolean b = inventoryDetailService.saveOrUpdateBatch(addDetailList);
         }
         Map<String, Long> inventoryDetailMap = addDetailList.stream().collect(Collectors.toMap(
@@ -478,7 +480,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
                 v -> v.getId()));
 
         inventoryAddProfit.forEach(inventoryCheckDetail -> {
-            String key = inventoryCheckDetail.getOwerCode()+"_"+inventoryCheckDetail.getWarehouseCode()+"_"+inventoryCheckDetail.getWarehouseAreaCode()+"_"+inventoryCheckDetail.getWarehouseLocationCode()+"_"+inventoryCheckDetail.getContainerCode()+"_"+inventoryCheckDetail.getMaterialCode()+"_"+inventoryCheckDetail.getBatchCode()+"_"+inventoryCheckDetail.getMaterialProductionDate()+"_"+inventoryCheckDetail.getCustomField1()+"_"+inventoryCheckDetail.getCustomField2()+"_"+inventoryCheckDetail.getCustomField3();
+            String key = inventoryCheckDetail.getOwerCode() + "_" + inventoryCheckDetail.getWarehouseCode() + "_" + inventoryCheckDetail.getWarehouseAreaCode() + "_" + inventoryCheckDetail.getWarehouseLocationCode() + "_" + inventoryCheckDetail.getContainerCode() + "_" + inventoryCheckDetail.getMaterialCode() + "_" + inventoryCheckDetail.getBatchCode() + "_" + inventoryCheckDetail.getMaterialProductionDate() + "_" + inventoryCheckDetail.getCustomField1() + "_" + inventoryCheckDetail.getCustomField2() + "_" + inventoryCheckDetail.getCustomField3();
 
             Long inventoryDetailId = inventoryDetailMap.get(key);//库存明细ID
 
@@ -497,15 +499,15 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             inventoryCheckDetail.setUpdateTime(new Date());
         });
         //新增盘盈，保存盘点明细
-        if(CollUtil.isNotEmpty(inventoryAddProfit)){
+        if (CollUtil.isNotEmpty(inventoryAddProfit)) {
             this.saveOrUpdateBatch(inventoryAddProfit);
         }
         //新增盘盈，保存库存事务
         List<InventoryBusiness> addProfitBusinessList = new ArrayList<>();
         addDetailList.forEach(detail -> {
-            String key = detail.getOwerCode()+"_"+detail.getWarehouseCode()+"_"+detail.getWarehouseAreaCode()+"_"
-                    +detail.getWarehouseLocationCode()+"_"+detail.getContainerCode()+"_"+detail.getMaterialCode()+"_"
-                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3();
+            String key = detail.getOwerCode() + "_" + detail.getWarehouseCode() + "_" + detail.getWarehouseAreaCode() + "_"
+                    + detail.getWarehouseLocationCode() + "_" + detail.getContainerCode() + "_" + detail.getMaterialCode() + "_"
+                    + detail.getBatchCode() + "_" + detail.getMaterialProductionDate() + "_" + detail.getCustomField1() + "_" + detail.getCustomField2() + "_" + detail.getCustomField3();
             JSONObject jsonObject = addOriginalMap.get(key);
             BigDecimal originalExistingCount = jsonObject.getBigDecimal("originalExistingCount");
             Long toWarehouseLocationId = jsonObject.getLong("toWarehouseLocationId");
@@ -536,7 +538,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             business.setUpdateTime(null);
             addProfitBusinessList.add(business);
         });
-        if(CollUtil.isNotEmpty(addProfitBusinessList)){
+        if (CollUtil.isNotEmpty(addProfitBusinessList)) {
             iInventoryBusinessService.saveOrUpdateBatch(addProfitBusinessList);
         }
 
@@ -550,7 +552,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             inventoryCheckDetail.setCheckLossesCount(new BigDecimal("0"));//盘亏数量
         });
         //正常，仅保存 盘点明细,不改动库存明细、库存事务
-        if(CollUtil.isNotEmpty(inventoryNormal)){
+        if (CollUtil.isNotEmpty(inventoryNormal)) {
             this.saveOrUpdateBatch(inventoryNormal);
         }
 
@@ -566,7 +568,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             inventoryCheckDetail.setUpdateTime(new Date());
         });
         //盘盈，保存 盘点明细
-        if(CollUtil.isNotEmpty(inventoryProfit)){
+        if (CollUtil.isNotEmpty(inventoryProfit)) {
             this.saveOrUpdateBatch(inventoryProfit);
         }
         //盘盈，保存 库存明细
@@ -605,19 +607,19 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
-            if(ObjectUtil.isNotEmpty(batchCode)){
+            if (ObjectUtil.isNotEmpty(batchCode)) {
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
             }
-            if(ObjectUtil.isNotEmpty(materialProductionDate)){
+            if (ObjectUtil.isNotEmpty(materialProductionDate)) {
                 queryWrapper.lambda().eq(InventoryDetail::getMaterialProductionDate, materialProductionDate);
             }
-            if(ObjectUtil.isNotEmpty(customField1)){
+            if (ObjectUtil.isNotEmpty(customField1)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField1, customField1);
             }
-            if(ObjectUtil.isNotEmpty(customField2)){
+            if (ObjectUtil.isNotEmpty(customField2)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField2, customField2);
             }
-            if(ObjectUtil.isNotEmpty(customField3)){
+            if (ObjectUtil.isNotEmpty(customField3)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField3, customField3);
             }
             queryWrapper.lambda().groupBy(InventoryDetail::getOwerCode, InventoryDetail::getWarehouseCode, InventoryDetail::getWarehouseAreaCode,
@@ -627,14 +629,14 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
             BigDecimal checkCount = inventoryCheckDetail.getCheckCount();
             BigDecimal inventoryCount = inventoryCheckDetail.getInventoryCount();
-            if(inventoryCount.compareTo(new BigDecimal("0")) < 0){
+            if (inventoryCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("盘盈，库存数量不能为小于0");
             }
             BigDecimal subtract = checkCount.subtract(inventoryCount);//盘点数量 - 库存数量
-            if(subtract.compareTo(new BigDecimal("0")) < 0){
+            if (subtract.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("盘盈，盘点数量不能小于库存数量");
             }
-            if(ObjectUtil.isEmpty(inventoryDetail)){
+            if (ObjectUtil.isEmpty(inventoryDetail)) {
                 throw new IllegalArgumentException("盘点明细对应的库存明细不存在");
             }
 
@@ -649,9 +651,9 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             BigDecimal originalExistingCount = existingCount;
             BigDecimal toOperationCount = subtract;
 
-            String key = inventoryDetail.getOwerCode()+"_"+inventoryDetail.getWarehouseCode()+"_"+inventoryDetail.getWarehouseAreaCode()+"_"
-                    +inventoryDetail.getWarehouseLocationCode()+"_"+inventoryDetail.getContainerCode()+"_"+inventoryDetail.getMaterialCode()+"_"
-                    +inventoryDetail.getBatchCode()+"_"+inventoryDetail.getMaterialProductionDate()+"_"+inventoryDetail.getCustomField1()+"_"+inventoryDetail.getCustomField2()+"_"+inventoryDetail.getCustomField3();
+            String key = inventoryDetail.getOwerCode() + "_" + inventoryDetail.getWarehouseCode() + "_" + inventoryDetail.getWarehouseAreaCode() + "_"
+                    + inventoryDetail.getWarehouseLocationCode() + "_" + inventoryDetail.getContainerCode() + "_" + inventoryDetail.getMaterialCode() + "_"
+                    + inventoryDetail.getBatchCode() + "_" + inventoryDetail.getMaterialProductionDate() + "_" + inventoryDetail.getCustomField1() + "_" + inventoryDetail.getCustomField2() + "_" + inventoryDetail.getCustomField3();
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("originalExistingCount", originalExistingCount);//原数量(原现有量)
             jsonObject.set("toWarehouseLocationId", inventoryDetail.getWarehouseLocationId());//目标库位ID
@@ -663,15 +665,15 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
             profitDetailList.add(inventoryDetail);
         });
-        if(CollUtil.isNotEmpty(profitDetailList)){
+        if (CollUtil.isNotEmpty(profitDetailList)) {
             boolean b = inventoryDetailService.saveOrUpdateBatch(profitDetailList);
         }
         //盘盈，保存 库存事务
         List<InventoryBusiness> profitBusinessList = new ArrayList<>();
         profitDetailList.forEach(detail -> {
-            String key = detail.getOwerCode()+"_"+detail.getWarehouseCode()+"_"+detail.getWarehouseAreaCode()+"_"
-                    +detail.getWarehouseLocationCode()+"_"+detail.getContainerCode()+"_"+detail.getMaterialCode()+"_"
-                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3();
+            String key = detail.getOwerCode() + "_" + detail.getWarehouseCode() + "_" + detail.getWarehouseAreaCode() + "_"
+                    + detail.getWarehouseLocationCode() + "_" + detail.getContainerCode() + "_" + detail.getMaterialCode() + "_"
+                    + detail.getBatchCode() + "_" + detail.getMaterialProductionDate() + "_" + detail.getCustomField1() + "_" + detail.getCustomField2() + "_" + detail.getCustomField3();
             JSONObject jsonObject = profitOriginalMap.get(key);
             BigDecimal originalExistingCount = jsonObject.getBigDecimal("originalExistingCount");
             Long toWarehouseLocationId = jsonObject.getLong("toWarehouseLocationId");
@@ -701,7 +703,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             business.setUpdateTime(null);
             profitBusinessList.add(business);
         });
-        if(CollUtil.isNotEmpty(profitBusinessList)){
+        if (CollUtil.isNotEmpty(profitBusinessList)) {
             iInventoryBusinessService.saveOrUpdateBatch(profitBusinessList);
         }
 
@@ -717,7 +719,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             inventoryCheckDetail.setUpdateTime(new Date());
         });
         //盘亏，保存 盘点明细
-        if(CollUtil.isNotEmpty(inventoryLosses)){
+        if (CollUtil.isNotEmpty(inventoryLosses)) {
             this.saveOrUpdateBatch(inventoryLosses);
         }
         //盘亏，保存 库存明细
@@ -756,19 +758,19 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
-            if(ObjectUtil.isNotEmpty(batchCode)){
+            if (ObjectUtil.isNotEmpty(batchCode)) {
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
             }
-            if(ObjectUtil.isNotEmpty(materialProductionDate)){
+            if (ObjectUtil.isNotEmpty(materialProductionDate)) {
                 queryWrapper.lambda().eq(InventoryDetail::getMaterialProductionDate, materialProductionDate);
             }
-            if(ObjectUtil.isNotEmpty(customField1)){
+            if (ObjectUtil.isNotEmpty(customField1)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField1, customField1);
             }
-            if(ObjectUtil.isNotEmpty(customField2)){
+            if (ObjectUtil.isNotEmpty(customField2)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField2, customField2);
             }
-            if(ObjectUtil.isNotEmpty(customField3)){
+            if (ObjectUtil.isNotEmpty(customField3)) {
                 queryWrapper.lambda().eq(InventoryDetail::getCustomField3, customField3);
             }
             queryWrapper.lambda().groupBy(InventoryDetail::getOwerCode, InventoryDetail::getWarehouseCode, InventoryDetail::getWarehouseAreaCode,
@@ -778,32 +780,32 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
             BigDecimal checkCount = inventoryCheckDetail.getCheckCount();
             BigDecimal inventoryCount = inventoryCheckDetail.getInventoryCount();
-            if(checkCount.compareTo(new BigDecimal("0")) < 0){
+            if (checkCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("盘亏，盘点数量不能为小于0");
             }
-            if(inventoryCount.compareTo(new BigDecimal("0")) < 0){
+            if (inventoryCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("盘亏，库存数量不能为小于0");
             }
             BigDecimal subtract = checkCount.subtract(inventoryCount);//盘点数量 - 库存数量
-            if(subtract.compareTo(new BigDecimal("0")) > 0){
+            if (subtract.compareTo(new BigDecimal("0")) > 0) {
                 throw new IllegalArgumentException("盘亏，盘点数量不能大于库存数量");
             }
-            if(ObjectUtil.isEmpty(inventoryDetail)){
+            if (ObjectUtil.isEmpty(inventoryDetail)) {
                 throw new IllegalArgumentException("盘点明细对应的库存明细不存在");
             }
             BigDecimal existingCount = inventoryDetail.getExistingCount();
             BigDecimal newExistingCount = existingCount.add(subtract);//新的现有量 = 原现有量 + subtract   (盘亏时，subtract为负数)
             //盘亏需要判断 库存的可用量
             BigDecimal allocationCount = inventoryDetail.getAllocationCount();
-            if(allocationCount.compareTo(new BigDecimal("0")) < 0){
+            if (allocationCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("库存明细，分配量不能为小于0");
             }
             BigDecimal pickingCount = inventoryDetail.getPickingCount();
-            if(pickingCount.compareTo(new BigDecimal("0")) < 0){
+            if (pickingCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("库存明细，拣货量不能为小于0");
             }
             BigDecimal usableCount = newExistingCount.subtract(allocationCount).subtract(pickingCount);//可用量(计算字段),可用量=现有量-分配量-拣货量，数据库不存在此字段
-            if(usableCount.compareTo(new BigDecimal("0")) < 0){
+            if (usableCount.compareTo(new BigDecimal("0")) < 0) {
                 throw new IllegalArgumentException("库存明细，计算后的可用量不能为小于0");
             }
             inventoryDetail.setExistingCount(newExistingCount);
@@ -813,9 +815,9 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
 
             BigDecimal originalExistingCount = existingCount;
             BigDecimal toOperationCount = subtract;
-            String key = inventoryDetail.getOwerCode()+"_"+inventoryDetail.getWarehouseCode()+"_"+inventoryDetail.getWarehouseAreaCode()+"_"
-                    +inventoryDetail.getWarehouseLocationCode()+"_"+inventoryDetail.getContainerCode()+"_"+inventoryDetail.getMaterialCode()+"_"
-                    +inventoryDetail.getBatchCode()+"_"+inventoryDetail.getMaterialProductionDate()+"_"+inventoryDetail.getCustomField1()+"_"+inventoryDetail.getCustomField2()+"_"+inventoryDetail.getCustomField3();
+            String key = inventoryDetail.getOwerCode() + "_" + inventoryDetail.getWarehouseCode() + "_" + inventoryDetail.getWarehouseAreaCode() + "_"
+                    + inventoryDetail.getWarehouseLocationCode() + "_" + inventoryDetail.getContainerCode() + "_" + inventoryDetail.getMaterialCode() + "_"
+                    + inventoryDetail.getBatchCode() + "_" + inventoryDetail.getMaterialProductionDate() + "_" + inventoryDetail.getCustomField1() + "_" + inventoryDetail.getCustomField2() + "_" + inventoryDetail.getCustomField3();
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("originalExistingCount", originalExistingCount);//原数量(原现有量)
             jsonObject.set("toWarehouseLocationId", inventoryDetail.getWarehouseLocationId());//目标库位ID
@@ -828,15 +830,15 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             lossesDetailList.add(inventoryDetail);
 
         });
-        if(CollUtil.isNotEmpty(lossesDetailList)){
+        if (CollUtil.isNotEmpty(lossesDetailList)) {
             boolean b = inventoryDetailService.saveOrUpdateBatch(lossesDetailList);
         }
         //盘亏，保存 库存事务
         List<InventoryBusiness> lossesProfitBusinessList = new ArrayList<>();
         lossesDetailList.forEach(detail -> {
-            String key = detail.getOwerCode()+"_"+detail.getWarehouseCode()+"_"+detail.getWarehouseAreaCode()+"_"
-                    +detail.getWarehouseLocationCode()+"_"+detail.getContainerCode()+"_"+detail.getMaterialCode()+"_"
-                    +detail.getBatchCode()+"_"+detail.getMaterialProductionDate()+"_"+detail.getCustomField1()+"_"+detail.getCustomField2()+"_"+detail.getCustomField3();
+            String key = detail.getOwerCode() + "_" + detail.getWarehouseCode() + "_" + detail.getWarehouseAreaCode() + "_"
+                    + detail.getWarehouseLocationCode() + "_" + detail.getContainerCode() + "_" + detail.getMaterialCode() + "_"
+                    + detail.getBatchCode() + "_" + detail.getMaterialProductionDate() + "_" + detail.getCustomField1() + "_" + detail.getCustomField2() + "_" + detail.getCustomField3();
             JSONObject jsonObject = lossesOriginalMap.get(key);
             BigDecimal originalExistingCount = jsonObject.getBigDecimal("originalExistingCount");
             Long toWarehouseLocationId = jsonObject.getLong("toWarehouseLocationId");
@@ -866,7 +868,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             business.setUpdateTime(null);
             lossesProfitBusinessList.add(business);
         });
-        if(CollUtil.isNotEmpty(lossesProfitBusinessList)){
+        if (CollUtil.isNotEmpty(lossesProfitBusinessList)) {
             iInventoryBusinessService.saveOrUpdateBatch(lossesProfitBusinessList);
         }
         return true;
@@ -881,5 +883,28 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
     public List<Long> queryNotCheckIdList() {
         return inventoryCheckDetailMapper.queryNotCheckIdList();
     }
+
+    @Override
+    public boolean affirmPost(InventoryCheckDetailPostForm form) {
+        for (int i = 0; i < form.getDetails().size(); i++) {
+
+            InventoryCheckDetail inventoryCheckDetail = form.getDetails().get(i);
+            inventoryCheckDetail.setCheckStatus(1);
+            this.getById(inventoryCheckDetail);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean withdrawPost(InventoryCheckDetailPostForm form) {
+
+        for (int i = 0; i < form.getDetails().size(); i++) {
+            InventoryCheckDetail inventoryCheckDetail = form.getDetails().get(i);
+            inventoryCheckDetail.setCheckStatus(2);
+            this.getById(inventoryCheckDetail);
+        }
+        return false;
+    }
+
 
 }

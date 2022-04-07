@@ -202,6 +202,11 @@
                 and create_time <![CDATA[ >= ]]> #{inventoryBusiness.operationTime[0]}
                 and create_time <![CDATA[ <= ]]> #{inventoryBusiness.operationTime[1]}
             </if>
+
+            <if test="receipt.creationTime !=null and receipt.creationTime.size > 0">
+                and create_time between #{receipt.creationTime[0]} and #{receipt.creationTime[1]}
+            </if>
+
             <if test="inventoryBusiness.owerIdList !=null and  inventoryBusiness.owerIdList.size > 0 ">
                 and ower_id in
                 <foreach item="id" collection="inventoryBusiness.owerIdList" open="(" separator=","  close=")" >

@@ -82,4 +82,20 @@ public interface IInventoryCheckDetailService extends IService<InventoryCheckDet
      * @return
      */
     List<Long> queryNotCheckIdList();
+
+
+    /**
+     * 确认盘点
+     * @param form
+     * @return
+     */
+    boolean affirmPost(InventoryCheckDetailPostForm form);
+
+    /**
+     * 撤回盘点
+     * @param form
+     * @return
+     */
+    boolean withdrawPost(InventoryCheckDetailPostForm form);
+
 }

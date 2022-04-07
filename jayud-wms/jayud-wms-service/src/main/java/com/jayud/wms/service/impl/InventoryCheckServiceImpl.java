@@ -181,6 +181,7 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
     @Transactional(rollbackFor = Exception.class)
     public InventoryCheckVO generateInventoryCheck(InventoryCheckForm bo) {
         String checkCode = codeUtils.getCodeByRule(CodeConStants.INVENTORY_CHECK_CODE);//库存盘点单号
+
         //System.out.println("[库存盘点单号] checkCode: " + checkCode);
         //库存盘点
         InventoryCheck inventoryCheck = ConvertUtil.convert(bo, InventoryCheck.class);
@@ -194,8 +195,8 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
         String warehouseAreaCode = bo.getWarehouseAreaCode();
         String warehouseAreaName = bo.getWarehouseAreaName();
         //货架
-        Long shelfId = bo.getShelfId();
-        String shelfCode = bo.getShelfCode();
+//        Long shelfId = bo.getShelfId();
+//        String shelfCode = bo.getShelfCode();
         //物料
         Long materialId = bo.getMaterialId();
         String materialCode = bo.getMaterialCode();
@@ -230,59 +231,59 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
         inventoryCheck.setCreateTime(new Date());
 
         //1.1、判断 货架是否存在，能否创建盘点单
-        if(StrUtil.isNotEmpty(shelfCode)){
-            //若货架存在，则需要判断是否能创建盘点单
-            QueryWrapper<InventoryCheck> inventoryCheckQueryWrapper = new QueryWrapper<>();
-            inventoryCheckQueryWrapper.lambda().ne(InventoryCheck::getCheckStatus, CheckStatusEnum.CHECKSTATUS_3.getTypeCode());
-            inventoryCheckQueryWrapper.lambda().eq(InventoryCheck::getShelfCode, shelfCode);
-            inventoryCheckQueryWrapper.lambda().eq(InventoryCheck::getIsDeleted, 0);
-            List<InventoryCheck> inventoryChecks = inventoryCheckMapper.selectList(inventoryCheckQueryWrapper);
-            if(inventoryChecks.size() > 0){
-                throw new IllegalArgumentException("选择的货架，存在未完成的盘点单，不能创建盘点单");
-            }
-        }
+//        if(StrUtil.isNotEmpty(shelfCode)){
+//            //若货架存在，则需要判断是否能创建盘点单
+//            QueryWrapper<InventoryCheck> inventoryCheckQueryWrapper = new QueryWrapper<>();
+//            inventoryCheckQueryWrapper.lambda().ne(InventoryCheck::getCheckStatus, CheckStatusEnum.CHECKSTATUS_3.getTypeCode());
+//            inventoryCheckQueryWrapper.lambda().eq(InventoryCheck::getShelfCode, shelfCode);
+//            inventoryCheckQueryWrapper.lambda().eq(InventoryCheck::getIsDeleted, 0);
+//            List<InventoryCheck> inventoryChecks = inventoryCheckMapper.selectList(inventoryCheckQueryWrapper);
+//            if(inventoryChecks.size() > 0){
+//                throw new IllegalArgumentException("选择的货架，存在未完成的盘点单，不能创建盘点单");
+//            }
+//        }
         //1.2、判断 工作台是否存在，是否要生成货架移动任务
-        String workbenchCode = bo.getWorkbenchCode();
-        if(StrUtil.isNotEmpty(workbenchCode)){
-            QueryWrapper<Workbench> workbenchQueryWrapper = new QueryWrapper<>();
-            workbenchQueryWrapper.lambda().eq(Workbench::getIsDeleted, 0);
-            workbenchQueryWrapper.lambda().eq(Workbench::getCode, workbenchCode);
-            workbenchQueryWrapper.lambda().groupBy(Workbench::getCode);
-            Workbench workbench = workbenchService.getOne(workbenchQueryWrapper);
-            if(ObjectUtil.isEmpty(workbench)){
-                throw new IllegalArgumentException("工作台编码正确，不能创建盘点单");
-            }
-            Long workbenchId = workbench.getId();
+//        String workbenchCode = bo.getWorkbenchCode();
+//        if(StrUtil.isNotEmpty(workbenchCode)){
+//            QueryWrapper<Workbench> workbenchQueryWrapper = new QueryWrapper<>();
+//            workbenchQueryWrapper.lambda().eq(Workbench::getIsDeleted, 0);
+//            workbenchQueryWrapper.lambda().eq(Workbench::getCode, workbenchCode);
+//            workbenchQueryWrapper.lambda().groupBy(Workbench::getCode);
+//            Workbench workbench = workbenchService.getOne(workbenchQueryWrapper);
+//            if(ObjectUtil.isEmpty(workbench)){
+//                throw new IllegalArgumentException("工作台编码正确，不能创建盘点单");
+//            }
+//            Long workbenchId = workbench.getId();
             //根据 仓库id，库区id，货架id 查询货架，准备进行 货架移动操作
-            QueryWrapper<WarehouseShelf> warehouseShelfQueryWrapper = new QueryWrapper<>();
-            if(ObjectUtil.isNotEmpty(warehouseId)){
-                warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getWarehouseId, warehouseId);
-            }
-            if(ObjectUtil.isNotEmpty(warehouseAreaId)){
-                warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getWarehouseAreaId, warehouseAreaId);
-            }
-            if(ObjectUtil.isNotEmpty(shelfId)){
-                warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getId, shelfId);
-            }
-            warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getIsDeleted, 0);
-            List<WarehouseShelf> list = warehouseShelfService.list(warehouseShelfQueryWrapper);
+//            QueryWrapper<WarehouseShelf> warehouseShelfQueryWrapper = new QueryWrapper<>();
+//            if(ObjectUtil.isNotEmpty(warehouseId)){
+//                warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getWarehouseId, warehouseId);
+//            }
+//            if(ObjectUtil.isNotEmpty(warehouseAreaId)){
+//                warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getWarehouseAreaId, warehouseAreaId);
+//            }
+//            if(ObjectUtil.isNotEmpty(shelfId)){
+//                warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getId, shelfId);
+//            }
+//            warehouseShelfQueryWrapper.lambda().eq(WarehouseShelf::getIsDeleted, 0);
+//            List<WarehouseShelf> list = warehouseShelfService.list(warehouseShelfQueryWrapper);
 
             //自动生成对应的货架移动任务：MTC05("MTC05","货架至工作台-盘点")
-            CreateShelfMoveTaskForm shelfMoveTaskForm = new CreateShelfMoveTaskForm();
-            shelfMoveTaskForm.setMovementTypeCode(ShelfMoveTaskEnum.MTC05.getTypeCode());
-            shelfMoveTaskForm.setMovementTypeName(ShelfMoveTaskEnum.MTC05.getTypeDesc());
-            shelfMoveTaskForm.setWorkbenchId(workbenchId);
-            shelfMoveTaskForm.setWorkbenchCode(workbenchCode);
-            List<WarehouseShelf> warehouseShelfList = new ArrayList<>();
-            warehouseShelfList.addAll(list);
-            shelfMoveTaskForm.setWarehouseShelfList(warehouseShelfList);
+//            CreateShelfMoveTaskForm shelfMoveTaskForm = new CreateShelfMoveTaskForm();
+//            shelfMoveTaskForm.setMovementTypeCode(ShelfMoveTaskEnum.MTC05.getTypeCode());
+//            shelfMoveTaskForm.setMovementTypeName(ShelfMoveTaskEnum.MTC05.getTypeDesc());
+//            shelfMoveTaskForm.setWorkbenchId(workbenchId);
+//            shelfMoveTaskForm.setWorkbenchCode(workbenchCode);
+//            List<WarehouseShelf> warehouseShelfList = new ArrayList<>();
+//            warehouseShelfList.addAll(list);
+//            shelfMoveTaskForm.setWarehouseShelfList(warehouseShelfList);
             /**
              * 创建货架移库任务
              * @see com.jyd.bases.service.IShelfMoveTaskService#createShelfMoveTask(CreateShelfMoveTaskForm)
              */
-            shelfMoveTaskService.createShelfMoveTask(shelfMoveTaskForm);
+//            shelfMoveTaskService.createShelfMoveTask(shelfMoveTaskForm);
 
-        }
+//        }
 
         //1、保存库存盘点
         boolean b = this.saveOrUpdate(inventoryCheck);
@@ -300,12 +301,12 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
         //paramMap.put("warehouseAreaName", warehouseAreaName);
         //货架 -> 库位ids
         /*根据货架，查询货架下关联的所有库位，拿到库位ids，在去库存明细查询*/
-        QueryWrapper<WarehouseLocation> warehouseLocationQueryWrapper = new QueryWrapper<>();
-        warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getShelfId, shelfId);
-        warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getIsDeleted, 0);
-        List<WarehouseLocation> warehouseLocationList = warehouseLocationService.list(warehouseLocationQueryWrapper);
-        List<Long> warehouseLocationIds = warehouseLocationList.stream().map(k -> k.getId()).collect(Collectors.toList());
-        paramMap.put("warehouseLocationIds", warehouseLocationIds);
+//        QueryWrapper<WarehouseLocation> warehouseLocationQueryWrapper = new QueryWrapper<>();
+//        warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getShelfId, shelfId);
+//        warehouseLocationQueryWrapper.lambda().eq(WarehouseLocation::getIsDeleted, 0);
+//        List<WarehouseLocation> warehouseLocationList = warehouseLocationService.list(warehouseLocationQueryWrapper);
+//        List<Long> warehouseLocationIds = warehouseLocationList.stream().map(k -> k.getId()).collect(Collectors.toList());
+//        paramMap.put("warehouseLocationIds", warehouseLocationIds);
 
         //物料
         //paramMap.put("materialId", materialId);
@@ -319,10 +320,10 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
 
         //java8 stream：检查list集合中是否存在某个值
         //warehouseLocationStatus 库位状态(0未冻结 1已冻结)
-        boolean present = inventoryDetails.stream().filter(m -> m.getWarehouseLocationStatus().equals(1)).findAny().isPresent();
-        if(present){
-            throw new IllegalArgumentException("存在被冻结的库位，正在被其他盘点单盘点");
-        }
+//        boolean present = inventoryDetails.stream().filter(m -> m.getWarehouseLocationStatus().equals(1)).findAny().isPresent();
+//        if(present){
+//            throw new IllegalArgumentException("存在被冻结的库位，正在被其他盘点单盘点");
+//        }
 
         List<InventoryCheckDetail> details = new ArrayList<>();
         if(CollUtil.isNotEmpty(inventoryDetails)){

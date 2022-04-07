@@ -11,6 +11,7 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.dto.AuthUserDetail;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.mapper.InventoryDetailMapper;
 import com.jayud.wms.model.bo.InventoryAdjustmentForm;
 import com.jayud.wms.model.bo.InventoryDetailForm;
@@ -57,6 +58,8 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     private SysUserOwerPermissionService sysUserOwerPermissionService;
     @Autowired
     private SysUserWarehousePermissionService sysUserWarehousePermissionService;
+    @Autowired
+    private AuthClient authClient;
 
     @Override
     public IPage selectMaterialPage(InventoryDetail inventoryDetail, Integer pageNo, Integer pageSize, HttpServletRequest req) {
@@ -460,13 +463,13 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         bo.setOperationCount(subtract);
         BigDecimal operationCount = bo.getOperationCount();//操作数量（调整数量）
         Integer warehouseLocationStatus = inventoryDetail.getWarehouseLocationStatus();//库位状态-盘点(0未冻结 1已冻结)
-        if(warehouseLocationStatus == 1){
-            throw new IllegalArgumentException("库存已被冻结，不能操作");//盘点冻结
-        }
-        Integer warehouseLocationStatus2 = inventoryDetail.getWarehouseLocationStatus2();//库位状态2-移库(0未冻结 1已冻结)
-        if(warehouseLocationStatus2 == 1){
-            throw new IllegalArgumentException("库存已被冻结，不能操作");//移库冻结
-        }
+//        if(warehouseLocationStatus == 1){
+//            throw new IllegalArgumentException("库存已被冻结，不能操作");//盘点冻结
+//        }
+//        Integer warehouseLocationStatus2 = inventoryDetail.getWarehouseLocationStatus2();//库位状态2-移库(0未冻结 1已冻结)
+//        if(warehouseLocationStatus2 == 1){
+//            throw new IllegalArgumentException("库存已被冻结，不能操作");//移库冻结
+//        }
 
         BigDecimal usableCount = inventoryDetail.getUsableCount();//可用量(计算字段),可用量=现有量-分配量-拣货量，数据库不存在此字段
         if(ObjectUtil.isEmpty(operationCount)){
@@ -484,11 +487,19 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         //修改库存明细
         BigDecimal existingCount = inventoryDetail.getExistingCount();
         BigDecimal newExistingCount = existingCount.add(operationCount);//新的现有量 = 现有量 + 操作数量
-        inventoryDetail.setExistingCount(newExistingCount);
+        inventoryDetail.setExistingCount(newExistingCount);//现有量
+//        inventoryDetail.setUnit(bo.getUnit());//单位
+//        inventoryDetail.setWeight(bo.getWeight());//重量
+//        inventoryDetail.setVolume(bo.getVolume());//体积
+        inventoryDetail.setRemark(bo.getRemark()); //调整原因
         this.saveOrUpdate(inventoryDetail);
 
-        String code = codeUtils.getCodeByRule(CodeConStants.INVENTORY_BUSINESS_CODE);//库存事务编号
+        BaseResult  baseResult = authClient.getOrderFeign(CodeConStants.INVENTORY_BUSINESS_CODE, new Date());
+        String code = baseResult.getResult().toString();
 
+//        String code = codeUtils.getCodeByRule(CodeConStants.INVENTORY_BUSINESS_CODE);//库存事务编号
+
+        //
         //保存库存事务表
         InventoryBusiness business = ConvertUtil.convert(inventoryDetail, InventoryBusiness.class);
         business.setId(null);

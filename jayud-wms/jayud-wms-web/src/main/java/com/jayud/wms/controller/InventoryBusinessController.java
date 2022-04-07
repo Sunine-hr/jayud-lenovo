@@ -2,10 +2,12 @@ package com.jayud.wms.controller;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.model.po.InventoryBusiness;
 import com.jayud.wms.service.AuthService;
 import com.jayud.wms.service.IInventoryBusinessService;
@@ -19,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 库存事务表 控制类
@@ -39,44 +38,49 @@ public class InventoryBusinessController {
 
     @Autowired
     public IInventoryBusinessService inventoryBusinessService;
+
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AuthClient authClient;
 
     /**
      * 分页查询数据
      *
-     * @param inventoryBusiness   查询条件
+     * @param inventoryBusiness 查询条件
      * @return
      */
-    @SysDataPermission(clazz = InventoryBusiness.class)
+
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<InventoryBusiness>>> selectPage(@RequestBody InventoryBusiness inventoryBusiness,
-                                                HttpServletRequest req) {
-        return BaseResult.ok(new CommonPageResult(inventoryBusinessService.selectPage(inventoryBusiness,inventoryBusiness.getCurrentPage(),inventoryBusiness.getPageSize(),req)));
+                                                                             HttpServletRequest req) {
+        return BaseResult.ok(new CommonPageResult(inventoryBusinessService.selectPage(inventoryBusiness, inventoryBusiness.getCurrentPage(), inventoryBusiness.getPageSize(), req)));
     }
 
     /**
      * 列表查询数据
      *
-     * @param inventoryBusiness   查询条件
+     * @param inventoryBusiness 查询条件
      * @return
      */
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<InventoryBusiness>> selectList(InventoryBusiness inventoryBusiness,
-                                                HttpServletRequest req) {
+                                                          HttpServletRequest req) {
         return BaseResult.ok(inventoryBusinessService.selectList(inventoryBusiness));
     }
 
     /**
-    * 根据id查询
-    * @param id
-    */
+     * 根据id查询
+     *
+     * @param id
+     */
     @ApiOperation("根据id查询")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiImplicitParam(name = "id", value = "主键id", dataType = "int", required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<InventoryBusiness> queryById(@RequestParam(name="id",required=true) int id) {
+    public BaseResult<InventoryBusiness> queryById(@RequestParam(name = "id", required = true) int id) {
         InventoryBusiness inventoryBusiness = inventoryBusinessService.getById(id);
         return BaseResult.ok(inventoryBusiness);
     }
@@ -92,27 +96,27 @@ public class InventoryBusinessController {
     public void exportInventoryBusiness(HttpServletResponse response, @RequestParam Map<String, Object> paramMap) {
         try {
             List<String> headList = Arrays.asList(
-                "主键",
-                "序号",
-                "事务编号",
-                "类型",
-                "仓库",
-                "货主",
-                "原库位编码",
-                "原容器号",
-                "原数量",
-                "新库位编码",
-                "新容器号",
-                "数量变化",
-                "物料编号",
-                "物料规格",
-                "批次号",
-                "生产日期",
-                "自定义1",
-                "自定义2",
-                "自定义3",
-                "操作人",
-                "操作时间"
+                    "主键",
+                    "序号",
+                    "事务编号",
+                    "类型",
+                    "仓库",
+                    "货主",
+                    "原库位编码",
+                    "原容器号",
+                    "原数量",
+                    "新库位编码",
+                    "新容器号",
+                    "数量变化",
+                    "物料编号",
+                    "物料规格",
+                    "批次号",
+                    "生产日期",
+                    "自定义1",
+                    "自定义2",
+                    "自定义3",
+                    "操作人",
+                    "操作时间"
             );
             List<LinkedHashMap<String, Object>> dataList = inventoryBusinessService.queryInventoryBusinessForExcel(paramMap);
             ExcelUtils.exportExcel(headList, dataList, "库存事务表", response);
@@ -130,14 +134,12 @@ public class InventoryBusinessController {
      */
     @ApiOperation("库存事务 的下拉框数据")
     @GetMapping(path = "/queryInventoryBusiness")
-    public BaseResult<Object> queryInventoryBusiness() {
-        List<LinkedHashMap<String, Object>> seedingTypeData = authService.queryDictByDictType("inventory_business");//库存事务
-        seedingTypeData.forEach(map -> {
-            //字符串转数字
-            Long value = MapUtil.getLong(map, "value");
-            map.put("value", value);
-        });
-        return BaseResult.ok(seedingTypeData);
+    public BaseResult queryInventoryBusiness() {
+        //库存事务 的下拉框数据
+        BaseResult<List<SysDictItem>> wmsStorageTransactionType = authClient.selectItemByDictCode("wms_storage_transaction_type");
+        Map<String, Object> map = new HashMap<>();
+        map.put("wmsStorageTransactionType", wmsStorageTransactionType);
+        return BaseResult.ok(map);
     }
 
 

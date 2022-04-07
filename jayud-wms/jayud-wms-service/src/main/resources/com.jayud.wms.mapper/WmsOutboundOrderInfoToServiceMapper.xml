@@ -8,8 +8,6 @@
         <result column="order_number" property="orderNumber" />
         <result column="serve_type_value" property="serveTypeValue" />
         <result column="serve_type_text" property="serveTypeText" />
-        <result column="material_name" property="materialName" />
-        <result column="material_specification" property="materialSpecification" />
         <result column="account" property="account" />
         <result column="unit" property="unit" />
         <result column="unit_price" property="unitPrice" />

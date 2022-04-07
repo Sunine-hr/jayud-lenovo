@@ -1,6 +1,7 @@
 package com.jayud.wms.model.vo;
 
 import com.jayud.wms.model.po.WmsOutboundOrderInfo;
+import com.jayud.wms.model.po.WmsOutboundOrderInfoToService;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -55,7 +56,7 @@ public class WmsOutboundOrderInfoVO extends WmsOutboundOrderInfo {
     @ApiModelProperty(value = "出库时间")
     private List<String> theDeliveryTime;
 
-//    @ApiModelProperty(value = "附加服务")
-//    private List<WmsOutboundOrderInfoToService> serviceList;
+    @ApiModelProperty(value = "附加服务")
+    private List<WmsOutboundOrderInfoToService> serviceList;
 
 }

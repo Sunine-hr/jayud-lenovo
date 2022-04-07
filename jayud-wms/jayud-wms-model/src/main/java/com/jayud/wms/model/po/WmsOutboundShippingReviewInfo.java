@@ -1,33 +1,36 @@
 package com.jayud.wms.model.po;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 /**
- * WmsOutboundOrderInfo 实体类
+ * WmsOutboundShippingReviewInfo 实体类
  *
- * @author jyd
- * @since 2021-12-22
+ * @author jayud
+ * @since 2022-04-07
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="出库单对象", description="出库单")
-public class WmsOutboundOrderInfo extends SysBaseEntity {
+@ApiModel(value="wms-出库发运复核对象", description="wms-出库发运复核")
+public class WmsOutboundShippingReviewInfo extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "出库通知单号")
@@ -36,8 +39,11 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "出库单号")
     private String orderNumber;
 
-    @ApiModelProperty(value = "波次号")
-    private String waveNumber;
+    @ApiModelProperty(value = "发运复核订单号")
+    private String shippingReviewOrderNumber;
+
+    @ApiModelProperty(value = "主订单号")
+    private String mainOrder;
 
     @ApiModelProperty(value = "仓库id")
     private Long warehouseId;
@@ -57,11 +63,14 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "货主名称")
     private String owerName;
 
-    @ApiModelProperty(value = "单据类型(1采购入库单-原材料仓,2生产领料退货单-原材料仓,3半成品入库单-半成品仓,4生产领料退货单-半成品仓,5成品生产入库单-成品仓,6销售退货入库单)")
+    @ApiModelProperty(value = "单据类型(1待复核,2复核中,3已复核)")
     private String documentType;
 
     @ApiModelProperty(value = "订单来源(1ERP下发,2EMS下发,3手工创建)")
     private String orderSourceType;
+
+    @ApiModelProperty(value = "发运复核状态(1待复核，2复核中，3已复核)")
+    private String orderStatusType;
 
     @ApiModelProperty(value = "外部订单号1")
     private String externalOrderNumberFirst;
@@ -78,13 +87,6 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "客户名称")
     private String customerName;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "预计出库时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime planDeliveryTime;
-
     @ApiModelProperty(value = "备用字段1")
     private String columnOne;
 
@@ -99,37 +101,6 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
 
     @ApiModelProperty(value = "合计体积")
     private BigDecimal allVolume;
-
-    @ApiModelProperty(value = "分配人")
-    private String assignorBy;
-
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @ApiModelProperty(value = "分配时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime assignorTime;
-
-    @ApiModelProperty(value = "订单状态(1未分配，2已分配，3缺货中，4已出库)")
-    private Integer orderStatusType;
-
-    @ApiModelProperty(value = "实际出库时间")
-    private LocalDateTime realDeliveryTime;
-
-    @ApiModelProperty(value = "物料总数")
-    private BigDecimal materialAccount;
-
-    @TableField(fill = FieldFill.INSERT)
-    @ApiModelProperty(value = "租户编码")
-    private String tenantCode;
-
-    @ApiModelProperty(value = "备注")
-    private String remark;
-
-
-    @ApiModelProperty(value = "是否删除，0未删除，1已删除")
-    @TableLogic
-    private Boolean isDeleted;
 
     @ApiModelProperty(value = "单位")
     private String unit;
@@ -158,11 +129,37 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "确认人员名称")
     private String comfirmName;
 
-    @ApiModelProperty(value = "发运复核单号")
-    private String shippingReviewOrderNumber;
+    @ApiModelProperty(value = "确认时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date comfirmTime;
+
+    @ApiModelProperty(value = "租户编码")
+    private String tenantCode;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
 
+    @ApiModelProperty(value = "是否删除，0未删除，1已删除")
+    @TableLogic
+    private Boolean isDeleted;
 
 
+    @TableField(exist = false)
+    @ApiModelProperty(value = "单据类型文本")
+    private String documentType_text;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "订单来源文本")
+    private String orderSourceType_text;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "发运复核状态文本")
+    private String orderStatusType_text;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "复核时间")
+    private List<String> theDeliveryTime;
 
 }

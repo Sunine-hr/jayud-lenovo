@@ -37,7 +37,7 @@
                 AND order_number LIKE CONCAT('%',#{wmsOutboundOrderInfoToService.orderNumber},'%')
             </if>
 
-            <if test="wmsOutboundOrderInfoToService.serveTypeValue != null ">
+            <if test="wmsOutboundOrderInfoToService.serveTypeValue != null and wmsOutboundOrderInfoToService.serveTypeValue != '' ">
                 AND serve_type_value = ${wmsOutboundOrderInfoToService.serveTypeValue}
             </if>
 

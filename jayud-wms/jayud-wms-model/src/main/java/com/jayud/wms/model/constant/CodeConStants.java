@@ -71,4 +71,9 @@ public interface CodeConStants {
      */
     String SHELF_MOVE_TASK_MX_CODE = "shelf_move_task_mx_code";
 
+    /**
+     * 发运复核
+     */
+    String SHIPPING_REVIEW = "shipping_review";
+
 }

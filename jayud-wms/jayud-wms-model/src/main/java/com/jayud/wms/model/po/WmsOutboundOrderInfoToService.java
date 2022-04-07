@@ -32,7 +32,7 @@ public class WmsOutboundOrderInfoToService extends SysBaseEntity {
     private String orderNumber;
 
     @ApiModelProperty(value = "服务名称")
-    private Integer serveTypeValue;
+    private String serveTypeValue;
 
     @ApiModelProperty(value = "服务名称文本")
     private String serveTypeText;

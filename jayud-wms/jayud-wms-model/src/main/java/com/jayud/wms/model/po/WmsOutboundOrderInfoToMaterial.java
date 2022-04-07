@@ -3,6 +3,7 @@ package com.jayud.wms.model.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -50,6 +51,7 @@ public class WmsOutboundOrderInfoToMaterial extends SysBaseEntity {
     @ApiModelProperty(value = "需求量")
     private BigDecimal requirementAccount;
 
+    @JsonProperty(value = "unit")
     @ApiModelProperty(value = "单位")
     private String unit;
 
@@ -90,12 +92,15 @@ public class WmsOutboundOrderInfoToMaterial extends SysBaseEntity {
     private Boolean isDeleted;
 
     @ApiModelProperty(value = "原始单位")
+    @JsonProperty(value = "OriginUnit")
     @TableField(exist = false)
     private String OriginUnit;
 
+    @JsonProperty(value = "weight")
     @ApiModelProperty(value = "重量")
     private BigDecimal weight;
 
+    @JsonProperty(value = "volume")
     @ApiModelProperty(value = "体积")
     private BigDecimal volume;
 

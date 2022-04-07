@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.common.BaseResult;
+import com.jayud.wms.model.bo.ConfirmInformationForm;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.WmsMaterialPackingSpecs;
 import com.jayud.wms.model.po.WmsOutboundOrderInfoToMaterial;
 import com.jayud.wms.model.enums.OutboundOrdertSatus;
@@ -14,10 +17,7 @@ import com.jayud.wms.model.vo.QueryScanInformationVO;
 import com.jayud.wms.model.vo.WmsMaterialBasicInfoVO;
 import com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO;
 import com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO;
-import com.jayud.wms.service.IWmsMaterialBasicInfoService;
-import com.jayud.wms.service.IWmsMaterialPackingSpecsService;
-import com.jayud.wms.service.IWmsOutboundNoticeOrderInfoToMaterialService;
-import com.jayud.wms.service.IWmsOutboundOrderInfoToMaterialService;
+import com.jayud.wms.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 出库单-物料信息 服务实现类
@@ -46,6 +47,8 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
     private IWmsMaterialPackingSpecsService wmsMaterialPackingSpecsService;
     @Autowired
     private IWmsMaterialBasicInfoService wmsMaterialBasicInfoService;
+    @Autowired
+    private IInventoryDetailService inventoryDetailService;
 
     @Autowired
     private WmsOutboundOrderInfoToMaterialMapper wmsOutboundOrderInfoToMaterialMapper;
@@ -63,7 +66,17 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
 
     @Override
     public List<WmsOutboundOrderInfoToMaterialVO> selectList(WmsOutboundOrderInfoToMaterialVO wmsOutboundOrderInfoToMaterialVO){
-        return wmsOutboundOrderInfoToMaterialMapper.list(wmsOutboundOrderInfoToMaterialVO);
+        List<WmsOutboundOrderInfoToMaterialVO> thisMaterialList = wmsOutboundOrderInfoToMaterialMapper.list(wmsOutboundOrderInfoToMaterialVO);
+        if (CollUtil.isNotEmpty(thisMaterialList)){
+            thisMaterialList.forEach(material -> {
+                if(StringUtils.isNotBlank(material.getImgUrl())){
+                    material.setIsHavePic(true);
+                }else{
+                    material.setIsHavePic(false);
+                }
+            });
+        }
+        return thisMaterialList;
     }
 
 
@@ -164,6 +177,36 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
             });
             this.updateBatchById(materialList);
         }
+    }
+
+    @Override
+    public BaseResult<List<WmsOutboundOrderInfoToMaterialVO>> comfirmOutput(ConfirmInformationForm confirmInformationForm) {
+        //确认id
+        List<Long> ids = confirmInformationForm.getMaterialVoList().stream().map(x->x.getId()).collect(Collectors.toList());
+        //图片
+        Map<Long,String> picMap = confirmInformationForm.getMaterialVoList().stream().filter(x->StringUtils.isNotBlank(x.getImgUrl())).collect(Collectors.toMap(x->x.getId(),x->x.getImgUrl()));
+        LambdaQueryWrapper<WmsOutboundOrderInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.in(WmsOutboundOrderInfoToMaterial::getId,ids);
+        List<WmsOutboundOrderInfoToMaterial> materialList = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(materialList)){
+            Map<Long,BigDecimal> msg = materialList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getRequirementAccount()));
+            BaseResult baseResult = inventoryDetailService.outputByMsg(msg);
+            if (baseResult.isSuccess()){
+                materialList.forEach(material->{
+                    material.setStatusType(4);
+                    if (picMap.containsKey(material.getId())){
+                        material.setImgUrl(picMap.get(material.getId()));
+                    }
+                });
+                this.updateBatchById(materialList);
+                WmsOutboundOrderInfoToMaterialVO vo = new WmsOutboundOrderInfoToMaterialVO();
+                vo.setOrderNumber(materialList.get(0).getOrderNumber());
+                List<WmsOutboundOrderInfoToMaterialVO> lists = selectList(vo);
+                return BaseResult.ok(lists);
+            }
+        }
+        return BaseResult.ok();
     }
 
 

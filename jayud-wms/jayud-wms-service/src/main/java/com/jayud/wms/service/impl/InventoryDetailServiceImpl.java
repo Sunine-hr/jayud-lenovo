@@ -1448,4 +1448,26 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return null;
     }
 
+    @Override
+    public BaseResult outputByMsg(Map<Long, BigDecimal> msg) {
+        List<Long> ids = msg.entrySet().stream().map(x->x.getKey()).collect(Collectors.toList());
+        LambdaQueryWrapper<InventoryDetail> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(InventoryDetail::getIsDeleted,false);
+        lambdaQueryWrapper.in(InventoryDetail::getId,ids);
+        lambdaQueryWrapper.eq(InventoryDetail::getWarehouseLocationStatus,0);
+        lambdaQueryWrapper.eq(InventoryDetail::getWarehouseLocationStatus2,0);
+        List<InventoryDetail> detailList = this.list(lambdaQueryWrapper);
+        if(detailList.size() != ids.size()){
+            return BaseResult.error();
+        }
+        if (CollUtil.isNotEmpty(detailList)){
+            detailList.forEach(detail -> {
+                detail.setExistingCount(detail.getExistingCount().subtract(msg.get(detail.getId())));
+                detail.setAllocationCount(detail.getAllocationCount().subtract(msg.get(detail.getId())));
+            });
+            this.updateBatchById(detailList);
+        }
+        return BaseResult.ok();
+    }
+
 }

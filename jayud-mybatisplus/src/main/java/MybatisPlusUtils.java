@@ -21,12 +21,12 @@ public class MybatisPlusUtils {
     public static void main(String[] args) {
         //TODO 1.jayud-业务模块名/jayud-业务模块名-model
         String[] models = {
-                "jayud-auth/jayud-auth-model",
-                "jayud-auth/jayud-auth-service",
-                "jayud-auth/jayud-auth-web"
+                "jayud-wms/jayud-wms-model",
+                "jayud-wms/jayud-wms-service",
+                "jayud-wms/jayud-wms-web"
         };
         for (String model : models) {
-            shell(model,"b_unit");
+            shell(model,"wms_outbound_shipping_review_info_to_material");
 
         }
     }
@@ -74,7 +74,7 @@ public class MybatisPlusUtils {
         String pack = "";
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.jayud.auth");//TODO 3.com.jayud.业务模块名
+        pc.setParent("com.jayud.wms");//TODO 3.com.jayud.业务模块名
         pc.setEntity("model.po");
         pc.setController("controller");
         pc.setMapper("mapper");
@@ -99,7 +99,7 @@ public class MybatisPlusUtils {
                 @Override
                 public String outputFile(TableInfo tableInfo) {
                     //TODO 4.com.jayud.业务模块名.mapper
-                    return path + "/src/main/resources/com.jayud.auth.mapper"
+                    return path + "/src/main/resources/com.jayud.wms.mapper"
                             + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
 
                 }

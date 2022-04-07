@@ -220,6 +220,15 @@ public interface IWmsOutboundOrderInfoService extends IService<WmsOutboundOrderI
      * @param: deleteForm
      * @return: com.jayud.common.BaseResult
      **/
-    BaseResult delOrder(DeleteForm deleteForm);
+    BaseResult cancelOrder(DeleteForm deleteForm);
+
+    /**
+     * @description 转发运复核
+     * @author  ciro
+     * @date   2022/4/7 11:37
+     * @param: deleteForm
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult changeToReview(DeleteForm deleteForm);
 
 }

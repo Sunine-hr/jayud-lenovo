@@ -5,6 +5,8 @@ import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
+import com.jayud.wms.model.bo.ConfirmInformationForm;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.WmsOutboundOrderInfoToMaterial;
 import com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO;
 import com.jayud.wms.service.IWmsOutboundOrderInfoToMaterialService;
@@ -164,6 +166,12 @@ public class WmsOutboundOrderInfoToMaterialController {
         } catch (Exception e) {
             logger.warn(e.toString());
         }
+    }
+
+    @ApiOperation("确认出库")
+    @PostMapping(path = "/comfirmOutput")
+    public BaseResult<List<WmsOutboundOrderInfoToMaterialVO>> comfirmOutput(@RequestBody ConfirmInformationForm confirmInformationForm){
+        return wmsOutboundOrderInfoToMaterialService.comfirmOutput(confirmInformationForm);
     }
 
 }

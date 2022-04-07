@@ -281,10 +281,16 @@ public class WmsOutboundOrderInfoController {
         return wmsOutboundOrderInfoService.saveInfo(wmsOutboundOrderInfoVO);
     }
 
-    @ApiOperation("删除数据")
-    @PostMapping("delOrder")
-    public BaseResult delOrder(@RequestBody DeleteForm deleteForm){
-        return wmsOutboundOrderInfoService.delOrder(deleteForm);
+    @ApiOperation("订单作废")
+    @PostMapping("cancelOrder")
+    public BaseResult cancelOrder(@RequestBody DeleteForm deleteForm){
+        return wmsOutboundOrderInfoService.cancelOrder(deleteForm);
+    }
+
+    @ApiOperation("转发运复核")
+    @PostMapping("changeToReview")
+    public BaseResult changeToReview(@RequestBody DeleteForm deleteForm){
+        return wmsOutboundOrderInfoService.changeToReview(deleteForm);
     }
 
 

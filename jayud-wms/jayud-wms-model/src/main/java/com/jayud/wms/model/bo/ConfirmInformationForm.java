@@ -1,7 +1,10 @@
 package com.jayud.wms.model.bo;
 
+import com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class ConfirmInformationForm {
@@ -17,4 +20,7 @@ public class ConfirmInformationForm {
 
     @ApiModelProperty(value = "库位编号")
     private String warehouseLocationCode;
+
+    @ApiModelProperty(value = "出库单物料")
+    private List<WmsOutboundOrderInfoToMaterialVO> materialVoList;
 }

@@ -42,13 +42,18 @@ public class WmsOutboundOrderInfoToMaterialVO extends WmsOutboundOrderInfoToMate
     @ApiModelProperty(value = "出库单号对象")
     private List<String> orderNumberList;
 
+    @ApiModelProperty(value = "物料对象")
     private Map<String,WmsOutboundOrderInfoToMaterialVO> materialMap;
 
     /**
      * 是否添加分配
      */
+    @ApiModelProperty(value = "是否添加分配")
     private Boolean isAddDistribution;
 
     @ApiModelProperty(value = "出库单状态文本")
     private String statusType_text;
+
+    @ApiModelProperty(value = "是否有图片")
+    private Boolean isHavePic;
 }

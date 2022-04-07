@@ -154,4 +154,13 @@ public interface IInventoryDetailService extends IService<InventoryDetail> {
      * @return: com.jayud.common.BaseResult
      **/
     BaseResult canceloutputAllocationByIds(Map<Long,BigDecimal> msg);
+
+    /**
+     * @description 真正出库
+     * @author  ciro
+     * @date   2022/4/7 9:06
+     * @param: msg
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult outputByMsg(Map<Long, BigDecimal> msg);
 }

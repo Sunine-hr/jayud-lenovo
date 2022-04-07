@@ -3,6 +3,9 @@ package com.jayud.wms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
+import com.jayud.wms.model.bo.ConfirmInformationForm;
+import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.WmsOutboundOrderInfoToMaterial;
 import com.jayud.wms.model.vo.QueryScanInformationVO;
 import com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO;
@@ -99,4 +102,14 @@ public interface IWmsOutboundOrderInfoToMaterialService extends IService<WmsOutb
      * @return: void
      **/
     void finishOrder(List<String> orderNumberList);
+
+
+    /**
+     * @description 确认出库
+     * @author  ciro
+     * @date   2022/4/7 10:15
+     * @param: confirmInformationForm
+     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO>>
+     **/
+    BaseResult<List<WmsOutboundOrderInfoToMaterialVO>> comfirmOutput(ConfirmInformationForm confirmInformationForm);
 }

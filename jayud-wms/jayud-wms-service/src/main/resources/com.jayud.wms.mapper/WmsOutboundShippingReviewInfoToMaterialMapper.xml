@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundShippingReviewInfoToMaterialMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOutboundShippingReviewInfoToMaterial">
+        <id column="id" property="id" />
+        <result column="shipping_review_order_number" property="shippingReviewOrderNumber" />
+        <result column="order_material_id" property="orderMaterialId" />
+        <result column="material_id" property="materialId" />
+        <result column="material_code" property="materialCode" />
+        <result column="material_name" property="materialName" />
+        <result column="material_specification" property="materialSpecification" />
+        <result column="account" property="account" />
+        <result column="unit" property="unit" />
+        <result column="external_number" property="externalNumber" />
+        <result column="external_line_number" property="externalLineNumber" />
+        <result column="batch_code" property="batchCode" />
+        <result column="material_production_date" property="materialProductionDate" />
+        <result column="custom_field1" property="customField1" />
+        <result column="custom_field2" property="customField2" />
+        <result column="custom_field3" property="customField3" />
+        <result column="is_review" property="isReview" />
+        <result column="container_id" property="containerId" />
+        <result column="container_code" property="containerCode" />
+        <result column="img_url" property="imgUrl" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="box_number" property="boxNumber" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, shipping_review_order_number, order_material_id, material_id, material_code, material_name, material_specification, account, unit, external_number, external_line_number, batch_code, material_production_date, custom_field1, custom_field2, custom_field3, is_review, container_id, container_code, img_url, remark, is_deleted, create_by, create_time, update_by, update_time,box_number
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_shipping_review_info_to_material </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsOutboundShippingReviewInfoToMaterial.shippingReviewOrderNumber != null and wmsOutboundShippingReviewInfoToMaterial.shippingReviewOrderNumber != ''">
+                AND shipping_review_order_number LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.shippingReviewOrderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.orderMaterialId != null ">
+                AND order_material_id = ${wmsOutboundShippingReviewInfoToMaterial.orderMaterialId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.materialId != null ">
+                AND material_id = ${wmsOutboundShippingReviewInfoToMaterial.materialId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.materialCode != null and wmsOutboundShippingReviewInfoToMaterial.materialCode != ''">
+                AND material_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.materialCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.materialName != null and wmsOutboundShippingReviewInfoToMaterial.materialName != ''">
+                AND material_name LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.materialName},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.materialSpecification != null and wmsOutboundShippingReviewInfoToMaterial.materialSpecification != ''">
+                AND material_specification LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.materialSpecification},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.account != null ">
+                AND account = ${wmsOutboundShippingReviewInfoToMaterial.account}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.unit != null and wmsOutboundShippingReviewInfoToMaterial.unit != ''">
+                AND unit LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.unit},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.externalNumber != null and wmsOutboundShippingReviewInfoToMaterial.externalNumber != ''">
+                AND external_number LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.externalNumber},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.externalLineNumber != null and wmsOutboundShippingReviewInfoToMaterial.externalLineNumber != ''">
+                AND external_line_number LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.externalLineNumber},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.batchCode != null and wmsOutboundShippingReviewInfoToMaterial.batchCode != ''">
+                AND batch_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.batchCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.materialProductionDate != null ">
+                AND material_production_date = ${wmsOutboundShippingReviewInfoToMaterial.materialProductionDate}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.customField1 != null and wmsOutboundShippingReviewInfoToMaterial.customField1 != ''">
+                AND custom_field1 LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.customField1},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.customField2 != null and wmsOutboundShippingReviewInfoToMaterial.customField2 != ''">
+                AND custom_field2 LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.customField2},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.customField3 != null and wmsOutboundShippingReviewInfoToMaterial.customField3 != ''">
+                AND custom_field3 LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.customField3},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.isReview != null ">
+                AND is_review = ${wmsOutboundShippingReviewInfoToMaterial.isReview}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.containerId != null ">
+                AND container_id = ${wmsOutboundShippingReviewInfoToMaterial.containerId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.containerCode != null and wmsOutboundShippingReviewInfoToMaterial.containerCode != ''">
+                AND container_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.containerCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.imgUrl != null and wmsOutboundShippingReviewInfoToMaterial.imgUrl != ''">
+                AND img_url LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.imgUrl},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfoToMaterial.remark != null and wmsOutboundShippingReviewInfoToMaterial.remark != ''">
+                AND remark LIKE CONCAT('%',#{wmsOutboundShippingReviewInfoToMaterial.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundShippingReviewInfoToMaterial">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundShippingReviewInfoToMaterial">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_shipping_review_info_to_material WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE wms_outbound_shipping_review_info_to_material SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <update id="delByOrderNumbers">
+        UPDATE wms_outbound_shipping_review_info_to_material SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND shipping_review_order_number IN
+        <foreach item="number" collection="numbers" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </update>
+
+    <select id="queryWmsOutboundShippingReviewInfoToMaterialForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            shipping_review_order_number 'shippingReviewOrderNumber',
+            order_material_id 'orderMaterialId',
+            material_id 'materialId',
+            material_code 'materialCode',
+            material_name 'materialName',
+            material_specification 'materialSpecification',
+            account 'account',
+            unit 'unit',
+            external_number 'externalNumber',
+            external_line_number 'externalLineNumber',
+            batch_code 'batchCode',
+            material_production_date 'materialProductionDate',
+            custom_field1 'customField1',
+            custom_field2 'customField2',
+            custom_field3 'customField3',
+            is_review 'isReview',
+            container_id 'containerId',
+            container_code 'containerCode',
+            img_url 'imgUrl',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_shipping_review_info_to_material
+        WHERE is_deleted = 0
+                    <if test="shippingReviewOrderNumber != null and shippingReviewOrderNumber != ''">
+                        AND shipping_review_order_number LIKE CONCAT('%',#{shippingReviewOrderNumber}, '%')
+                    </if>
+                    <if test="orderMaterialId != null ">
+                        AND order_material_id = #{orderMaterialId}
+                    </if>
+                    <if test="materialId != null ">
+                        AND material_id = #{materialId}
+                    </if>
+                    <if test="materialCode != null and materialCode != ''">
+                        AND material_code LIKE CONCAT('%',#{materialCode}, '%')
+                    </if>
+                    <if test="materialName != null and materialName != ''">
+                        AND material_name LIKE CONCAT('%',#{materialName}, '%')
+                    </if>
+                    <if test="materialSpecification != null and materialSpecification != ''">
+                        AND material_specification LIKE CONCAT('%',#{materialSpecification}, '%')
+                    </if>
+                    <if test="account != null ">
+                        AND account = #{account}
+                    </if>
+                    <if test="unit != null and unit != ''">
+                        AND unit LIKE CONCAT('%',#{unit}, '%')
+                    </if>
+                    <if test="externalNumber != null and externalNumber != ''">
+                        AND external_number LIKE CONCAT('%',#{externalNumber}, '%')
+                    </if>
+                    <if test="externalLineNumber != null and externalLineNumber != ''">
+                        AND external_line_number LIKE CONCAT('%',#{externalLineNumber}, '%')
+                    </if>
+                    <if test="batchCode != null and batchCode != ''">
+                        AND batch_code LIKE CONCAT('%',#{batchCode}, '%')
+                    </if>
+                    <if test="materialProductionDate != null ">
+                        AND material_production_date = #{materialProductionDate}
+                    </if>
+                    <if test="customField1 != null and customField1 != ''">
+                        AND custom_field1 LIKE CONCAT('%',#{customField1}, '%')
+                    </if>
+                    <if test="customField2 != null and customField2 != ''">
+                        AND custom_field2 LIKE CONCAT('%',#{customField2}, '%')
+                    </if>
+                    <if test="customField3 != null and customField3 != ''">
+                        AND custom_field3 LIKE CONCAT('%',#{customField3}, '%')
+                    </if>
+                    <if test="isReview != null ">
+                        AND is_review = #{isReview}
+                    </if>
+                    <if test="containerId != null ">
+                        AND container_id = #{containerId}
+                    </if>
+                    <if test="containerCode != null and containerCode != ''">
+                        AND container_code LIKE CONCAT('%',#{containerCode}, '%')
+                    </if>
+                    <if test="imgUrl != null and imgUrl != ''">
+                        AND img_url LIKE CONCAT('%',#{imgUrl}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

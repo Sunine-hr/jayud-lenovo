@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundShippingReviewInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOutboundShippingReviewInfo">
+        <id column="id" property="id" />
+        <result column="notice_order_number" property="noticeOrderNumber" />
+        <result column="order_number" property="orderNumber" />
+        <result column="shipping_review_order_number" property="shippingReviewOrderNumber" />
+        <result column="main_order" property="mainOrder" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="document_type" property="documentType" />
+        <result column="order_source_type" property="orderSourceType" />
+        <result column="external_order_number_first" property="externalOrderNumberFirst" />
+        <result column="external_order_number_second" property="externalOrderNumberSecond" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_code" property="customerCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="column_one" property="columnOne" />
+        <result column="column_two" property="columnTwo" />
+        <result column="all_count" property="allCount" />
+        <result column="all_height" property="allHeight" />
+        <result column="all_volume" property="allVolume" />
+        <result column="unit" property="unit" />
+        <result column="car_barnd" property="carBarnd" />
+        <result column="car_model" property="carModel" />
+        <result column="car_driver" property="carDriver" />
+        <result column="car_relation" property="carRelation" />
+        <result column="operators_id" property="operatorsId" />
+        <result column="operators_name" property="operatorsName" />
+        <result column="comfirm_id" property="comfirmId" />
+        <result column="comfirm_name" property="comfirmName" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="documentType_text" property="documentType_text" />
+        <result column="orderSourceType_text" property="orderSourceType_text" />
+        <result column="orderStatusType_text" property="orderStatusType_text" />
+        <result column="order_status_type" property="orderStatusType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, notice_order_number, order_number, shipping_review_order_number, main_order, warehouse_id, warehouse_code, warehouse_name, ower_id, ower_code, ower_name, document_type, order_source_type, external_order_number_first, external_order_number_second, customer_id, customer_code, customer_name, column_one, column_two, all_count, all_height, all_volume, unit, car_barnd, car_model, car_driver, car_relation, operators_id, operators_name, comfirm_id, comfirm_name, tenant_code, remark, is_deleted, create_by, create_time, update_by, update_time,order_status_type
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_shipping_review_info </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeDocumentType' AND document_type = sdi.item_value) documentType_text,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeOrderSourceType' AND order_source_type = sdi.item_value) orderSourceType_text,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'shippingReviewOrderStatusType' AND order_status_type = sdi.item_value) orderStatusType_text
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsOutboundShippingReviewInfo.noticeOrderNumber != null and wmsOutboundShippingReviewInfo.noticeOrderNumber != ''">
+                AND notice_order_number LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.noticeOrderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.orderNumber != null and wmsOutboundShippingReviewInfo.orderNumber != ''">
+                AND order_number LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.orderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.shippingReviewOrderNumber != null and wmsOutboundShippingReviewInfo.shippingReviewOrderNumber != ''">
+                AND shipping_review_order_number LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.shippingReviewOrderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.mainOrder != null and wmsOutboundShippingReviewInfo.mainOrder != ''">
+                AND main_order LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.mainOrder},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.warehouseId != null ">
+                AND warehouse_id = ${wmsOutboundShippingReviewInfo.warehouseId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.warehouseCode != null and wmsOutboundShippingReviewInfo.warehouseCode != ''">
+                AND warehouse_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.warehouseCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.warehouseName != null and wmsOutboundShippingReviewInfo.warehouseName != ''">
+                AND warehouse_name LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.warehouseName},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.owerId != null ">
+                AND ower_id = ${wmsOutboundShippingReviewInfo.owerId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.owerCode != null and wmsOutboundShippingReviewInfo.owerCode != ''">
+                AND ower_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.owerCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.owerName != null and wmsOutboundShippingReviewInfo.owerName != ''">
+                AND ower_name LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.owerName},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.documentType != null and wmsOutboundShippingReviewInfo.documentType != '' ">
+                AND document_type = ${wmsOutboundShippingReviewInfo.documentType}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.orderSourceType != null and wmsOutboundShippingReviewInfo.orderSourceType != '' ">
+                AND order_source_type = ${wmsOutboundShippingReviewInfo.orderSourceType}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.orderStatusType != null and wmsOutboundShippingReviewInfo.orderStatusType != '' ">
+                AND order_status_type = ${wmsOutboundShippingReviewInfo.orderStatusType}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.externalOrderNumberFirst != null and wmsOutboundShippingReviewInfo.externalOrderNumberFirst != ''">
+                AND external_order_number_first LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.externalOrderNumberFirst},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.externalOrderNumberSecond != null and wmsOutboundShippingReviewInfo.externalOrderNumberSecond != ''">
+                AND external_order_number_second LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.externalOrderNumberSecond},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.customerId != null ">
+                AND customer_id = ${wmsOutboundShippingReviewInfo.customerId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.customerCode != null and wmsOutboundShippingReviewInfo.customerCode != ''">
+                AND customer_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.customerCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.customerName != null and wmsOutboundShippingReviewInfo.customerName != ''">
+                AND customer_name LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.customerName},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.columnOne != null and wmsOutboundShippingReviewInfo.columnOne != ''">
+                AND column_one LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.columnOne},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.columnTwo != null and wmsOutboundShippingReviewInfo.columnTwo != ''">
+                AND column_two LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.columnTwo},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.allCount != null ">
+                AND all_count = ${wmsOutboundShippingReviewInfo.allCount}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.allHeight != null ">
+                AND all_height = ${wmsOutboundShippingReviewInfo.allHeight}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.allVolume != null ">
+                AND all_volume = ${wmsOutboundShippingReviewInfo.allVolume}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.unit != null and wmsOutboundShippingReviewInfo.unit != ''">
+                AND unit LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.unit},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.carBarnd != null and wmsOutboundShippingReviewInfo.carBarnd != ''">
+                AND car_barnd LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.carBarnd},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.carModel != null and wmsOutboundShippingReviewInfo.carModel != ''">
+                AND car_model LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.carModel},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.carDriver != null and wmsOutboundShippingReviewInfo.carDriver != ''">
+                AND car_driver LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.carDriver},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.carRelation != null and wmsOutboundShippingReviewInfo.carRelation != ''">
+                AND car_relation LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.carRelation},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.operatorsId != null ">
+                AND operators_id = ${wmsOutboundShippingReviewInfo.operatorsId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.operatorsName != null and wmsOutboundShippingReviewInfo.operatorsName != ''">
+                AND operators_name LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.operatorsName},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.comfirmId != null ">
+                AND comfirm_id = ${wmsOutboundShippingReviewInfo.comfirmId}
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.comfirmName != null and wmsOutboundShippingReviewInfo.comfirmName != ''">
+                AND comfirm_name LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.comfirmName},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.tenantCode != null and wmsOutboundShippingReviewInfo.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.tenantCode},'%')
+            </if>
+
+            <if test="wmsOutboundShippingReviewInfo.remark != null and wmsOutboundShippingReviewInfo.remark != ''">
+                AND remark LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.remark},'%')
+            </if>
+            <if test="wmsOutboundShippingReviewInfo.theDeliveryTime !=null and wmsOutboundShippingReviewInfo.theDeliveryTime.size > 0">
+                AND  DATE_FORMAT( comfirm_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundShippingReviewInfo.theDeliveryTime[0]}
+                AND DATE_FORMAT( comfirm_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundShippingReviewInfo.theDeliveryTime[1]}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundShippingReviewInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundShippingReviewInfo">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_shipping_review_info WHERE id = ${id}
+    </delete>
+    <update id="delByOrderNumbers">
+        UPDATE wms_outbound_shipping_review_info SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE is_deleted = 0
+        AND shipping_review_order_number IN
+        <foreach item="number" collection="numbers" open="(" separator="," close=")">
+            #{number}
+        </foreach>
+    </update>
+
+    <update id="logicDel">
+        UPDATE wms_outbound_shipping_review_info SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+    <update id="changeStatusByOrderNumber">
+        UPDATE wms_outbound_shipping_review_info SET order_status_type = ${statusType} ,update_by = #{username}, update_time = now()
+        WHERE shipping_review_order_number = ${orderNumber} AND is_deleted = 0
+    </update>
+
+    <select id="queryWmsOutboundShippingReviewInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            notice_order_number 'noticeOrderNumber',
+            order_number 'orderNumber',
+            shipping_review_order_number 'shippingReviewOrderNumber',
+            main_order 'mainOrder',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            ower_id 'owerId',
+            ower_code 'owerCode',
+            ower_name 'owerName',
+            document_type 'documentType',
+            order_source_type 'orderSourceType',
+            external_order_number_first 'externalOrderNumberFirst',
+            external_order_number_second 'externalOrderNumberSecond',
+            customer_id 'customerId',
+            customer_code 'customerCode',
+            customer_name 'customerName',
+            column_one 'columnOne',
+            column_two 'columnTwo',
+            all_count 'allCount',
+            all_height 'allHeight',
+            all_volume 'allVolume',
+            unit 'unit',
+            car_barnd 'carBarnd',
+            car_model 'carModel',
+            car_driver 'carDriver',
+            car_relation 'carRelation',
+            operators_id 'operatorsId',
+            operators_name 'operatorsName',
+            comfirm_id 'comfirmId',
+            comfirm_name 'comfirmName',
+            tenant_code 'tenantCode',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_shipping_review_info
+        WHERE is_deleted = 0
+                    <if test="noticeOrderNumber != null and noticeOrderNumber != ''">
+                        AND notice_order_number LIKE CONCAT('%',#{noticeOrderNumber}, '%')
+                    </if>
+                    <if test="orderNumber != null and orderNumber != ''">
+                        AND order_number LIKE CONCAT('%',#{orderNumber}, '%')
+                    </if>
+                    <if test="shippingReviewOrderNumber != null and shippingReviewOrderNumber != ''">
+                        AND shipping_review_order_number LIKE CONCAT('%',#{shippingReviewOrderNumber}, '%')
+                    </if>
+                    <if test="mainOrder != null and mainOrder != ''">
+                        AND main_order LIKE CONCAT('%',#{mainOrder}, '%')
+                    </if>
+                    <if test="warehouseId != null ">
+                        AND warehouse_id = #{warehouseId}
+                    </if>
+                    <if test="warehouseCode != null and warehouseCode != ''">
+                        AND warehouse_code LIKE CONCAT('%',#{warehouseCode}, '%')
+                    </if>
+                    <if test="warehouseName != null and warehouseName != ''">
+                        AND warehouse_name LIKE CONCAT('%',#{warehouseName}, '%')
+                    </if>
+                    <if test="owerId != null ">
+                        AND ower_id = #{owerId}
+                    </if>
+                    <if test="owerCode != null and owerCode != ''">
+                        AND ower_code LIKE CONCAT('%',#{owerCode}, '%')
+                    </if>
+                    <if test="owerName != null and owerName != ''">
+                        AND ower_name LIKE CONCAT('%',#{owerName}, '%')
+                    </if>
+                    <if test="documentType != null ">
+                        AND document_type = #{documentType}
+                    </if>
+                    <if test="orderSourceType != null ">
+                        AND order_source_type = #{orderSourceType}
+                    </if>
+                    <if test="externalOrderNumberFirst != null and externalOrderNumberFirst != ''">
+                        AND external_order_number_first LIKE CONCAT('%',#{externalOrderNumberFirst}, '%')
+                    </if>
+                    <if test="externalOrderNumberSecond != null and externalOrderNumberSecond != ''">
+                        AND external_order_number_second LIKE CONCAT('%',#{externalOrderNumberSecond}, '%')
+                    </if>
+                    <if test="customerId != null ">
+                        AND customer_id = #{customerId}
+                    </if>
+                    <if test="customerCode != null and customerCode != ''">
+                        AND customer_code LIKE CONCAT('%',#{customerCode}, '%')
+                    </if>
+                    <if test="customerName != null and customerName != ''">
+                        AND customer_name LIKE CONCAT('%',#{customerName}, '%')
+                    </if>
+                    <if test="columnOne != null and columnOne != ''">
+                        AND column_one LIKE CONCAT('%',#{columnOne}, '%')
+                    </if>
+                    <if test="columnTwo != null and columnTwo != ''">
+                        AND column_two LIKE CONCAT('%',#{columnTwo}, '%')
+                    </if>
+                    <if test="allCount != null ">
+                        AND all_count = #{allCount}
+                    </if>
+                    <if test="allHeight != null ">
+                        AND all_height = #{allHeight}
+                    </if>
+                    <if test="allVolume != null ">
+                        AND all_volume = #{allVolume}
+                    </if>
+                    <if test="unit != null and unit != ''">
+                        AND unit LIKE CONCAT('%',#{unit}, '%')
+                    </if>
+                    <if test="carBarnd != null and carBarnd != ''">
+                        AND car_barnd LIKE CONCAT('%',#{carBarnd}, '%')
+                    </if>
+                    <if test="carModel != null and carModel != ''">
+                        AND car_model LIKE CONCAT('%',#{carModel}, '%')
+                    </if>
+                    <if test="carDriver != null and carDriver != ''">
+                        AND car_driver LIKE CONCAT('%',#{carDriver}, '%')
+                    </if>
+                    <if test="carRelation != null and carRelation != ''">
+                        AND car_relation LIKE CONCAT('%',#{carRelation}, '%')
+                    </if>
+                    <if test="operatorsId != null ">
+                        AND operators_id = #{operatorsId}
+                    </if>
+                    <if test="operatorsName != null and operatorsName != ''">
+                        AND operators_name LIKE CONCAT('%',#{operatorsName}, '%')
+                    </if>
+                    <if test="comfirmId != null ">
+                        AND comfirm_id = #{comfirmId}
+                    </if>
+                    <if test="comfirmName != null and comfirmName != ''">
+                        AND comfirm_name LIKE CONCAT('%',#{comfirmName}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

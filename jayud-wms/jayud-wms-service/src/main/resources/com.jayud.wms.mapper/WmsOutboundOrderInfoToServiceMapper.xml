@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsOutboundOrderInfoToServiceMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsOutboundOrderInfoToService">
+        <id column="id" property="id" />
+        <result column="order_number" property="orderNumber" />
+        <result column="serve_type_value" property="serveTypeValue" />
+        <result column="serve_type_text" property="serveTypeText" />
+        <result column="material_name" property="materialName" />
+        <result column="material_specification" property="materialSpecification" />
+        <result column="account" property="account" />
+        <result column="unit" property="unit" />
+        <result column="unit_price" property="unitPrice" />
+        <result column="all_price" property="allPrice" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, order_number, serve_type_value, serve_type_text, account, unit, unit_price, all_price, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_outbound_order_info_to_service </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsOutboundOrderInfoToService.orderNumber != null and wmsOutboundOrderInfoToService.orderNumber != ''">
+                AND order_number LIKE CONCAT('%',#{wmsOutboundOrderInfoToService.orderNumber},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.serveTypeValue != null ">
+                AND serve_type_value = ${wmsOutboundOrderInfoToService.serveTypeValue}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.serveTypeText != null and wmsOutboundOrderInfoToService.serveTypeText != ''">
+                AND serve_type_text LIKE CONCAT('%',#{wmsOutboundOrderInfoToService.serveTypeText},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.account != null ">
+                AND account = ${wmsOutboundOrderInfoToService.account}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.unit != null and wmsOutboundOrderInfoToService.unit != ''">
+                AND unit LIKE CONCAT('%',#{wmsOutboundOrderInfoToService.unit},'%')
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.unitPrice != null ">
+                AND unit_price = ${wmsOutboundOrderInfoToService.unitPrice}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.allPrice != null ">
+                AND all_price = ${wmsOutboundOrderInfoToService.allPrice}
+            </if>
+
+            <if test="wmsOutboundOrderInfoToService.remark != null and wmsOutboundOrderInfoToService.remark != ''">
+                AND remark LIKE CONCAT('%',#{wmsOutboundOrderInfoToService.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundOrderInfoToService">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsOutboundOrderInfoToService">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_outbound_order_info_to_service WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE wms_outbound_order_info_to_service SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+    <update id="logicDelByIds">
+        UPDATE wms_outbound_order_info_to_service
+        SET is_deleted = 1,update_by = #{username},update_time = now()
+        WHERE
+            is_deleted = 0
+        <if test="idList != null and idList.size > 0">
+            AND id IN
+            <foreach item="id" collection="idList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </update>
+
+    <select id="queryWmsOutboundOrderInfoToServiceForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            order_number 'orderNumber',
+            serve_type_value 'serveTypeValue',
+            serve_type_text 'serveTypeText',
+            account 'account',
+            unit 'unit',
+            unit_price 'unitPrice',
+            all_price 'allPrice',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_outbound_order_info_to_service
+        WHERE is_deleted = 0
+                    <if test="orderNumber != null and orderNumber != ''">
+                        AND order_number LIKE CONCAT('%',#{orderNumber}, '%')
+                    </if>
+                    <if test="serveTypeValue != null ">
+                        AND serve_type_value = #{serveTypeValue}
+                    </if>
+                    <if test="serveTypeText != null and serveTypeText != ''">
+                        AND serve_type_text LIKE CONCAT('%',#{serveTypeText}, '%')
+                    </if>
+                    <if test="account != null ">
+                        AND account = #{account}
+                    </if>
+                    <if test="unit != null and unit != ''">
+                        AND unit LIKE CONCAT('%',#{unit}, '%')
+                    </if>
+                    <if test="unitPrice != null ">
+                        AND unit_price = #{unitPrice}
+                    </if>
+                    <if test="allPrice != null ">
+                        AND all_price = #{allPrice}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

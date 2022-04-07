@@ -100,6 +100,11 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
 
         Page<WmsOutboundOrderInfoVO> page=new Page<WmsOutboundOrderInfoVO>(currentPage,pageSize);
         IPage<WmsOutboundOrderInfoVO> pageList= wmsOutboundOrderInfoMapper.pageList(page, wmsOutboundOrderInfoVO);
+        if (CollUtil.isNotEmpty(pageList.getRecords())){
+            pageList.getRecords().forEach(info -> {
+                info.setInWarehouseNumber(wmsOutboundOrderInfoToMaterialService.getInWarehouseNumbers(info.getOrderNumber()));
+            });
+        }
         return pageList;
     }
 
@@ -149,12 +154,13 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             wmsOutboundOrderInfo.setId(null);
             wmsOutboundOrderInfo.setNoticeOrderNumber(wmsOutboundNoticeOrderInfoVos.getOrderNumber());
             wmsOutboundOrderInfo.setOrderNumber(codeUtils.getCodeByRule(CodeConStants.OUTBOUND_ORDER_NUMBER));
-//            wmsOutboundOrderInfo.setOrderNumber();
+            wmsOutboundOrderInfo.setOrderStatusType(null);
             addMaterialList.addAll(changeMaterial(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundNoticeOrderInfoVos.getThisMaterialList()));
             addInfoList.add(wmsOutboundOrderInfo);
         }
         if (CollUtil.isNotEmpty(addInfoList)){
             this.saveBatch(addInfoList);
+            changeNoticeStatus(addInfoList.stream().map(x->x.getNoticeOrderNumber()).collect(Collectors.toList()),"3");
         }
         if (CollUtil.isNotEmpty(addMaterialList)){
             wmsOutboundOrderInfoToMaterialService.saveBatch(addMaterialList);
@@ -215,7 +221,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             List<WmsOutboundOrderInfoToDistributionMaterial> distributionList = new ArrayList<>();
             wmsOutboundOrderInfoVO.setOrderNumber(orderNumber);
             wmsOutboundOrderInfoVO = this.queryByCode(wmsOutboundOrderInfoVO);
-            BaseResult orderResult = checkDistribution(wmsOutboundOrderInfoVO.getOrderStatusType());
+            BaseResult orderResult = BaseResult.ok();
             if (!orderResult.isSuccess()){
                 if (orderResult.getMsg().equals(SysTips.OUTBOUND_IS_DISTRIBUTION)){
                     isDistributionList.add(orderNumber);
@@ -278,9 +284,9 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             WmsOutboundOrderInfo wmsOutboundOrderInfo = new WmsOutboundOrderInfo();
             BeanUtils.copyProperties(wmsOutboundOrderInfoVO, wmsOutboundOrderInfo);
             if (isAllLock) {
-                wmsOutboundOrderInfo.setOrderStatusType(OutboundOrdertSatus.ASSIGNED.getType());
+                wmsOutboundOrderInfo.setOrderStatusType(String.valueOf(OutboundOrdertSatus.ASSIGNED.getType()));
             } else {
-                wmsOutboundOrderInfo.setOrderStatusType(OutboundOrdertSatus.OUT_STOCK.getType());
+                wmsOutboundOrderInfo.setOrderStatusType(String.valueOf(OutboundOrdertSatus.OUT_STOCK.getType()));
             }
             wmsOutboundOrderInfo.setAssignorBy(CurrentUserUtil.getUsername());
             wmsOutboundOrderInfo.setAssignorTime(LocalDateTime.now());
@@ -490,7 +496,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         queryWrapper.lambda().eq(WmsOutboundOrderInfo::getOrderNumber,orderNumber);
         queryWrapper.lambda().eq(WmsOutboundOrderInfo::getIsDeleted,0);
         WmsOutboundOrderInfo wmsOutboundOrderInfo = this.getOne(queryWrapper);
-        wmsOutboundOrderInfo.setOrderStatusType(4);
+        wmsOutboundOrderInfo.setOrderStatusType("4");
         wmsOutboundOrderInfo.setUpdateBy(CurrentUserUtil.getUsername());
         wmsOutboundOrderInfo.setUpdateTime(new Date());
         return this.updateById(wmsOutboundOrderInfo);
@@ -694,10 +700,10 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             }
             //出库单分配成功
             if (isAll){
-                wmsOutboundOrderInfoVO.setOrderStatusType(OutboundOrdertSatus.ASSIGNED.getType());
+                wmsOutboundOrderInfoVO.setOrderStatusType(String.valueOf(OutboundOrdertSatus.ASSIGNED.getType()));
             }else {
                 isAllWave = false;
-                wmsOutboundOrderInfoVO.setOrderStatusType(OutboundOrdertSatus.OUT_STOCK.getType());
+                wmsOutboundOrderInfoVO.setOrderStatusType(String.valueOf(OutboundOrdertSatus.OUT_STOCK.getType()));
             }
         }
         updateWaveOrderMaterial(infoList,updateMetailList);
@@ -833,7 +839,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         List<WmsOutboundOrderInfo> infoList = this.list(lambdaQueryWrapper);
         if (CollUtil.isNotEmpty(infoList)){
             infoList.forEach(info->{
-                info.setOrderStatusType(OutboundOrdertSatus.ISSUED.getType());
+                info.setOrderStatusType(String.valueOf(OutboundOrdertSatus.ISSUED.getType()));
             });
             this.updateBatchById(infoList);
         }
@@ -869,7 +875,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         if (CollUtil.isNotEmpty(infoList)){
             for (WmsOutboundOrderInfo info : infoList){
                 //判断是否出库
-                if (info.getOrderStatusType() == 4){
+                if (info.getOrderStatusType() == "2"){
                     errList.add(info.getOrderNumber());
                     continue;
                 }
@@ -883,6 +889,9 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
                 lambdaQueryWrapper1.eq(WmsOutboundOrderInfoToMaterial::getOrderNumber,info.getOrderNumber());
                 List<WmsOutboundOrderInfoToMaterial> materialList = wmsOutboundOrderInfoToMaterialService.list(lambdaQueryWrapper1);
                 if (CollUtil.isNotEmpty(materialList)){
+                    List<String> orderNumberList = new ArrayList<>();
+                    orderNumberList.add(info.getNoticeOrderNumber());
+                    changeNoticeStatus(orderNumberList,"1");
                     Map<Long,BigDecimal> msg = materialList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getRequirementAccount()));
                     inventoryDetailService.canceloutputAllocationByIds(msg);
                     //删除物料
@@ -906,7 +915,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         List<String> errList = new ArrayList<>();
         if (CollUtil.isNotEmpty(lists)){
             lists.forEach(info->{
-                if (info.getOrderStatusType()==4){
+                if (info.getOrderStatusType()=="4"){
                     WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO = new WmsOutboundOrderInfoVO();
                     wmsOutboundOrderInfoVO.setOrderNumber(info.getOrderNumber());
                     wmsOutboundOrderInfoVO = queryByCode(wmsOutboundOrderInfoVO);
@@ -1016,7 +1025,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             }
         }
         if (isAll){
-            info.setOrderStatusType(4);
+            info.setOrderStatusType("4");
         }
     }
 
@@ -1035,7 +1044,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         boolean isCancel = true;
         if (CollUtil.isNotEmpty(materialList)){
             for (WmsOutboundOrderInfoToMaterial material : materialList){
-                if (material.getStatusType() != 4){
+                if (material.getStatusType() == 2){
                     isCancel = false;
                     break;
                 }
@@ -1044,6 +1053,27 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             isCancel = false;
         }
         return isCancel;
+    }
+
+    /**
+     * @description 修改状态
+     * @author  ciro
+     * @date   2022/4/7 17:04
+     * @param: orderNumberList
+     * @param: type
+     * @return: void
+     **/
+    private void changeNoticeStatus(List<String> orderNumberList,String type){
+        LambdaQueryWrapper<WmsOutboundNoticeOrderInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfo::getIsDeleted,false);
+        lambdaQueryWrapper.in(WmsOutboundNoticeOrderInfo::getOrderNumber,orderNumberList);
+        List<WmsOutboundNoticeOrderInfo> infoList = wmsOutboundNoticeOrderInfoService.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(infoList)){
+            infoList.forEach(info->{
+                info.setOrderStatusType(type);
+            });
+        }
+        wmsOutboundNoticeOrderInfoService.updateBatchById(infoList);
     }
 
 }

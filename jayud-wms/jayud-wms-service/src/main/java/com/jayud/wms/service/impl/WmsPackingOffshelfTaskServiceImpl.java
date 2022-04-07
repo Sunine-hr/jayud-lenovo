@@ -1124,7 +1124,6 @@ public class WmsPackingOffshelfTaskServiceImpl extends ServiceImpl<WmsPackingOff
         WmsOutboundOrderMsgDTO wmsOutboundOrderMsgDTO = getOrderToPackingRelation(packingOffshelfTaskVO);
         if (wmsOutboundOrderMsgDTO.getOrderStatus().equals(OutboundOrdertSatus.ISSUED.getType())){
             WmsOutboundOrderInfo wmsOutboundOrderInfo = wmsOutboundOrderInfoService.getById(wmsOutboundOrderMsgDTO.getOrderId());
-            wmsOutboundOrderInfo.setOrderStatusType(OutboundOrdertSatus.ISSUED.getType());
             wmsOutboundOrderInfoService.updateById(wmsOutboundOrderInfo);
         }
         List<WmsOutboundOrderInfoToMaterial> updateMaterialList = new ArrayList<>();

@@ -112,4 +112,13 @@ public interface IWmsOutboundOrderInfoToMaterialService extends IService<WmsOutb
      * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.wms.model.vo.WmsOutboundOrderInfoToMaterialVO>>
      **/
     BaseResult<List<WmsOutboundOrderInfoToMaterialVO>> comfirmOutput(ConfirmInformationForm confirmInformationForm);
+
+    /**
+     * @description 获取入仓号
+     * @author  ciro
+     * @date   2022/4/7 16:13
+     * @param: orderNumber
+     * @return: java.lang.String
+     **/
+    String getInWarehouseNumbers(String orderNumber);
 }

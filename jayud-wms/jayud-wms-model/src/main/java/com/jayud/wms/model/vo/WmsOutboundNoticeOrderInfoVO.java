@@ -60,4 +60,7 @@ public class WmsOutboundNoticeOrderInfoVO extends WmsOutboundNoticeOrderInfo {
     @ApiModelProperty(value = "发货时间")
     private List<String> theDeliveryTime;
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
 }

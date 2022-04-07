@@ -602,11 +602,7 @@ public class WmsWaveOrderInfoServiceImpl extends ServiceImpl<WmsWaveOrderInfoMap
                     updateMaterialList.add(materialVO);
                 }
             }
-            if (isAll){
-                wmsOutboundOrderInfoVO.setOrderStatusType(OutboundOrdertSatus.ASSIGNED.getType());
-            }else {
-                wmsOutboundOrderInfoVO.setOrderStatusType(OutboundOrdertSatus.OUT_STOCK.getType());
-            }
+
             updateOrderList.add(wmsOutboundOrderInfoVO);
         });
     }

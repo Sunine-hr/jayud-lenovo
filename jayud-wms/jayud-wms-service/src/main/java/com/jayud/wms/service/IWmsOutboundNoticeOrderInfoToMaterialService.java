@@ -94,4 +94,13 @@ public interface IWmsOutboundNoticeOrderInfoToMaterialService extends IService<W
      * @return: com.jayud.common.result.BasePage<com.jayud.wms.model.vo.WmsOutboundNoticeOrderInfoToMaterialVO>
      **/
     BasePage<WmsOutboundNoticeOrderInfoToMaterialVO> selectInvenDetail(WmsOutboundNoticeOrderInfoToMaterialVO material,Integer currentPage,Integer pageSize);
+
+    /**
+     * @description 获取入仓号
+     * @author  ciro
+     * @date   2022/4/7 16:09
+     * @param: orderNumber
+     * @return: java.lang.String
+     **/
+    String getInWarehouseNumbers(String orderNumber);
 }

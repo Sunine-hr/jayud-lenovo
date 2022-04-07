@@ -1,16 +1,17 @@
 package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.common.BaseResult;
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.wms.model.bo.ConfirmInformationForm;
 import com.jayud.wms.model.bo.DeleteForm;
-import com.jayud.wms.model.po.WmsMaterialPackingSpecs;
-import com.jayud.wms.model.po.WmsOutboundOrderInfoToMaterial;
+import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.enums.OutboundOrdertSatus;
 import com.jayud.wms.mapper.WmsOutboundOrderInfoToMaterialMapper;
 import com.jayud.wms.model.vo.QueryScanInformationVO;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,6 +51,10 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
     private IWmsMaterialBasicInfoService wmsMaterialBasicInfoService;
     @Autowired
     private IInventoryDetailService inventoryDetailService;
+    @Autowired
+    private IWmsOutboundOrderInfoService wmsOutboundOrderInfoService;
+    @Autowired
+    private IWmsOutboundNoticeOrderInfoService wmsOutboundNoticeOrderInfoService;
 
     @Autowired
     private WmsOutboundOrderInfoToMaterialMapper wmsOutboundOrderInfoToMaterialMapper;
@@ -194,7 +200,7 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
             BaseResult baseResult = inventoryDetailService.outputByMsg(msg);
             if (baseResult.isSuccess()){
                 materialList.forEach(material->{
-                    material.setStatusType(4);
+                    material.setStatusType(2);
                     if (picMap.containsKey(material.getId())){
                         material.setImgUrl(picMap.get(material.getId()));
                     }
@@ -203,10 +209,95 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
                 WmsOutboundOrderInfoToMaterialVO vo = new WmsOutboundOrderInfoToMaterialVO();
                 vo.setOrderNumber(materialList.get(0).getOrderNumber());
                 List<WmsOutboundOrderInfoToMaterialVO> lists = selectList(vo);
+                changeComfirTime(materialList.get(0).getOrderNumber());
                 return BaseResult.ok(lists);
             }
         }
         return BaseResult.ok();
+    }
+
+    @Override
+    public String getInWarehouseNumbers(String orderNumber) {
+        LambdaQueryWrapper<WmsOutboundOrderInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getOrderNumber,orderNumber);
+        List<WmsOutboundOrderInfoToMaterial> materialList = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(materialList)){
+            List<String> numberList = materialList.stream().filter(x->StringUtils.isNotBlank(x.getInWarehouseNumber())).map(x->x.getInWarehouseNumber()).collect(Collectors.toList());
+            return StringUtils.join(numberList, StrUtil.C_COMMA);
+        }
+        return null;
+    }
+
+    /**
+     * @description 修改确认数据
+     * @author  ciro
+     * @date   2022/4/7 16:24
+     * @param: orderNumber
+     * @return: void
+     **/
+    private void changeComfirTime(String orderNumber){
+        LambdaQueryWrapper<WmsOutboundOrderInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfo::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfo::getOrderNumber,orderNumber);
+        WmsOutboundOrderInfo info = wmsOutboundOrderInfoService.getOne(lambdaQueryWrapper);
+        info.setComfirmId(CurrentUserUtil.getUserId());
+        info.setComfirmName(CurrentUserUtil.getUserRealName());
+        info.setRealDeliveryTime(LocalDateTime.now());
+        wmsOutboundOrderInfoService.updateById(info);
+        changeAllStatus(orderNumber);
+    }
+
+    private void changeAllStatus(String orderNumber){
+        LambdaQueryWrapper<WmsOutboundOrderInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getOrderNumber,orderNumber);
+        List<WmsOutboundOrderInfoToMaterial> materialList = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(materialList)){
+            boolean isAll = true;
+            for (WmsOutboundOrderInfoToMaterial material:materialList){
+                if (material.getStatusType() != 2){
+                    isAll = false;
+                    break;
+                }
+            }
+            if (isAll){
+                changeInfoStatus(orderNumber);
+            }
+        }
+    }
+
+    /**
+     * @description 修改出库单状态
+     * @author  ciro
+     * @date   2022/4/7 17:39
+     * @param: orderNumber
+     * @return: void
+     **/
+    public void changeInfoStatus(String orderNumber){
+        LambdaQueryWrapper<WmsOutboundOrderInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfo::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundOrderInfo::getOrderNumber,orderNumber);
+        WmsOutboundOrderInfo info = wmsOutboundOrderInfoService.getOne(lambdaQueryWrapper);
+        info.setOrderStatusType("2");
+        wmsOutboundOrderInfoService.updateById(info);
+        changeNoticeInfoStatus(info.getNoticeOrderNumber());
+    }
+
+    /**
+     * @description 修改出库通知单状态
+     * @author  ciro
+     * @date   2022/4/7 17:39
+     * @param: noticOrderNumber
+     * @return: void
+     **/
+    public void changeNoticeInfoStatus(String noticOrderNumber){
+        LambdaQueryWrapper<WmsOutboundNoticeOrderInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfo::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfo::getOrderNumber,noticOrderNumber);
+        WmsOutboundNoticeOrderInfo info = wmsOutboundNoticeOrderInfoService.getOne(lambdaQueryWrapper);
+        info.setOrderStatusType("2");
+        wmsOutboundNoticeOrderInfoService.updateById(info);
     }
 
 

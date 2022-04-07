@@ -68,6 +68,11 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
 //        }
         Page<WmsOutboundNoticeOrderInfoVO> page=new Page<WmsOutboundNoticeOrderInfoVO>(currentPage,pageSize);
         IPage<WmsOutboundNoticeOrderInfoVO> pageList= wmsOutboundNoticeOrderInfoMapper.pageList(page, wmsOutboundNoticeOrderInfoVO);
+        if (CollUtil.isNotEmpty(pageList.getRecords())){
+            pageList.getRecords().forEach(info->{
+                info.setInWarehouseNumber(wmsOutboundNoticeOrderInfoToMaterialService.getInWarehouseNumbers(info.getOrderNumber()));
+            });
+        }
         return pageList;
     }
 

@@ -1,6 +1,7 @@
 package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -230,6 +231,19 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
             }
         }
         return basePage;
+    }
+
+    @Override
+    public String getInWarehouseNumbers(String orderNumber) {
+        LambdaQueryWrapper<WmsOutboundNoticeOrderInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfoToMaterial::getIsDeleted,false);
+        lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfoToMaterial::getOrderNumber,orderNumber);
+        List<WmsOutboundNoticeOrderInfoToMaterial> materialList = this.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(materialList)){
+            List<String> numberList = materialList.stream().filter(x->StringUtils.isNotBlank(x.getInWarehouseNumber())).map(x->x.getInWarehouseNumber()).collect(Collectors.toList());
+            return StringUtils.join(numberList, StrUtil.C_COMMA);
+        }
+        return null;
     }
 
     /**

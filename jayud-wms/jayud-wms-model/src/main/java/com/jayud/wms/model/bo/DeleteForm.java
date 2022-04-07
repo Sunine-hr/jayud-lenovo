@@ -1,6 +1,7 @@
 package com.jayud.wms.model.bo;
 
 import com.jayud.wms.model.vo.MaterialVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @since 2021-12-14
  */
 @Data
+@ApiModel(value="删除对象", description="删除对象")
 public class DeleteForm{
 
 

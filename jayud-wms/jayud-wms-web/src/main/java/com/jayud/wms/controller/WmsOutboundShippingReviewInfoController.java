@@ -233,8 +233,8 @@ public class WmsOutboundShippingReviewInfoController {
     }
 
     @ApiOperation("根据编码集合删除")
-    @GetMapping(value = "/delByOrderNumbers")
-    public BaseResult delByOrderNumbers(DeleteForm deleteForm){
+    @PostMapping(value = "/delByOrderNumbers")
+    public BaseResult delByOrderNumbers(@RequestBody DeleteForm deleteForm){
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

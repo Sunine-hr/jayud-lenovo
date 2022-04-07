@@ -56,4 +56,5 @@ public class WmsOutboundOrderInfoToMaterialVO extends WmsOutboundOrderInfoToMate
 
     @ApiModelProperty(value = "是否有图片")
     private Boolean isHavePic;
+
 }

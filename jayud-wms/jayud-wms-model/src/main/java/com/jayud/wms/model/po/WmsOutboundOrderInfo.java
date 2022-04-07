@@ -111,7 +111,7 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     private LocalDateTime assignorTime;
 
     @ApiModelProperty(value = "订单状态(1未分配，2已分配，3缺货中，4已出库)")
-    private Integer orderStatusType;
+    private String orderStatusType;
 
     @ApiModelProperty(value = "实际出库时间")
     private LocalDateTime realDeliveryTime;

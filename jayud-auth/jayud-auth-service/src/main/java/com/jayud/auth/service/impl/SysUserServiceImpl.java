@@ -11,8 +11,10 @@ import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysUserRole;
+import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysDepartService;
+import com.jayud.auth.service.ISysUserToWarehouseService;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ConvertUtil;
@@ -46,6 +48,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private ISysDepartService sysDepartService;
+
+    @Autowired
+    private ISysUserToWarehouseService sysUserToWarehouseService;
 
     @Autowired
     private SysUserMapper sysUserMapper;
@@ -354,6 +359,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         condition.lambda().in(SysUser::getId,userIds);
         condition.lambda().eq(SysUser::getIsDeleted,0);
         return this.list(condition);
+    }
+
+    @Override
+    public List<SysUser> getUserByWarehouse(SysUserToWarehouse sysUserToWarehouse) {
+        sysUserToWarehouse.setTenantCode(CurrentUserUtil.getUserTenantCode());
+        List<SysUserToWarehouse> warehouseList = sysUserToWarehouseService.selectList(sysUserToWarehouse);
+        List<SysUser> userList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(warehouseList)){
+            List<Long> userIdList = warehouseList.stream().map(x->x.getUserId()).collect(Collectors.toList());
+            LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(SysUser::getIsDeleted,false);
+            lambdaQueryWrapper.eq(SysUser::getStatus,1);
+            lambdaQueryWrapper.eq(SysUser::getJobStatus,1);
+            lambdaQueryWrapper.eq(SysUser::getIsWarehouseOperator,true);
+            lambdaQueryWrapper.in(SysUser::getId,userIdList);
+            userList = this.list(lambdaQueryWrapper);
+        }
+        return userList;
     }
 
     public static void main(String[] args) {

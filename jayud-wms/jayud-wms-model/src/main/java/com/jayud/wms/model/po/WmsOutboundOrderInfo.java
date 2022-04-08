@@ -1,6 +1,7 @@
 package com.jayud.wms.model.po;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -114,6 +115,10 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     private String orderStatusType;
 
     @ApiModelProperty(value = "实际出库时间")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime realDeliveryTime;
 
     @ApiModelProperty(value = "物料总数")
@@ -146,8 +151,9 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "作业人员id")
-    private Long operatorsId;
+    private String operatorsId;
 
     @ApiModelProperty(value = "作业人员名称")
     private String operatorsName;
@@ -158,6 +164,7 @@ public class WmsOutboundOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "确认人员名称")
     private String comfirmName;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "发运复核单号")
     private String shippingReviewOrderNumber;
 

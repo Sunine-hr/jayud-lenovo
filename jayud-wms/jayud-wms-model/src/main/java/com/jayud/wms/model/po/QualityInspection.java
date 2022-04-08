@@ -1,5 +1,7 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -57,6 +59,7 @@ public class QualityInspection extends SysBaseEntity {
     @ApiModelProperty(value = "质检部门")
     private String qualityInspectionDept;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "质检人id集合")
     private String qualityInspectorIds;
 

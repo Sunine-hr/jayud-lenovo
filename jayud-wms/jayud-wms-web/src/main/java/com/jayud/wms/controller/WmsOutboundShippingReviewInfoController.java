@@ -111,7 +111,7 @@ public class WmsOutboundShippingReviewInfoController {
     @ApiOperation("编辑")
     @PostMapping("/edit")
     public BaseResult edit(@Valid @RequestBody WmsOutboundShippingReviewInfo wmsOutboundShippingReviewInfo ){
-        wmsOutboundShippingReviewInfoService.updateById(wmsOutboundShippingReviewInfo);
+        wmsOutboundShippingReviewInfoService.edit(wmsOutboundShippingReviewInfo);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
 
@@ -235,6 +235,7 @@ public class WmsOutboundShippingReviewInfoController {
     @ApiOperation("根据编码集合删除")
     @PostMapping(value = "/delByOrderNumbers")
     public BaseResult delByOrderNumbers(@RequestBody DeleteForm deleteForm){
+        wmsOutboundShippingReviewInfoService.delByOrderNumbers(deleteForm);
         return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 

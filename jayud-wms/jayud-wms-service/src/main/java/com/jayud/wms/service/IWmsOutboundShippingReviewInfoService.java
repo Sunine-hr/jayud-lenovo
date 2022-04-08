@@ -91,7 +91,7 @@ public interface IWmsOutboundShippingReviewInfoService extends IService<WmsOutbo
      * @param: wmsOutboundOrderInfoVO
      * @return: com.jayud.common.BaseResult
      **/
-    BaseResult changeToReview(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO);
+    BaseResult<WmsOutboundShippingReviewInfo> changeToReview(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO);
 
     /**
      * @description 根据信息查询发运复核数据
@@ -110,5 +110,14 @@ public interface IWmsOutboundShippingReviewInfoService extends IService<WmsOutbo
      * @return: void
      **/
     void delByOrderNumbers(DeleteForm deleteForm);
+
+    /**
+     * @description 编辑
+     * @author  ciro
+     * @date   2022/4/8 15:22
+     * @param: info
+     * @return: void
+     **/
+    void edit(WmsOutboundShippingReviewInfo info);
 
 }

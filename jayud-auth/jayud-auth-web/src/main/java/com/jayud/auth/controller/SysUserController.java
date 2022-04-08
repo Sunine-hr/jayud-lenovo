@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.dto.SysUserDTO;
+import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -269,5 +270,10 @@ public class SysUserController {
         return BaseResult.ok(sysUserService.selectByUserId(userId));
     }
 
+    @ApiOperation("根据仓库查询用户")
+    @GetMapping("/getUserByWarehouse")
+    public BaseResult<List<SysUser>> getUserByWarehouse(SysUserToWarehouse sysUserToWarehouse){
+        return BaseResult.ok(sysUserService.getUserByWarehouse(sysUserToWarehouse));
+    }
 
 }

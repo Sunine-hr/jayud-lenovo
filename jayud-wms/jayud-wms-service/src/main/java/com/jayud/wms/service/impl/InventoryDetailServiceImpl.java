@@ -1460,12 +1460,29 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         if(detailList.size() != ids.size()){
             return BaseResult.error();
         }
+        List<InventoryBusiness> businessList = new ArrayList<>();
         if (CollUtil.isNotEmpty(detailList)){
             detailList.forEach(detail -> {
+                InventoryBusiness business = ConvertUtil.convert(detail, InventoryBusiness.class);
+                business.setCode(codeUtils.getCodeByRule(CodeConStants.INVENTORY_BUSINESS_CODE));
+                business.setBusinessTypeCode(2);
+                business.setBusinessTypeName("出库");
+                business.setInventoryDetailId(detail.getId());
+                business.setExistingCount(detail.getExistingCount());//原数量(原现有量)
+                business.setToWarehouseLocationId(detail.getWarehouseLocationId() );
+                business.setToWarehouseLocationCode(detail.getWarehouseLocationCode());
+                business.setToContainerId(detail.getContainerId());
+                business.setToContainerCode(detail.getContainerCode());
+                business.setToOperationCount(msg.get(detail.getId()));//操作数量
+                business.clearCreate();
+                business.clearUpdate();
+                business.setId(null);
+                businessList.add(business);
                 detail.setExistingCount(detail.getExistingCount().subtract(msg.get(detail.getId())));
                 detail.setAllocationCount(detail.getAllocationCount().subtract(msg.get(detail.getId())));
             });
             this.updateBatchById(detailList);
+            iInventoryBusinessService.saveBatch(businessList);
         }
         return BaseResult.ok();
     }

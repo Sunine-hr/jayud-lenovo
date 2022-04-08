@@ -170,4 +170,13 @@ public class BaseResult<T> implements Serializable {
         r.setMsg(ResultEnum.UNAUTHORIZED.getMessage());
         return r;
     }
+
+    public static <T> BaseResult<T> error(String msg, T data) {
+        BaseResult<T> r = new BaseResult<T>();
+        r.setSuccess(true);
+        r.setCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        r.setMsg(msg);
+        r.setResult(data);
+        return r;
+    }
 }

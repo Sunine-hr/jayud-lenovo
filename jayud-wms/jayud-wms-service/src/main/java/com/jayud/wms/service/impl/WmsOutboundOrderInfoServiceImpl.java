@@ -97,7 +97,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
                                                     Integer currentPage,
                                                     Integer pageSize,
                                                     HttpServletRequest req){
-
+        wmsOutboundOrderInfoVO.setTenantCode(CurrentUserUtil.getUserTenantCode());
         Page<WmsOutboundOrderInfoVO> page=new Page<WmsOutboundOrderInfoVO>(currentPage,pageSize);
         IPage<WmsOutboundOrderInfoVO> pageList= wmsOutboundOrderInfoMapper.pageList(page, wmsOutboundOrderInfoVO);
         if (CollUtil.isNotEmpty(pageList.getRecords())){
@@ -181,8 +181,11 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
     @Override
     public WmsOutboundOrderInfoVO queryByCode(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO) {
         List<WmsOutboundOrderInfoVO> infoList = wmsOutboundOrderInfoMapper.list(wmsOutboundOrderInfoVO);
-        if (!infoList.isEmpty()){
+        if (CollUtil.isNotEmpty(infoList)){
             wmsOutboundOrderInfoVO = infoList.get(0);
+            if (StringUtils.isNotBlank(wmsOutboundOrderInfoVO.getOperatorsId())){
+                wmsOutboundOrderInfoVO.setOperatorsIds(Arrays.stream(wmsOutboundOrderInfoVO.getOperatorsId().split(StrUtil.COMMA)).map(x->Long.parseLong(x)).collect(Collectors.toList()));
+            }
             WmsOutboundOrderInfoToMaterialVO wmsOutboundOrderInfoToMaterialVO = new WmsOutboundOrderInfoToMaterialVO();
             wmsOutboundOrderInfoToMaterialVO.setOrderNumber(wmsOutboundOrderInfoVO.getOrderNumber());
             List<WmsOutboundOrderInfoToMaterialVO> thisMaterialList = wmsOutboundOrderInfoToMaterialService.selectList(wmsOutboundOrderInfoToMaterialVO);
@@ -861,6 +864,11 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         }
         wmsOutboundOrderInfoToServiceService.saveService(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundOrderInfoVO.getServiceList());
         allOut(wmsOutboundOrderInfo);
+        if (CollUtil.isNotEmpty(wmsOutboundOrderInfoVO.getOperatorsIds())){
+            wmsOutboundOrderInfo.setOperatorsId(StringUtils.join(wmsOutboundOrderInfoVO.getOperatorsIds(),StrUtil.C_COMMA));
+        }else {
+            wmsOutboundOrderInfo.setOperatorsId(null);
+        }
         this.updateById(wmsOutboundOrderInfo);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
@@ -913,22 +921,38 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         lambdaQueryWrapper.in(WmsOutboundOrderInfo::getId,deleteForm.getIds());
         List<WmsOutboundOrderInfo> lists = this.list(lambdaQueryWrapper);
         List<String> errList = new ArrayList<>();
+        List<String> exitList = new ArrayList<>();
+        List<WmsOutboundOrderInfo> successList = new ArrayList<>();
         if (CollUtil.isNotEmpty(lists)){
-            lists.forEach(info->{
-                if (info.getOrderStatusType()=="4"){
+            List<String> numberList = lists.stream().filter(x->StringUtils.isNotBlank(x.getShippingReviewOrderNumber())).map(x->x.getShippingReviewOrderNumber()).collect(Collectors.toList());
+            exitList = getExitMsg(numberList);
+            for (WmsOutboundOrderInfo info : lists){
+                if (!info.getOrderStatusType().equals("2")){
+                    errList.add(info.getOrderNumber());
+                }else if (info.getOrderStatusType().equals("2")&&!exitList.contains(info.getShippingReviewOrderNumber())){
                     WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO = new WmsOutboundOrderInfoVO();
                     wmsOutboundOrderInfoVO.setOrderNumber(info.getOrderNumber());
                     wmsOutboundOrderInfoVO = queryByCode(wmsOutboundOrderInfoVO);
-                    wmsOutboundShippingReviewInfoService.changeToReview(wmsOutboundOrderInfoVO);
-                }else {
-                    errList.add(info.getOrderNumber());
+                    BaseResult<WmsOutboundShippingReviewInfo> reviewResult = wmsOutboundShippingReviewInfoService.changeToReview(wmsOutboundOrderInfoVO);
+                    info.setShippingReviewOrderNumber(reviewResult.getResult().getShippingReviewOrderNumber());
+                    successList.add(info);
                 }
-            });
+            }
         }
+        if (CollUtil.isNotEmpty(successList)){
+            this.updateBatchById(successList);
+        }
+        String errMsg = "";
         if (CollUtil.isNotEmpty(errList)){
-            return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 未完全完全出库！");
+            errMsg+=StringUtils.join(errList,StrUtil.C_COMMA)+" 未完全完全出库！";
         }
-        return null;
+        if (CollUtil.isNotEmpty(exitList)){
+            errMsg+=StringUtils.join(exitList,StrUtil.C_COMMA)+" 已生成发运复核，请勿重新生成！";
+        }
+        if (StringUtils.isNotBlank(errMsg)){
+            return BaseResult.error(errMsg);
+        }
+        return BaseResult.ok();
     }
 
     /**
@@ -1074,6 +1098,28 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             });
         }
         wmsOutboundNoticeOrderInfoService.updateBatchById(infoList);
+    }
+
+    /**
+     * @description 获取存在数据
+     * @author  ciro
+     * @date   2022/4/8 10:03
+     * @param: numberList
+     * @return: java.util.List<java.lang.String>
+     **/
+    private List<String> getExitMsg(List<String> numberList){
+        List<String> reList = new ArrayList<>();
+        if (CollUtil.isEmpty(numberList)){
+            return reList;
+        }
+        LambdaQueryWrapper<WmsOutboundShippingReviewInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundShippingReviewInfo::getIsDeleted,false);
+        lambdaQueryWrapper.in(WmsOutboundShippingReviewInfo::getShippingReviewOrderNumber,numberList);
+        List<WmsOutboundShippingReviewInfo> infoList = wmsOutboundShippingReviewInfoService.list(lambdaQueryWrapper);
+        if (CollUtil.isNotEmpty(infoList)){
+            reList = infoList.stream().map(x->x.getShippingReviewOrderNumber()).collect(Collectors.toList());
+        }
+        return reList;
     }
 
 }

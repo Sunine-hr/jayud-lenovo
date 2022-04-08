@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.SysUserToWarehouseMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.SysUserToWarehouse">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="warehouse_id" property="warehouseId" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="warehouse_name" property="warehouseName" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, user_id, warehouse_id, warehouse_code, warehouse_name, tenant_code, create_by, create_time, update_by, update_time, is_deleted
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">sys_user_to_warehouse </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="sysUserToWarehouse.userId != null ">
+                AND user_id = ${sysUserToWarehouse.userId}
+            </if>
+
+            <if test="sysUserToWarehouse.warehouseId != null ">
+                AND warehouse_id = ${sysUserToWarehouse.warehouseId}
+            </if>
+
+            <if test="sysUserToWarehouse.warehouseCode != null and sysUserToWarehouse.warehouseCode != ''">
+                AND warehouse_code LIKE CONCAT('%',#{sysUserToWarehouse.warehouseCode},'%')
+            </if>
+
+            <if test="sysUserToWarehouse.warehouseName != null and sysUserToWarehouse.warehouseName != ''">
+                AND warehouse_name LIKE CONCAT('%',#{sysUserToWarehouse.warehouseName},'%')
+            </if>
+
+            <if test="sysUserToWarehouse.tenantCode != null and sysUserToWarehouse.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{sysUserToWarehouse.tenantCode},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUserToWarehouse">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.SysUserToWarehouse">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  sys_user_to_warehouse WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE sys_user_to_warehouse SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="querySysUserToWarehouseForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            user_id 'userId',
+            warehouse_id 'warehouseId',
+            warehouse_code 'warehouseCode',
+            warehouse_name 'warehouseName',
+            tenant_code 'tenantCode',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_deleted 'isDeleted'
+        FROM sys_user_to_warehouse
+        WHERE is_deleted = 0
+                    <if test="userId != null ">
+                        AND user_id = #{userId}
+                    </if>
+                    <if test="warehouseId != null ">
+                        AND warehouse_id = #{warehouseId}
+                    </if>
+                    <if test="warehouseCode != null and warehouseCode != ''">
+                        AND warehouse_code LIKE CONCAT('%',#{warehouseCode}, '%')
+                    </if>
+                    <if test="warehouseName != null and warehouseName != ''">
+                        AND warehouse_name LIKE CONCAT('%',#{warehouseName}, '%')
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

@@ -220,7 +220,7 @@ public class WmsOutboundShippingReviewInfoToMaterialController {
     @ApiOperation("撤销发运复核")
     @PostMapping("/cancelReview")
     public BaseResult<List<WmsOutboundShippingReviewInfoToMaterial>> cancelReview(@RequestBody WmsOutboundShippingReviewInfoVO reviewInfo){
-        return wmsOutboundShippingReviewInfoToMaterialService.comfirmReview(reviewInfo);
+        return wmsOutboundShippingReviewInfoToMaterialService.cancelReview(reviewInfo);
     }
 
 }

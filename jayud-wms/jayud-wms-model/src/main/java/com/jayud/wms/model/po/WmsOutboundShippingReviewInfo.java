@@ -1,5 +1,6 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -117,8 +118,9 @@ public class WmsOutboundShippingReviewInfo extends SysBaseEntity {
     @ApiModelProperty(value = "联系方式")
     private String carRelation;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "作业人员id")
-    private Long operatorsId;
+    private String operatorsId;
 
     @ApiModelProperty(value = "作业人员名称")
     private String operatorsName;
@@ -161,5 +163,13 @@ public class WmsOutboundShippingReviewInfo extends SysBaseEntity {
     @TableField(exist = false)
     @ApiModelProperty(value = "复核时间")
     private List<String> theDeliveryTime;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "作业人员id集合")
+    private List<Long> operatorsIds;
 
 }

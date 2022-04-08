@@ -1,8 +1,11 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.entity.SysBaseEntity;
+import com.jayud.wms.model.enums.InventoryCheckDetailEnum;
+import com.jayud.wms.model.enums.ReceiptStatusEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -126,7 +129,14 @@ public class InventoryCheckDetail extends SysBaseEntity {
     //@TableLogic //@TableLogic注解表示逻辑删除,设置修改人手动更新，这里注释
     private Boolean isDeleted;
 
+    @TableField(exist = false)
+    @ApiModelProperty(value = "状态")
+    private String checkStatusDetails;
 
+    public void setCheckStatusDetails(Integer checkStatus) {
+        this.checkStatus = checkStatus;
+        this.checkStatusDetails = InventoryCheckDetailEnum.getDesc(checkStatus);
+    }
 
 
 

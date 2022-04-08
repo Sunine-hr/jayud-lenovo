@@ -219,8 +219,8 @@
                 AND id.in_warehouse_number LIKE CONCAT('%',#{inventoryDetail.inWarehouseNumber}, '%')
             </if>
 
-            <if test="receipt.creationTime !=null and receipt.creationTime.size > 0">
-                and r.create_time between #{receipt.creationTime[0]} and #{receipt.creationTime[1]}
+            <if test="inventoryDetail.creationTime !=null and inventoryDetail.creationTime.size > 0">
+                and id.create_time between #{inventoryDetail.creationTime[0]} and #{inventoryDetail.creationTime[1]}
             </if>
 
         </where>

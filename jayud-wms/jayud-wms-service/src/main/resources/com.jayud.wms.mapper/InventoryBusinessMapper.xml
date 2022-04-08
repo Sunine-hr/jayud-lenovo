@@ -203,8 +203,8 @@
                 and create_time <![CDATA[ <= ]]> #{inventoryBusiness.operationTime[1]}
             </if>
 
-            <if test="receipt.creationTime !=null and receipt.creationTime.size > 0">
-                and create_time between #{receipt.creationTime[0]} and #{receipt.creationTime[1]}
+            <if test="inventoryBusiness.creationTime !=null and inventoryBusiness.creationTime.size > 0">
+                and create_time between #{inventoryBusiness.creationTime[0]} and #{inventoryBusiness.creationTime[1]}
             </if>
 
             <if test="inventoryBusiness.owerIdList !=null and  inventoryBusiness.owerIdList.size > 0 ">

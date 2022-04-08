@@ -113,6 +113,21 @@ public class InventoryCheck extends SysBaseEntity {
     @TableField(exist = false)
     private List<Long> notCheckIdList;
 
+    @ApiModelProperty(value = "货主ID")
+    private Long owerId;
 
+    @ApiModelProperty(value = "货主编号")
+    private String owerCode;
 
+    @ApiModelProperty(value = "货主名称")
+    private String owerName;
+
+    @ApiModelProperty(value = "库区ID")
+    private Long warehouseAreaId;
+
+    @ApiModelProperty(value = "库区编号")
+    private String warehouseAreaCode;
+
+    @ApiModelProperty(value = "库区名称")
+    private String warehouseAreaName;
 }

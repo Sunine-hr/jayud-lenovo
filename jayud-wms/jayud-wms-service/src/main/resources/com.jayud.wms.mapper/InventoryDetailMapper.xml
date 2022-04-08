@@ -65,6 +65,10 @@
                 AND id.ower_id = ${inventoryDetail.owerId}
             </if>
 
+            <if test="inventoryDetail.inWarehouseNumber != null and inventoryDetail.inWarehouseNumber != ''">
+                AND id.in_warehouse_number LIKE CONCAT('%',#{inventoryDetail.inWarehouseNumber}, '%')
+            </if>
+
             <if test="inventoryDetail.owerCode != null and inventoryDetail.owerCode != ''">
                 AND id.ower_code LIKE CONCAT('%',#{inventoryDetail.owerCode}, '%')
             </if>
@@ -213,6 +217,10 @@
 
             <if test="inventoryDetail.inWarehouseNumber != null and inventoryDetail.inWarehouseNumber != ''">
                 AND id.in_warehouse_number LIKE CONCAT('%',#{inventoryDetail.inWarehouseNumber}, '%')
+            </if>
+
+            <if test="inventoryDetail.creationTime !=null and inventoryDetail.creationTime.size > 0">
+                and id.create_time between #{inventoryDetail.creationTime[0]} and #{inventoryDetail.creationTime[1]}
             </if>
 
         </where>

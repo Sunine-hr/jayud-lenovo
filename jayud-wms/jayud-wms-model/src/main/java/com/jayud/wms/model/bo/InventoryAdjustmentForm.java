@@ -112,15 +112,29 @@ public class InventoryAdjustmentForm extends SysBaseEntity {
     private BigDecimal toExistingCount;
 
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "重量")
+    private BigDecimal weight;
+
+    @ApiModelProperty(value = "体积")
+    private BigDecimal volume;
+
+    @ApiModelProperty(value = "单位")
+    private String unit;
+
+    @ApiModelProperty(value = "备注信息")
+    private String remark;
 
     /**
      * 可用量(计算字段),可用量=现有量-分配量-拣货量，数据库不存在此字段
      * @return
      */
-    public BigDecimal getUsableCount() {
-        //可用量=现有量-分配量-拣货量
-        usableCount = existingCount.subtract(allocationCount).subtract(pickingCount);
-        return usableCount;
-    }
+//    public BigDecimal getUsableCount() {
+//        //可用量=现有量-分配量-拣货量
+//        usableCount = existingCount.subtract(allocationCount).subtract(pickingCount);
+//        return usableCount;
+//    }
 
 }

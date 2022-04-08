@@ -24,11 +24,19 @@
         <result column="create_time" property="createTime" />
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
+        <result column="ower_id" property="owerId" />
+        <result column="ower_code" property="owerCode" />
+        <result column="ower_name" property="owerName" />
+        <result column="warehouse_area_id" property="warehouseAreaId" />
+        <result column="warehouse_area_code" property="warehouseAreaCode" />
+        <result column="warehouse_area_name" property="warehouseAreaName" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, check_code, warehouse_id, warehouse_code, warehouse_name, check_status, check_type, inventory_count, check_count, check_by, check_start_time, check_finish_time, update_start_time, update_finish_time, remark, is_deleted, create_by, create_time, update_by, update_time
+            id, check_code, warehouse_id, warehouse_code, warehouse_name, check_status, check_type, inventory_count, check_count, check_by, check_start_time, check_finish_time,
+            update_start_time, update_finish_time, remark, is_deleted, create_by, create_time, update_by, update_time,ower_id,ower_code,ower_name,warehouse_area_id,warehouse_area_code,warehouse_area_name
     </sql>
 
     <!-- 表名 -->
@@ -43,7 +51,19 @@
                 AND check_code LIKE CONCAT('%',#{inventoryCheck.checkCode}, '%')
             </if>
 
-            <if test="inventoryCheck.warehouseId != null ">
+            <if test="inventoryCheck.warehouseAreaId != null ">
+                AND warehouse_area_id = ${inventoryCheck.warehouseAreaId}
+            </if>
+
+            <if test="inventoryCheck.warehouseAreaName != null ">
+                AND warehouse_area_name = ${inventoryCheck.warehouseAreaName}
+            </if>
+
+            <if test="inventoryCheck.owerId != null ">
+                AND ower_id = ${inventoryCheck.owerId}
+            </if>
+
+             <if test="inventoryCheck.warehouseId != null ">
                 AND warehouse_id = ${inventoryCheck.warehouseId}
             </if>
 

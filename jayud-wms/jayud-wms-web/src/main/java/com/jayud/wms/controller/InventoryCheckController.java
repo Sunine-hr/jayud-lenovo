@@ -52,7 +52,6 @@ public class InventoryCheckController {
      * @param inventoryCheck   查询条件
      * @return
      */
-    @SysDataPermission(clazz = InventoryCheck.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<InventoryCheck>>> selectPage(@RequestBody InventoryCheck inventoryCheck,
@@ -141,16 +140,17 @@ public class InventoryCheckController {
         return BaseResult.ok(vo);
     }
 
+
     /**
      * 确认完成盘点
      */
-    @ApiOperation("确认完成盘点")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
+    @ApiOperation("确认盘点过账")
     @PostMapping(value = "/confirmCompleteInventoryCheck")
     public BaseResult confirmCompleteInventoryCheck(@RequestParam(name="id",required=true) int id){
         boolean b = inventoryCheckService.confirmCompleteInventoryCheck(id);
         return BaseResult.ok(b);
     }
+
 
     /**
      * 盘点作业任务(汇总)查询Feign

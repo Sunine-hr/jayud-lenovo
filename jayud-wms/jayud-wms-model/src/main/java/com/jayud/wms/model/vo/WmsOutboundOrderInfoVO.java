@@ -62,4 +62,7 @@ public class WmsOutboundOrderInfoVO extends WmsOutboundOrderInfo {
     @ApiModelProperty(value = "入仓号")
     private String inWarehouseNumber;
 
+    @ApiModelProperty(value = "作业人员id集合")
+    private List<Long> operatorsIds;
+
 }

@@ -221,8 +221,8 @@
                 AND wooi.car_relation LIKE CONCAT('%',#{wmsOutboundOrderInfoVO.carRelation},'%')
             </if>
             <if test="wmsOutboundOrderInfoVO.theDeliveryTime !=null and wmsOutboundOrderInfoVO.theDeliveryTime.size > 0">
-                AND  DATE_FORMAT( wooi.plan_delivery_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[0]}
-                AND DATE_FORMAT( wooi.plan_delivery_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[1]}
+                AND  DATE_FORMAT( wooi.real_delivery_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[0]}
+                AND DATE_FORMAT( wooi.real_delivery_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[1]}
             </if>
         </where>
 

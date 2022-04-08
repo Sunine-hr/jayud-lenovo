@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.constant.SysTips;
+import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.mapper.WmsOutboundNoticeOrderInfoMapper;
 import com.jayud.wms.model.constant.CodeConStants;
@@ -66,6 +67,7 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
 //        if (wmsOutboundNoticeOrderInfoVO.getOwerIdList().isEmpty()||wmsOutboundNoticeOrderInfoVO.getOwerIdList().isEmpty()){
 //            return new Page<>();
 //        }
+        wmsOutboundNoticeOrderInfoVO.setTenantCode(CurrentUserUtil.getUserTenantCode());
         Page<WmsOutboundNoticeOrderInfoVO> page=new Page<WmsOutboundNoticeOrderInfoVO>(currentPage,pageSize);
         IPage<WmsOutboundNoticeOrderInfoVO> pageList= wmsOutboundNoticeOrderInfoMapper.pageList(page, wmsOutboundNoticeOrderInfoVO);
         if (CollUtil.isNotEmpty(pageList.getRecords())){
@@ -209,6 +211,10 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
         BaseResult<List<SysDictItem>> serviceTypeResult = authClient.selectItemByDictCode("outboundOrderServiceType");
         if (serviceTypeResult.isSuccess()){
             wmsOutboundNoticeDictVO.setServiceTypeDict(serviceTypeResult.getResult());
+        }
+        BaseResult<List<SysDictItem>> reviewStatusTypeResult = authClient.selectItemByDictCode("shippingReviewOrderStatusType");
+        if (reviewStatusTypeResult.isSuccess()){
+            wmsOutboundNoticeDictVO.setReviewStatusTypeDict(reviewStatusTypeResult.getResult());
         }
         return wmsOutboundNoticeDictVO;
     }

@@ -195,8 +195,13 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
         lambdaQueryWrapper.eq(WmsOutboundOrderInfoToMaterial::getIsDeleted,false);
         lambdaQueryWrapper.in(WmsOutboundOrderInfoToMaterial::getId,ids);
         List<WmsOutboundOrderInfoToMaterial> materialList = this.list(lambdaQueryWrapper);
+        List<String> errList = new ArrayList<>();
+        String orderNumber = "";
         if (CollUtil.isNotEmpty(materialList)){
-            Map<Long,BigDecimal> msg = materialList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getRequirementAccount()));
+            orderNumber = materialList.get(0).getOrderNumber();
+            List<WmsOutboundOrderInfoToMaterial> successList = materialList.stream().filter(x->x.getStatusType()!=4).collect(Collectors.toList());
+            errList = materialList.stream().filter(x->x.getStatusType()==4).map(x->x.getMaterialCode()).collect(Collectors.toList());
+            Map<Long,BigDecimal> msg = successList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getRequirementAccount()));
             BaseResult baseResult = inventoryDetailService.outputByMsg(msg);
             if (baseResult.isSuccess()){
                 materialList.forEach(material->{
@@ -206,10 +211,14 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
                     }
                 });
                 this.updateBatchById(materialList);
-                WmsOutboundOrderInfoToMaterialVO vo = new WmsOutboundOrderInfoToMaterialVO();
-                vo.setOrderNumber(materialList.get(0).getOrderNumber());
-                List<WmsOutboundOrderInfoToMaterialVO> lists = selectList(vo);
-                changeComfirTime(materialList.get(0).getOrderNumber());
+            }
+            changeComfirTime(orderNumber);
+            WmsOutboundOrderInfoToMaterialVO vo = new WmsOutboundOrderInfoToMaterialVO();
+            vo.setOrderNumber(materialList.get(0).getOrderNumber());
+            List<WmsOutboundOrderInfoToMaterialVO> lists = selectList(vo);
+            if (CollUtil.isNotEmpty(errList)){
+                return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已出库请勿重复出库！",lists);
+            }else {
                 return BaseResult.ok(lists);
             }
         }

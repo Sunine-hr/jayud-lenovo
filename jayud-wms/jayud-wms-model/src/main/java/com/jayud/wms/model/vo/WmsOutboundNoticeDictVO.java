@@ -34,5 +34,8 @@ public class WmsOutboundNoticeDictVO {
     @ApiModelProperty(value = "服务类型")
     List<SysDictItem> serviceTypeDict;
 
+    @ApiModelProperty(value = "发运复核状态")
+    List<SysDictItem> reviewStatusTypeDict;
+
 
 }

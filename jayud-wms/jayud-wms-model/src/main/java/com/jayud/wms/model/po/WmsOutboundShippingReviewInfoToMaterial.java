@@ -1,7 +1,9 @@
 package com.jayud.wms.model.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
@@ -98,7 +100,23 @@ public class WmsOutboundShippingReviewInfoToMaterial extends SysBaseEntity {
     @ApiModelProperty(value = "箱号")
     private Integer boxNumber;
 
+    @ApiModelProperty(value = "出仓号")
+    private String outWarehouseNumber;
 
+    @ApiModelProperty(value = "入仓号")
+    private String inWarehouseNumber;
+
+    @ApiModelProperty(value = "复核状态文本")
+    @TableField(exist = false)
+    private String isReview_text;
+
+    @JsonProperty(value = "weight")
+    @ApiModelProperty(value = "重量")
+    private BigDecimal weight;
+
+    @JsonProperty(value = "volume")
+    @ApiModelProperty(value = "体积")
+    private BigDecimal volume;
 
 
 }

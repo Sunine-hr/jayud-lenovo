@@ -61,7 +61,17 @@ public class WmsOutboundShippingReviewInfoToMaterialServiceImpl extends ServiceI
 
     @Override
     public List<WmsOutboundShippingReviewInfoToMaterial> selectList(WmsOutboundShippingReviewInfoToMaterial wmsOutboundShippingReviewInfoToMaterial){
-        return wmsOutboundShippingReviewInfoToMaterialMapper.list(wmsOutboundShippingReviewInfoToMaterial);
+        List<WmsOutboundShippingReviewInfoToMaterial> materialList = wmsOutboundShippingReviewInfoToMaterialMapper.list(wmsOutboundShippingReviewInfoToMaterial);
+        if (CollUtil.isNotEmpty(materialList)) {
+            materialList.forEach(materials -> {
+                if (materials.getIsReview()) {
+                    materials.setIsReview_text("已发运复核");
+                } else {
+                    materials.setIsReview_text("未发运复核");
+                }
+            });
+        }
+        return materialList;
     }
 
 
@@ -92,25 +102,27 @@ public class WmsOutboundShippingReviewInfoToMaterialServiceImpl extends ServiceI
         List<WmsOutboundShippingReviewInfoToMaterial> materialList = reviewInfo.getMaterialList().stream().filter(x->x.getBoxNumber()!=null).collect(Collectors.toList());
         Map<Long,Integer> msg = materialList.stream().collect(Collectors.toMap(x->x.getId(),x->x.getBoxNumber()));
         List<Long> idList = materialList.stream().map(x->x.getId()).collect(Collectors.toList());
-        LambdaQueryWrapper<WmsOutboundShippingReviewInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(WmsOutboundShippingReviewInfoToMaterial::getIsDeleted,false);
-        lambdaQueryWrapper.in(WmsOutboundShippingReviewInfoToMaterial::getId,idList);
-        materialList = this.list(lambdaQueryWrapper);
         List<String> errList = new ArrayList<>();
-        if (CollUtil.isNotEmpty(materialList)){
-            List<WmsOutboundShippingReviewInfoToMaterial> successList = new ArrayList<>();
-            materialList.forEach(materials->{
-                if (materials.getIsReview()){
-                    errList.add(materials.getMaterialCode());
-                }else {
-                    materials.setBoxNumber(msg.get(materials.getId()));
-                    materials.setIsReview(true);
-                    successList.add(materials);
+        if (CollUtil.isNotEmpty(idList)) {
+            LambdaQueryWrapper<WmsOutboundShippingReviewInfoToMaterial> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(WmsOutboundShippingReviewInfoToMaterial::getIsDeleted, false);
+            lambdaQueryWrapper.in(WmsOutboundShippingReviewInfoToMaterial::getId, idList);
+            materialList = this.list(lambdaQueryWrapper);
+            if (CollUtil.isNotEmpty(materialList)) {
+                List<WmsOutboundShippingReviewInfoToMaterial> successList = new ArrayList<>();
+                materialList.forEach(materials -> {
+                    if (materials.getIsReview()) {
+                        errList.add(materials.getMaterialCode());
+                    } else {
+                        materials.setBoxNumber(msg.get(materials.getId()));
+                        materials.setIsReview(true);
+                        successList.add(materials);
+                    }
+                });
+                if (CollUtil.isNotEmpty(successList)) {
+                    this.updateBatchById(successList);
+                    changeInfoStatus(successList.get(0).getShippingReviewOrderNumber());
                 }
-            });
-            if (CollUtil.isNotEmpty(successList)){
-                this.updateBatchById(successList);
-                changeInfoStatus(successList.get(0).getShippingReviewOrderNumber());
             }
         }
         String errMsg = "";
@@ -120,10 +132,13 @@ public class WmsOutboundShippingReviewInfoToMaterialServiceImpl extends ServiceI
         if (CollUtil.isNotEmpty(errList)){
             errMsg += StringUtils.join(errList, StrUtil.C_COMMA) + " 已确认复核，请勿重复确认！ ";
         }
+        WmsOutboundShippingReviewInfoToMaterial material = new WmsOutboundShippingReviewInfoToMaterial();
+        material.setShippingReviewOrderNumber(reviewInfo.getMaterialList().get(0).getShippingReviewOrderNumber());
+        List<WmsOutboundShippingReviewInfoToMaterial> materialLists = selectList(material);
         if (StringUtils.isNotBlank(errMsg)){
-            return BaseResult.error(errMsg);
+            return BaseResult.error(errMsg,materialLists);
         }
-        return BaseResult.ok();
+        return BaseResult.ok(materialLists);
     }
 
     @Override
@@ -138,6 +153,7 @@ public class WmsOutboundShippingReviewInfoToMaterialServiceImpl extends ServiceI
             List<WmsOutboundShippingReviewInfoToMaterial> successList = new ArrayList<>();
             materialList.forEach(material -> {
                 if (material.getIsReview()){
+                    material.setIsReview(false);
                     successList.add(material);
                 }else {
                     errList.add(material.getMaterialCode());
@@ -148,10 +164,13 @@ public class WmsOutboundShippingReviewInfoToMaterialServiceImpl extends ServiceI
                 changeInfoStatus(successList.get(0).getShippingReviewOrderNumber());
             }
         }
+        WmsOutboundShippingReviewInfoToMaterial material = new WmsOutboundShippingReviewInfoToMaterial();
+        material.setShippingReviewOrderNumber(reviewInfo.getMaterialList().get(0).getShippingReviewOrderNumber());
+        List<WmsOutboundShippingReviewInfoToMaterial> materialLists = selectList(material);
         if (CollUtil.isNotEmpty(errList)){
-            return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已撤销，请勿重复撤销！");
+            return BaseResult.error(StringUtils.join(errList,StrUtil.C_COMMA)+" 已撤销，请勿重复撤销！",materialLists);
         }
-        return BaseResult.ok();
+        return BaseResult.ok(materialLists);
     }
 
 

@@ -343,7 +343,11 @@ public class QualityInspectionServiceImpl extends ServiceImpl<QualityInspectionM
     public BaseResult saveDetail(QualityInspectionVO qualityInspectionVO) {
         QualityInspection qualityInspection = new QualityInspection();
         BeanUtils.copyProperties(qualityInspectionVO,qualityInspection);
-        qualityInspection.setQualityInspectorIds(StringUtils.join(qualityInspectionVO.getQualityInspectorIds(),StrUtil.C_COMMA));
+        if (CollUtil.isNotEmpty(qualityInspectionVO.getQualityInspectorIds())) {
+            qualityInspection.setQualityInspectorIds(StringUtils.join(qualityInspectionVO.getQualityInspectorIds(), StrUtil.C_COMMA));
+        }else {
+            qualityInspection.setQualityInspectorIds(null);
+        }
         this.updateById(qualityInspection);
         List<QualityInspectionMaterialVO> materialList = qualityInspectionVO.getMaterialForms();
         if (CollUtil.isNotEmpty(materialList)){

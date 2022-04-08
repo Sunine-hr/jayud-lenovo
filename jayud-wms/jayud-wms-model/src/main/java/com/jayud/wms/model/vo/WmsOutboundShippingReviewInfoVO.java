@@ -19,4 +19,7 @@ public class WmsOutboundShippingReviewInfoVO extends WmsOutboundShippingReviewIn
 
     @ApiModelProperty(value = "发运复核物料信息")
     List<WmsOutboundShippingReviewInfoToMaterial> materialList;
+
+    @ApiModelProperty(value = "作业人员id集合")
+    private List<Long> operatorsIds;
 }

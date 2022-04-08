@@ -118,4 +118,7 @@ public class SysUser extends SysBaseEntity {
     @ApiModelProperty(value = "所属部门id集合")
     @TableField(exist = false)
     private List<Long> departIdList;
+
+    @ApiModelProperty(value = "是否仓库操作人员")
+    private Boolean isWarehouseOperator;
 }

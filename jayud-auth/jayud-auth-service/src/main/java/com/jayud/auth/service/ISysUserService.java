@@ -6,6 +6,7 @@ import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.common.BaseResult;
 
@@ -157,4 +158,13 @@ public interface ISysUserService extends IService<SysUser> {
      * @return
      */
     List<SysUser> getUserByUserIds(Set<Long> userIds);
+
+    /**
+     * @description 根据仓库查询用户
+     * @author  ciro
+     * @date   2022/4/8 14:17
+     * @param: sysUserToWarehouse
+     * @return: java.util.List<com.jayud.auth.model.po.SysUser>
+     **/
+    List<SysUser> getUserByWarehouse(SysUserToWarehouse sysUserToWarehouse);
 }

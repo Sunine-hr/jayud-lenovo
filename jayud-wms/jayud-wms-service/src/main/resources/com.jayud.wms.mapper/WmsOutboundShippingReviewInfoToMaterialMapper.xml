@@ -31,11 +31,15 @@
         <result column="update_by" property="updateBy" />
         <result column="update_time" property="updateTime" />
         <result column="box_number" property="boxNumber" />
+        <result column="out_warehouse_number" property="outWarehouseNumber" />
+        <result column="in_warehouse_number" property="inWarehouseNumber" />
+        <result column="weight" property="weight" />
+        <result column="volume" property="volume" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-            id, shipping_review_order_number, order_material_id, material_id, material_code, material_name, material_specification, account, unit, external_number, external_line_number, batch_code, material_production_date, custom_field1, custom_field2, custom_field3, is_review, container_id, container_code, img_url, remark, is_deleted, create_by, create_time, update_by, update_time,box_number
+            id, shipping_review_order_number, order_material_id, material_id, material_code, material_name, material_specification, account, unit, external_number, external_line_number, batch_code, material_production_date, custom_field1, custom_field2, custom_field3, is_review, container_id, container_code, img_url, remark, is_deleted, create_by, create_time, update_by, update_time,box_number,out_warehouse_number,in_warehouse_number,weight,volume
     </sql>
 
     <!-- 表名 -->

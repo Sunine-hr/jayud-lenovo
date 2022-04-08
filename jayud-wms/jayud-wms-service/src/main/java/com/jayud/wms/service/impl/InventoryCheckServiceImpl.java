@@ -449,6 +449,14 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
                 inventoryDetailService.saveOrUpdateBatch(inventoryDetailList);
             }
         }
+
+        //过账 把明细计算到库存部分 并且留有记录
+        InventoryCheckDetailPostForm inventoryCheckDetailPostForm = new InventoryCheckDetailPostForm();
+        inventoryCheckDetailPostForm.setInventoryCheckId(inventoryCheck.getId());//
+        inventoryCheckDetailPostForm.setDetails(details);
+        boolean b = inventoryCheckDetailService.confirmPost(inventoryCheckDetailPostForm);
+
+
         return true;
     }
 

@@ -299,7 +299,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             String owerCode = inventoryCheckDetail.getOwerCode();
             String owerName = inventoryCheckDetail.getOwerName();
             if (ObjectUtil.isEmpty(owerCode)) {
-                throw new IllegalArgumentException("货主不能为空");
+                throw new IllegalArgumentException("客户不能为空");
             }
             Long warehouseId = inventoryCheckDetail.getWarehouseId();//仓库
             String warehouseCode = inventoryCheckDetail.getWarehouseCode();
@@ -321,7 +321,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             Long containerId = inventoryCheckDetail.getContainerId();//容器
             String containerCode = inventoryCheckDetail.getContainerCode();
             if (ObjectUtil.isEmpty(containerCode)) {
-                throw new IllegalArgumentException("容器不能为空");
+                throw new IllegalArgumentException("卡板号不能为空");
             }
             Long materialId = inventoryCheckDetail.getMaterialId();//物料
             String materialCode = inventoryCheckDetail.getMaterialCode();
@@ -382,6 +382,7 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             String containerCode = inventoryCheckDetail.getContainerCode();
             Long materialId = inventoryCheckDetail.getMaterialId();//物料
             String materialCode = inventoryCheckDetail.getMaterialCode();
+//            inventoryCheckDetail
             //(批次号 + 生产日期 + 字段1 + 字段2 + 字段3)
             String batchCode = inventoryCheckDetail.getBatchCode();//批次号
             LocalDateTime materialProductionDate = inventoryCheckDetail.getMaterialProductionDate();//生产日期
@@ -398,9 +399,9 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseAreaCode, warehouseAreaCode);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseLocationId, warehouseLocationId);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseLocationCode, warehouseLocationCode);
-            queryWrapper.lambda().eq(InventoryDetail::getContainerId, containerId);
-            queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
-            queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
+//            queryWrapper.lambda().eq(InventoryDetail::getContainerId, containerId);   //容器id 这边没有
+            queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);  // 卡板号
+//            queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
             if (ObjectUtil.isNotEmpty(batchCode)) {
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);
@@ -754,9 +755,9 @@ public class InventoryCheckDetailServiceImpl extends ServiceImpl<InventoryCheckD
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseAreaCode, warehouseAreaCode);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseLocationId, warehouseLocationId);
             queryWrapper.lambda().eq(InventoryDetail::getWarehouseLocationCode, warehouseLocationCode);
-            queryWrapper.lambda().eq(InventoryDetail::getContainerId, containerId);
+//            queryWrapper.lambda().eq(InventoryDetail::getContainerId, containerId);   //容器id 乜有
             queryWrapper.lambda().eq(InventoryDetail::getContainerCode, containerCode);
-            queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);
+//            queryWrapper.lambda().eq(InventoryDetail::getMaterialId, materialId);  // 物料id
             queryWrapper.lambda().eq(InventoryDetail::getMaterialCode, materialCode);
             if (ObjectUtil.isNotEmpty(batchCode)) {
                 queryWrapper.lambda().eq(InventoryDetail::getBatchCode, batchCode);

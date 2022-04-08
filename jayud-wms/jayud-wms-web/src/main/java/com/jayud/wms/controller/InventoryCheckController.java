@@ -140,23 +140,13 @@ public class InventoryCheckController {
         return BaseResult.ok(vo);
     }
 
-    /**
-     * 确认完成盘点
-     */
-    @ApiOperation("确认完成盘点")
-    @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
-    @PostMapping(value = "/confirmCompleteInventoryCheck")
-    public BaseResult confirmCompleteInventoryCheck(@RequestParam(name="id",required=true) int id){
-        boolean b = inventoryCheckService.confirmCompleteInventoryCheck(id);
-        return BaseResult.ok(b);
-    }
 
     /**
      * 确认完成盘点
      */
     @ApiOperation("确认盘点过账")
-    @PostMapping(value = "/confirmInventoryPostingCheck")
-    public BaseResult confirmInventoryPostingCheck(@RequestParam(name="id",required=true) int id){
+    @PostMapping(value = "/confirmCompleteInventoryCheck")
+    public BaseResult confirmCompleteInventoryCheck(@RequestParam(name="id",required=true) int id){
         boolean b = inventoryCheckService.confirmCompleteInventoryCheck(id);
         return BaseResult.ok(b);
     }

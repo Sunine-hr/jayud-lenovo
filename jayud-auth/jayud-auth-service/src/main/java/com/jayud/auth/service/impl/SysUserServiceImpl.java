@@ -196,7 +196,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 for (int i = 0; i < sysUserForm.getSysUserToWarehouselist().size(); i++) {
 
                     SysUserToWarehouse sysUserToWarehouse = new SysUserToWarehouse();
-                    sysUserToWarehouse.setUserId(id);//用户id
+                    //用户id
+                    sysUserToWarehouse.setUserId(id);
                     sysUserToWarehouse.setWarehouseId(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseId());
                     sysUserToWarehouse.setWarehouseName(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseName());
                     sysUserToWarehouse.setWarehouseCode(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseCode());
@@ -206,8 +207,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
 
         }
-        sysUserToWarehouseService.saveWarehouse(sysUser.getId(),sysUserForm.getWarehouseList());
-
+//        sysUserToWarehouseService.saveWarehouse(sysUser.getId(),sysUserForm.getWarehouseList());
         if (result) {
             log.warn("新增或修改库区成功");
             return true;

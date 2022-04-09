@@ -220,6 +220,18 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         //获取收货通知单
         Receipt receipt = this.getById(id);
         ReceiptVO receiptVO = ConvertUtil.convert(receipt, ReceiptVO.class);
+
+        if(receiptVO.getReceiver()!=null){
+            //拿到操作人id集合
+            List<Long> list = new ArrayList<>();
+            String s = receiptVO.getReceiver();
+            String[] a = s.split(",");
+            for (int i = 0; i < a.length; i++) {
+                list.add(Long.parseLong(a[i]));
+            }
+            receiptVO.setReceiverIds(list);//作业人人员
+        }
+
         //获取物理信息
         List<Material> materials = this.materialService.getByCondition(new Material().setOrderId(receiptVO.getId()).setIsDeleted(false));
         List<MaterialVO> materialList = ConvertUtil.convertList(materials, MaterialVO.class);
@@ -248,7 +260,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         Receipt receipt = ConvertUtil.convert(form, Receipt.class);
         Date date = new Date();
         receipt.setUpdateBy(CurrentUserUtil.getUsername()).setUpdateTime(date);
-
+        if(form.getReceiverIds()!=null){
+            receipt.setReceiver(StringUtils.getFileNameString(form.getReceiverIds()));//作业人员
+        }
         this.updateById(receipt);
         List<MaterialForm> materialForms = form.getMaterialForms();
         List<Material> materials = new ArrayList<>();

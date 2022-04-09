@@ -138,5 +138,5 @@ public class SysUserForm extends SysBaseEntity {
 
 
     @ApiModelProperty(value = "仓库关联数据")
-    List<SysUserToWarehouse> warehouseList;
+    private List<SysUserToWarehouse> warehouseList;
 }

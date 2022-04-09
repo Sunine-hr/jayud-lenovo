@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -135,6 +136,9 @@ public class SysUserVO extends SysBaseEntity {
 
     @ApiModelProperty(value = "所属部门id节点集合")
     private List<Long> departIdLists;
+
+    @ApiModelProperty(value = "仓库关联数据")
+    private List<SysUserToWarehouse> warehouseList;
 
 
     public void setJobStatus(Integer jobStatus) {

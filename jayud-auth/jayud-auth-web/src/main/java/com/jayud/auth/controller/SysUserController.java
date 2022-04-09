@@ -1,11 +1,13 @@
 package com.jayud.auth.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jayud.auth.model.bo.DeleteForm;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.auth.model.vo.SysUserVO;
+import com.jayud.auth.service.ISysUserToWarehouseService;
 import com.jayud.common.constant.CommonConstant;
 import com.jayud.common.utils.CurrentUserUtil;
 import io.swagger.annotations.ApiImplicitParam;
@@ -43,6 +45,8 @@ public class SysUserController {
 
     @Autowired
     public ISysUserService sysUserService;
+    @Autowired
+    private ISysUserToWarehouseService sysUserToWarehouseService;
 
 
     /**
@@ -235,6 +239,14 @@ public class SysUserController {
             list.add(Long.parseLong(a[i]));
         }
         sysUserIdOne.setRoleIds(list);
+        SysUserToWarehouse warehouse = new SysUserToWarehouse();
+        warehouse.setUserId(sysUserIdOne.getId());
+        List<SysUserToWarehouse> warehouseList = sysUserToWarehouseService.selectList(warehouse);
+        if (CollUtil.isNotEmpty(warehouseList)){
+            sysUserIdOne.setWarehouseList(warehouseList);
+        }else {
+            sysUserIdOne.setWarehouseList(new ArrayList<>());
+        }
         return BaseResult.ok(sysUserIdOne);
     }
 

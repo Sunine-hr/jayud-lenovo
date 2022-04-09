@@ -164,6 +164,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 sysUserRoleMapper.insert(sysUserRole);
             }
         }
+        sysUserToWarehouseService.saveWarehouse(sysUser.getId(),sysUserForm.getWarehouseList());
 
         if (result) {
             log.warn("新增或修改库区成功");

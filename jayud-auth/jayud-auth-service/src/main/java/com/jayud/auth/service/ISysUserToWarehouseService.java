@@ -4,6 +4,8 @@ package com.jayud.auth.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jayud.common.BaseResult;
+import com.jayud.wms.model.po.Warehouse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -78,5 +80,24 @@ public interface ISysUserToWarehouseService extends IService<SysUserToWarehouse>
      **/
     List<LinkedHashMap<String, Object>> querySysUserToWarehouseForExcel(Map<String, Object> paramMap);
 
+    /**
+     * @description 保存仓库数据
+     * @author  ciro
+     * @date   2022/4/9 13:33
+     * @param: userId
+     * @param: warehouseList
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult saveWarehouse(Long userId,List<SysUserToWarehouse> warehouseList);
+
+
+    /**
+     * @description 获取仓库数据
+     * @author  ciro
+     * @date   2022/4/9 14:06
+     * @param:
+     * @return: java.util.List<com.jayud.auth.model.po.SysUserToWarehouse>
+     **/
+    List<SysUserToWarehouse> getWarehouseMsg();
 
 }

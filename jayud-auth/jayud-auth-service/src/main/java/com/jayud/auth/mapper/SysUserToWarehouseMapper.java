@@ -70,4 +70,15 @@ public interface SysUserToWarehouseMapper extends BaseMapper<SysUserToWarehouse>
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> querySysUserToWarehouseForExcel(Map<String, Object> paramMap);
+
+
+    /**
+     * @description 根据id集合逻辑删除
+     * @author  ciro
+     * @date   2022/4/9 13:51
+     * @param: ids
+     * @param: username
+     * @return: int
+     **/
+    int logicDelByIds(@Param("ids") List<String> ids,@Param("username") String username);
 }

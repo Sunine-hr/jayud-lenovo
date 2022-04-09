@@ -1,5 +1,6 @@
 package com.jayud.auth.controller;
 
+import com.jayud.wms.model.po.Warehouse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -195,5 +196,10 @@ public class SysUserToWarehouseController {
         }
     }
 
+    @ApiOperation("获取仓库数据")
+    @PostMapping(path = "/getWarehouseMsg")
+    public BaseResult<List<SysUserToWarehouse>> getWarehouseMsg(){
+        return BaseResult.ok(sysUserToWarehouseService.getWarehouseMsg());
+    }
 
 }

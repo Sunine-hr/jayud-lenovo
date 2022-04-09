@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.common.entity.SysBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -130,4 +131,7 @@ public class SysUserForm extends SysBaseEntity {
 
     @ApiModelProperty(value = "新密码")
     private String newPassword;
+
+    @ApiModelProperty(value = "仓库关联数据")
+    List<SysUserToWarehouse> warehouseList;
 }

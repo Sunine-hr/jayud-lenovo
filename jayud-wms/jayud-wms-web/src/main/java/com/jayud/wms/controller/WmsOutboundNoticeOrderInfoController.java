@@ -212,8 +212,7 @@ public class WmsOutboundNoticeOrderInfoController {
             @ApiImplicitParam(name = "orderNumber",value = "出库通知单编码",dataType = "String",required = true)})
     @DeleteMapping("/delById")
     public BaseResult delById(String id,String orderNumber){
-        wmsOutboundNoticeOrderInfoService.delById(Long.parseLong(id),orderNumber);
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+        return wmsOutboundNoticeOrderInfoService.delById(Long.parseLong(id),orderNumber);
     }
 
     /**
@@ -227,11 +226,7 @@ public class WmsOutboundNoticeOrderInfoController {
     @ApiImplicitParam(name = "delList",value = "删除集合",dataType = "List<WmsOutboundNoticeOrderInfoVO>",required = true)
     @PostMapping("/dels")
     public BaseResult dels(@RequestBody List<WmsOutboundNoticeOrderInfoVO> delList){
-        delList.forEach(x->{
-            wmsOutboundNoticeOrderInfoService.delById(x.getId(),x.getOrderNumber());
-        });
-
-        return BaseResult.ok(SysTips.ADD_SUCCESS);
+        return wmsOutboundNoticeOrderInfoService.dels(delList);
     }
 
     @ApiOperation("获取字典数据")

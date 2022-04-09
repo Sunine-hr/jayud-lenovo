@@ -84,7 +84,16 @@ public interface IWmsOutboundNoticeOrderInfoService extends IService<WmsOutbound
      * @param: orderNumber
      * @return: void
      **/
-    void delById(long id,String orderNumber);
+    BaseResult delById(long id,String orderNumber);
+
+    /**
+     * @description 集合删除
+     * @author  ciro
+     * @date   2022/4/9 10:30
+     * @param: delList
+     * @return: com.jayud.common.BaseResult
+     **/
+    BaseResult dels(List<WmsOutboundNoticeOrderInfoVO> delList);
 
     /**
      * @description 根据订单号修改统计数值

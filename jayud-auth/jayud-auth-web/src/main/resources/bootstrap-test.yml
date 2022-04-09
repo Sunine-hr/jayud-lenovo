@@ -1,5 +1,5 @@
 jayud:
   nacos:
-    server-addr: 192.168.3.212:8848
+    server-addr: 192.168.3.215:8849
     config:
       namespace: test

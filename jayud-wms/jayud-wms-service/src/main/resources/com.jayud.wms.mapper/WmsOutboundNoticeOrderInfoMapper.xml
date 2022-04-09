@@ -343,5 +343,9 @@
         DELETE FROM  wms_outbound_notice_order_info WHERE id = ${id}
     </delete>
 
+    <update id="logicDelById">
+        UPDATE wms_outbound_notice_order_info SET is_deleted = 1 ,update_by=#{username},update_time=now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
 
 </mapper>

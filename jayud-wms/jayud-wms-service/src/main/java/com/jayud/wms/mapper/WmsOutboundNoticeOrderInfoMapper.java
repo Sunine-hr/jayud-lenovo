@@ -43,4 +43,13 @@ public interface WmsOutboundNoticeOrderInfoMapper extends BaseMapper<WmsOutbound
      * @return
      */
     int phyDelById(@Param("id") int id);
+
+    /**
+     * @description 逻辑删除
+     * @author  ciro
+     * @date   2022/4/9 10:41
+     * @param: id
+     * @return: int
+     **/
+    int logicDelById(@Param("id") Long id,@Param("username") String username);
 }

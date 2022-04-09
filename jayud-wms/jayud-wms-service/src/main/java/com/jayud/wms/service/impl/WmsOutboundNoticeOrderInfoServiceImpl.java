@@ -3,6 +3,7 @@ package com.jayud.wms.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 出库通知单 服务实现类
@@ -152,9 +154,35 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delById(long id,String orderNumber) {
-        this.removeById(id);
+    public BaseResult delById(long id,String orderNumber) {
+        WmsOutboundNoticeOrderInfo info = this.getById(id);
+        if (!info.getOrderStatusType().equals("3")){
+            return BaseResult.error(orderNumber+" 已转为出库单，请勿删除！");
+        }
+        this.baseMapper.logicDelById(id,CurrentUserUtil.getUsername());
         wmsOutboundNoticeOrderInfoToMaterialService.delByOrderNumber(orderNumber);
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
+    }
+
+    @Override
+    public BaseResult dels(List<WmsOutboundNoticeOrderInfoVO> delList) {
+        List<Long> idList = delList.stream().map(x->x.getId()).collect(Collectors.toList());
+        LambdaQueryWrapper<WmsOutboundNoticeOrderInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfo::getIsDeleted,false);
+        lambdaQueryWrapper.in(WmsOutboundNoticeOrderInfo::getId,idList);
+        List<WmsOutboundNoticeOrderInfo> infoList = this.list(lambdaQueryWrapper);
+        List<String> errList = infoList.stream().filter(x->!x.getOrderStatusType().equals("1")).map(x->x.getOrderNumber()).collect(Collectors.toList());
+        infoList = infoList.stream().filter(x->x.getOrderStatusType().equals("1")).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(infoList)){
+            infoList.forEach(info -> {
+                this.baseMapper.logicDelById(info.getId(),CurrentUserUtil.getUsername());
+                wmsOutboundNoticeOrderInfoToMaterialService.delByOrderNumber(info.getOrderNumber());
+            });
+        }
+        if (CollUtil.isNotEmpty(errList)){
+            return BaseResult.error(StringUtils.join(errList, StrUtil.C_COMMA)+" 已转为出库单，请勿删除！");
+        }
+        return BaseResult.ok(SysTips.DEL_SUCCESS);
     }
 
     @Override

@@ -234,4 +234,10 @@ public class WarehouseController {
     public BaseResult queryWarehouseByOwerId(@RequestParam(name = "owerId", required = true) Long owerId) {
         return warehouseService.queryWarehouseByOwerId(owerId);
     }
+
+    @ApiOperation("根据用户id查询仓库信息")
+    @GetMapping(value = "/getWarehouseByUserId")
+    public BaseResult<List<Warehouse>> getWarehouseByUserId(){
+        return warehouseService.getWarehouseByUserId();
+    }
 }

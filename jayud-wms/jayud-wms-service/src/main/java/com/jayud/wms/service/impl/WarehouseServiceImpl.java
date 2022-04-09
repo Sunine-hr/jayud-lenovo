@@ -1,11 +1,14 @@
 package com.jayud.wms.service.impl;
 
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jayud.auth.model.po.SysUserToWarehouse;
+import com.jayud.wms.fegin.AuthClient;
 import com.jayud.wms.model.bo.QueryWarehouseForm;
 import com.jayud.wms.model.bo.WarehouseForm;
 import com.jayud.wms.model.po.Warehouse;
@@ -24,10 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 仓库信息表 服务实现类
@@ -47,6 +48,9 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
     private IWmsMaterialBasicInfoService wmsMaterialBasicInfoService;
     @Autowired
     private IWmsMaterialToLoactionRelationService wmsMaterialToLoactionRelationService;
+
+    @Autowired
+    private AuthClient authClient;
 
 
     @Override
@@ -165,6 +169,21 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
     @Override
     public BaseResult queryWarehouseByOwerId(Long owerId) {
         List<Warehouse> warehouseList = this.baseMapper.queryWarehouseByOwerId(owerId);
+        return BaseResult.ok(warehouseList);
+    }
+
+    @Override
+    public BaseResult<List<Warehouse>> getWarehouseByUserId() {
+        List<Warehouse> warehouseList = new ArrayList<>();
+        BaseResult<List<SysUserToWarehouse>> warehouseResult = authClient.getWarehouseByUserId(CurrentUserUtil.getUserId());
+        if (CollUtil.isNotEmpty(warehouseResult.getResult())){
+            List<Long> warehouseIdList = warehouseResult.getResult().stream().map(x->x.getWarehouseId()).collect(Collectors.toList());
+            LambdaQueryWrapper<Warehouse> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(Warehouse::getIsDeleted,false);
+            lambdaQueryWrapper.eq(Warehouse::getStatus,1);
+            lambdaQueryWrapper.in(Warehouse::getId,warehouseIdList);
+            warehouseList = this.list(lambdaQueryWrapper);
+        }
         return BaseResult.ok(warehouseList);
     }
 

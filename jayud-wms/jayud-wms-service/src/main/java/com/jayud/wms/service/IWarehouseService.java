@@ -91,4 +91,13 @@ public interface IWarehouseService extends IService<Warehouse> {
          * @return: com.jyd.component.commons.result.Result
          **/
         BaseResult queryWarehouseByOwerId(Long owerId);
+
+        /**
+         * @description 根据用户查询仓库
+         * @author  ciro
+         * @date   2022/4/9 14:19
+         * @param:
+         * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.wms.model.po.Warehouse>>
+         **/
+        BaseResult<List<Warehouse>> getWarehouseByUserId();
 }

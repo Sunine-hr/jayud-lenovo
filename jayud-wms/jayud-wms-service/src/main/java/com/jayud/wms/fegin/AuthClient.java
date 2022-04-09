@@ -2,6 +2,7 @@ package com.jayud.wms.fegin;
 
 
 import com.jayud.auth.model.po.SysDictItem;
+import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.common.BaseResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -58,5 +59,13 @@ public interface AuthClient {
     @PostMapping(value = "/sysDictItem/api/selectItemByDictCode")
     public BaseResult selectItemByDictCodeFeign(@RequestParam("dictCode") String dictCode);
 
-
+    /**
+     * @description 根据用户查询仓库
+     * @author  ciro
+     * @date   2022/4/9 14:21
+     * @param: userId
+     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.auth.model.po.SysUserToWarehouse>>
+     **/
+    @GetMapping(value = "/sysUserToWarehouse/selectList")
+    public BaseResult<List<SysUserToWarehouse>> getWarehouseByUserId(@RequestParam("userId") Long userId);
 }

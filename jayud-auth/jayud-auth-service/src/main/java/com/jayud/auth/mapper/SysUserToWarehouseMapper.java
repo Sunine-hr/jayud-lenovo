@@ -1,5 +1,6 @@
 package com.jayud.auth.mapper;
 
+import com.jayud.auth.model.po.SysUserRole;
 import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -62,6 +63,7 @@ public interface SysUserToWarehouseMapper extends BaseMapper<SysUserToWarehouse>
     int logicDel(@Param("id") Long id,@Param("username") String username);
 
 
+    int updateSysUserToWarehouseTwo( @Param("SysUserToWarehouse") SysUserToWarehouse sysUserToWarehouse);
     /**
      * @description 查询导出
      * @author  jayud

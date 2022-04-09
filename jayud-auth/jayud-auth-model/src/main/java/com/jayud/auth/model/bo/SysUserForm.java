@@ -132,6 +132,11 @@ public class SysUserForm extends SysBaseEntity {
     @ApiModelProperty(value = "新密码")
     private String newPassword;
 
+
+    @ApiModelProperty(value = "仓库集合")
+    private List<SysUserToWarehouse> sysUserToWarehouselist;
+
+
     @ApiModelProperty(value = "仓库关联数据")
     List<SysUserToWarehouse> warehouseList;
 }

@@ -490,22 +490,22 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         BigDecimal existingCount = inventoryDetail.getExistingCount();
         BigDecimal newExistingCount = existingCount.add(operationCount);//新的现有量 = 现有量 + 操作数量
         inventoryDetail.setExistingCount(newExistingCount);//现有量
-//        inventoryDetail.setUnit(bo.getUnit());//单位
-//        inventoryDetail.setWeight(bo.getWeight());//重量
-//        inventoryDetail.setVolume(bo.getVolume());//体积
+        inventoryDetail.setUnit(bo.getUnit());//单位
+        inventoryDetail.setWeight(bo.getWeight());//重量
+        inventoryDetail.setVolume(bo.getVolume());//体积
         inventoryDetail.setRemark(bo.getRemark()); //调整原因
         this.saveOrUpdate(inventoryDetail);
 
-        BaseResult  baseResult = authClient.getOrderFeign(CodeConStants.INVENTORY_BUSINESS_CODE, new Date());
-        String code = baseResult.getResult().toString();
 
+        BaseResult  baseResult = authClient.getOrderFeign(CodeConStants.INVENTORY_BUSINESS_CODE, new Date());
+        HashMap data = (HashMap)baseResult.getResult();
 //        String code = codeUtils.getCodeByRule(CodeConStants.INVENTORY_BUSINESS_CODE);//库存事务编号
 
         //
         //保存库存事务表
         InventoryBusiness business = ConvertUtil.convert(inventoryDetail, InventoryBusiness.class);
         business.setId(null);
-        business.setCode(code);
+        business.setCode(data.get("order").toString());
         business.setBusinessTypeCode(3);
         business.setBusinessTypeName("调整");
         business.setInventoryDetailId(inventoryDetail.getId());

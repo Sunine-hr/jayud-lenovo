@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jayud.auth.mapper.SysUserRoleMapper;
+import com.jayud.auth.mapper.SysUserToWarehouseMapper;
 import com.jayud.auth.model.bo.SysUserForm;
 import com.jayud.auth.model.dto.SysUserDTO;
 import com.jayud.auth.model.po.SysDepart;
@@ -58,6 +59,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
 
+    @Autowired
+    private SysUserToWarehouseMapper sysUserToWarehouseMapper;
+
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
@@ -96,8 +100,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             //截取集合拼接成字符串  未完 。。。。
             //所属部门id 的节点   departIdLists
-            String fileNameString =null;
-            if(sysUserForm.getDepartIdLists().size()!=0){
+            String fileNameString = null;
+            if (sysUserForm.getDepartIdLists().size() != 0) {
                 fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
             }
             //负责部门节点id集合
@@ -128,6 +132,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 sysUserRole.setCreateTime(new Date());
                 sysUserRoleMapper.insert(sysUserRole);
             }
+
+            //所选仓库非必填
+            if (sysUserForm.getSysUserToWarehouselist() != null) {
+
+                //先删除用户和仓库关联表
+                SysUserToWarehouse sysUserToWarehouse1 = new SysUserToWarehouse();
+                sysUserToWarehouse1.setUserId(sysUser.getId());
+                sysUserToWarehouse1.setUpdateBy(CurrentUserUtil.getUsername());
+                sysUserToWarehouseMapper.updateSysUserToWarehouseTwo(sysUserToWarehouse1);
+
+                //在把仓库数据添加进去
+
+                for (int i = 0; i < sysUserForm.getSysUserToWarehouselist().size(); i++) {
+
+                    SysUserToWarehouse sysUserToWarehouse = new SysUserToWarehouse();
+                    sysUserToWarehouse.setUserId(id);//用户id
+                    sysUserToWarehouse.setWarehouseId(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseId());
+                    sysUserToWarehouse.setWarehouseName(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseName());
+                    sysUserToWarehouse.setWarehouseCode(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseCode());
+                    sysUserToWarehouseMapper.insert(sysUserToWarehouse);
+                }
+
+            }
         } else {
             //新增
             sysUser.setCreateBy(CurrentUserUtil.getUsername());
@@ -135,8 +162,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             //截取集合拼接成字符串  未完 。。。。
             //所属部门id 的节点   departIdLists
-            String fileNameString =null;
-            if(sysUserForm.getDepartIdLists().size()!=0){
+            String fileNameString = null;
+            if (sysUserForm.getDepartIdLists().size() != 0) {
                 fileNameString = com.jayud.common.utils.StringUtils.getFileNameString(sysUserForm.getDepartIdLists());
             }
 
@@ -163,6 +190,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 sysUserRole.setCreateTime(new Date());
                 sysUserRoleMapper.insert(sysUserRole);
             }
+
+            if (sysUserForm.getSysUserToWarehouselist() != null) {
+                //在把仓库数据添加进去
+                for (int i = 0; i < sysUserForm.getSysUserToWarehouselist().size(); i++) {
+
+                    SysUserToWarehouse sysUserToWarehouse = new SysUserToWarehouse();
+                    sysUserToWarehouse.setUserId(id);//用户id
+                    sysUserToWarehouse.setWarehouseId(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseId());
+                    sysUserToWarehouse.setWarehouseName(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseName());
+                    sysUserToWarehouse.setWarehouseCode(sysUserForm.getSysUserToWarehouselist().get(i).getWarehouseCode());
+                    sysUserToWarehouseMapper.insert(sysUserToWarehouse);
+                }
+
+            }
+
         }
 
         if (result) {
@@ -206,7 +248,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUser1.setId(ids.get(i));
             sysUser1.setJobStatus(1);
             List<SysUserVO> list = sysUserMapper.list(sysUser1);
-            if(list.size()!=0){
+            if (list.size() != 0) {
                 return BaseResult.error(SysTips.SYS_USER_ON_JOB_REMIND);
             }
             SysUser sysUser = new SysUser();
@@ -235,7 +277,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (sysUser == null) {
             return BaseResult.error(SysTips.ACCOUNT_NON_EXISTENT);
         }
-        if (!encoder.matches(password,sysUser.getPassword())) {
+        if (!encoder.matches(password, sysUser.getPassword())) {
             return BaseResult.error(SysTips.LOGIN_ERROR);
         }
         if (sysUser.getJobStatus().equals(0)) {
@@ -284,6 +326,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         return BaseResult.ok();
     }
+
     @Override
     public SysUserVO getSystemUserByName(String token) {
         return sysUserMapper.getSystemUserByName(token);
@@ -291,25 +334,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysUserDTO> selectUserByRoleCode(String roleCode) {
-        if (roleCode.contains(StrUtil.COMMA)){
+        if (roleCode.contains(StrUtil.COMMA)) {
             String[] codes = roleCode.split(StrUtil.COMMA);
             roleCode = codes[0];
         }
         List<SysUserDTO> userDtoList = new ArrayList<>();
         String tenantCode = CurrentUserUtil.getUserTenantCode();
-        List<SysUser> sysUserList = sysUserMapper.selectUserByRoleCode(roleCode,tenantCode);
+        List<SysUser> sysUserList = sysUserMapper.selectUserByRoleCode(roleCode, tenantCode);
         SysDepart sysDepart = new SysDepart();
         sysDepart.setTenantCode(tenantCode);
         List<SysDepart> sysDepartList = sysDepartService.selectList(sysDepart);
-        Map<String,String> departMap = new HashMap<>();
-        if (CollUtil.isNotEmpty(sysDepartList)){
-            departMap = sysDepartList.stream().collect(Collectors.toMap(x->String.valueOf(x.getId()),x->x.getDepartName()));
+        Map<String, String> departMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(sysDepartList)) {
+            departMap = sysDepartList.stream().collect(Collectors.toMap(x -> String.valueOf(x.getId()), x -> x.getDepartName()));
         }
-        if (CollUtil.isNotEmpty(sysUserList)){
+        if (CollUtil.isNotEmpty(sysUserList)) {
             Map<String, String> finalDepartMap = departMap;
             sysUserList.forEach(sysUser -> {
                 SysUserDTO userDto = new SysUserDTO();
-                BeanUtils.copyProperties(sysUser,userDto);
+                BeanUtils.copyProperties(sysUser, userDto);
                 if (StringUtils.isNotBlank(sysUser.getDepartmentList())) {
                     String[] departIds = sysUser.getDepartmentList().split(StrUtil.COMMA);
                     List<String> departNameList = new ArrayList<>();
@@ -332,10 +375,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Cacheable(value = "sys:cache:username", key = "#username")
     public SysUserDTO selectByUsername(String username) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(SysUser::getName,username);
+        lambdaQueryWrapper.eq(SysUser::getName, username);
         SysUser sysUser = this.getOne(lambdaQueryWrapper);
         SysUserDTO sysUserDTO = new SysUserDTO();
-        BeanUtils.copyProperties(sysUser,sysUserDTO);
+        BeanUtils.copyProperties(sysUser, sysUserDTO);
         return sysUserDTO;
     }
 
@@ -348,16 +391,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public List<SysUser> getSysUserByDepartmentId(Long departId) {
         QueryWrapper<SysUser> condition = new QueryWrapper<>();
-        condition.lambda().eq(SysUser::getDepartId,departId);
-        condition.lambda().eq(SysUser::getIsDeleted,0);
+        condition.lambda().eq(SysUser::getDepartId, departId);
+        condition.lambda().eq(SysUser::getIsDeleted, 0);
         return this.list(condition);
     }
 
     @Override
     public List<SysUser> getUserByUserIds(Set<Long> userIds) {
         QueryWrapper<SysUser> condition = new QueryWrapper<>();
-        condition.lambda().in(SysUser::getId,userIds);
-        condition.lambda().eq(SysUser::getIsDeleted,0);
+        condition.lambda().in(SysUser::getId, userIds);
+        condition.lambda().eq(SysUser::getIsDeleted, 0);
         return this.list(condition);
     }
 
@@ -366,14 +409,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserToWarehouse.setTenantCode(CurrentUserUtil.getUserTenantCode());
         List<SysUserToWarehouse> warehouseList = sysUserToWarehouseService.selectList(sysUserToWarehouse);
         List<SysUser> userList = new ArrayList<>();
-        if (CollUtil.isNotEmpty(warehouseList)){
-            List<Long> userIdList = warehouseList.stream().map(x->x.getUserId()).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(warehouseList)) {
+            List<Long> userIdList = warehouseList.stream().map(x -> x.getUserId()).collect(Collectors.toList());
             LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(SysUser::getIsDeleted,false);
-            lambdaQueryWrapper.eq(SysUser::getStatus,1);
-            lambdaQueryWrapper.eq(SysUser::getJobStatus,1);
-            lambdaQueryWrapper.eq(SysUser::getIsWarehouseOperator,true);
-            lambdaQueryWrapper.in(SysUser::getId,userIdList);
+            lambdaQueryWrapper.eq(SysUser::getIsDeleted, false);
+            lambdaQueryWrapper.eq(SysUser::getStatus, 1);
+            lambdaQueryWrapper.eq(SysUser::getJobStatus, 1);
+            lambdaQueryWrapper.eq(SysUser::getIsWarehouseOperator, true);
+            lambdaQueryWrapper.in(SysUser::getId, userIdList);
             userList = this.list(lambdaQueryWrapper);
         }
         return userList;

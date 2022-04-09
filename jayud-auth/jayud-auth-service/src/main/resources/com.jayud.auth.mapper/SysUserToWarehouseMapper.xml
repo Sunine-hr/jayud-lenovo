@@ -73,6 +73,13 @@
         WHERE id = ${id} AND is_deleted = 0
     </update>
 
+    <update id="updateSysUserToWarehouseTwo" parameterType="com.jayud.auth.model.po.SysUserToWarehouse">
+        update sys_user_role
+        set is_deleted=1 ,update_by = #{sysUserToWarehouse.updateBy},update_time = now()
+        where is_deleted = 0
+        and user_id = #{sysUserToWarehouse.userId}
+    </update>
+
     <select id="querySysUserToWarehouseForExcel" resultType="java.util.LinkedHashMap">
         SELECT
             id 'id',

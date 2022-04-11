@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.wms.mapper.WmsInventoryMovementMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.wms.model.po.WmsInventoryMovement">
+        <id column="id" property="id" />
+        <result column="movement_code" property="movementCode" />
+        <result column="status" property="status" />
+        <result column="tenant_code" property="tenantCode" />
+        <result column="shifting_parking_time" property="shiftingParkingTime" />
+        <result column="remark" property="remark" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, movement_code, status, tenant_code, shifting_parking_time, remark, is_deleted, create_by, create_time, update_by, update_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">wms_inventory_movement </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="wmsInventoryMovement.movementCode != null and wmsInventoryMovement.movementCode != ''">
+                AND movement_code LIKE CONCAT('%',#{wmsInventoryMovement.movementCode},'%')
+            </if>
+
+            <if test="wmsInventoryMovement.status != null ">
+                AND status = ${wmsInventoryMovement.status}
+            </if>
+
+            <if test="wmsInventoryMovement.tenantCode != null and wmsInventoryMovement.tenantCode != ''">
+                AND tenant_code LIKE CONCAT('%',#{wmsInventoryMovement.tenantCode},'%')
+            </if>
+
+            <if test="wmsInventoryMovement.shiftingParkingTime != null ">
+                AND shifting_parking_time = ${wmsInventoryMovement.shiftingParkingTime}
+            </if>
+
+            <if test="wmsInventoryMovement.creationTime !=null and wmsInventoryMovement.creationTime.size > 0">
+                and shifting_parking_time between #{wmsInventoryMovement.creationTime[0]} and #{wmsInventoryMovement.creationTime[1]}
+            </if>
+
+            <if test="wmsInventoryMovement.remark != null and wmsInventoryMovement.remark != ''">
+                AND remark LIKE CONCAT('%',#{wmsInventoryMovement.remark},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" parameterType="com.jayud.wms.model.bo.WmsInventoryMovementForm"  resultType="com.jayud.wms.model.vo.WmsInventoryMovementVO">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsInventoryMovement">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  wms_inventory_movement WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE wms_inventory_movement SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryWmsInventoryMovementForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            movement_code 'movementCode',
+            status 'status',
+            tenant_code 'tenantCode',
+            shifting_parking_time 'shiftingParkingTime',
+            remark 'remark',
+            is_deleted 'isDeleted',
+            create_by 'createBy',
+            create_time 'createTime',
+            update_by 'updateBy',
+            update_time 'updateTime'
+        FROM wms_inventory_movement
+        WHERE is_deleted = 0
+                    <if test="movementCode != null and movementCode != ''">
+                        AND movement_code LIKE CONCAT('%',#{movementCode}, '%')
+                    </if>
+                    <if test="status != null ">
+                        AND status = #{status}
+                    </if>
+                    <if test="tenantCode != null and tenantCode != ''">
+                        AND tenant_code LIKE CONCAT('%',#{tenantCode}, '%')
+                    </if>
+                    <if test="shiftingParkingTime != null ">
+                        AND shifting_parking_time = #{shiftingParkingTime}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        AND remark LIKE CONCAT('%',#{remark}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

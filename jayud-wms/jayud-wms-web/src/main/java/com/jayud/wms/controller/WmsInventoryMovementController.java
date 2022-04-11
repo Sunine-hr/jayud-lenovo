@@ -1,5 +1,7 @@
 package com.jayud.wms.controller;
 
+import com.jayud.wms.model.bo.WmsInventoryMovementForm;
+import com.jayud.wms.model.vo.WmsInventoryMovementVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,13 +60,10 @@ public class WmsInventoryMovementController {
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.wms.model.po.WmsInventoryMovement>>
      **/
     @ApiOperation("分页查询数据")
-    @GetMapping("/selectPage")
-    public BaseResult<ListPageRuslt<WmsInventoryMovement>> selectPage(WmsInventoryMovement wmsInventoryMovement,
-                                                   @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
-                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-
-                                                    HttpServletRequest req) {
-        return BaseResult.ok(PaginationBuilder.buildPageResult(wmsInventoryMovementService.selectPage(wmsInventoryMovement,currentPage,pageSize,req)));
+    @PostMapping("/selectPage")
+    public BaseResult<ListPageRuslt<WmsInventoryMovementVO>> selectPage(@RequestBody WmsInventoryMovementForm wmsInventoryMovementForm,
+                                                                        HttpServletRequest req) {
+        return BaseResult.ok(PaginationBuilder.buildPageResult(wmsInventoryMovementService.selectPage(wmsInventoryMovementForm,wmsInventoryMovementForm.getCurrentPage(),wmsInventoryMovementForm.getPageSize(),req)));
     }
 
 

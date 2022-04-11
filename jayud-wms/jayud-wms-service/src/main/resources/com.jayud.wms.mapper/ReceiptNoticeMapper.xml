@@ -230,7 +230,7 @@
                 </if>
 
                 <if test="receiptNotice.receiptNoticeNum != null and receiptNotice.receiptNoticeNum != ''  ">
-                    AND rn.receipt_notice_num = #{receiptNotice.receiptNoticeNum}
+                    AND rn.receipt_notice_num like CONCAT('%',#{receiptNotice.receiptNoticeNum} , '%')
                 </if>
 
                 <if test="receiptNotice.ower != null and receiptNotice.ower != '' ">

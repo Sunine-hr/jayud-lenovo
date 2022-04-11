@@ -213,6 +213,10 @@
                 AND DATE_FORMAT( comfirm_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundShippingReviewInfo.theDeliveryTime[1]}
             </if>
 
+            <if test="wmsOutboundShippingReviewInfo.yearMonth != null and wmsOutboundShippingReviewInfo.yearMonth != ''">
+                AND DATE_FORMAT( update_time, '%Y-%m' ) = DATE_FORMAT(#{wmsOutboundShippingReviewInfo.yearMonth}, '%Y-%m')
+            </if>
+
         </where>
     </sql>
 

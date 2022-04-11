@@ -176,7 +176,7 @@ public class WmsOutboundNoticeOrderInfoToMaterialController {
 
     @ApiOperation("获取货品信息")
     @PostMapping(path = "/selectInvenDetail")
-    public BaseResult<BasePage<WmsOutboundNoticeOrderInfoToMaterialVO>> selectInvenDetail(WmsOutboundNoticeOrderInfoToMaterialVO material,
+    public BaseResult<BasePage<WmsOutboundNoticeOrderInfoToMaterialVO>> selectInvenDetail(@RequestBody WmsOutboundNoticeOrderInfoToMaterialVO material,
                                                                                           @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
                                                                                           @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                                                           HttpServletRequest req){

@@ -224,6 +224,9 @@
                 AND  DATE_FORMAT( wooi.real_delivery_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[0]}
                 AND DATE_FORMAT( wooi.real_delivery_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundOrderInfoVO.theDeliveryTime[1]}
             </if>
+            <if test="wmsOutboundOrderInfoVO.yearMonth != null and wmsOutboundOrderInfoVO.yearMonth != ''">
+                AND DATE_FORMAT( wooi.update_time, '%Y-%m' ) = DATE_FORMAT(#{wmsOutboundOrderInfoVO.yearMonth}, '%Y-%m')
+            </if>
         </where>
 
     </sql>

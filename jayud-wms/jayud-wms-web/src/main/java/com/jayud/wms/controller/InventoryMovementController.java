@@ -41,7 +41,7 @@ import javax.validation.Valid;
 @Api(tags = "库存移动订单表")
 @RestController
 @RequestMapping("/wmsInventoryMovement")
-public class WmsInventoryMovementController {
+public class InventoryMovementController {
 
 
 
@@ -92,25 +92,25 @@ public class WmsInventoryMovementController {
     **/
     @ApiOperation("新增")
     @PostMapping("/add")
-    public BaseResult add(@Valid @RequestBody WmsInventoryMovement wmsInventoryMovement ){
-        wmsInventoryMovementService.save(wmsInventoryMovement);
+    public BaseResult add(@Valid @RequestBody WmsInventoryMovementForm wmsInventoryMovementForm ){
+        wmsInventoryMovementService.saveOrUpdateWmsInventoryMovement(wmsInventoryMovementForm);
         return BaseResult.ok(SysTips.ADD_SUCCESS);
     }
 
 
-    /**
-     * @description 编辑
-     * @author  jayud
-     * @date   2022-04-11
-     * @param: wmsInventoryMovement
-     * @return: com.jayud.common.BaseResult
-     **/
-    @ApiOperation("编辑")
-    @PostMapping("/edit")
-    public BaseResult edit(@Valid @RequestBody WmsInventoryMovement wmsInventoryMovement ){
-        wmsInventoryMovementService.updateById(wmsInventoryMovement);
-        return BaseResult.ok(SysTips.EDIT_SUCCESS);
-    }
+//    /**
+//     * @description 编辑
+//     * @author  jayud
+//     * @date   2022-04-11
+//     * @param: wmsInventoryMovement
+//     * @return: com.jayud.common.BaseResult
+//     **/
+//    @ApiOperation("编辑")
+//    @PostMapping("/edit")
+//    public BaseResult edit(@Valid @RequestBody WmsInventoryMovement wmsInventoryMovement ){
+//        wmsInventoryMovementService.updateById(wmsInventoryMovement);
+//        return BaseResult.ok(SysTips.EDIT_SUCCESS);
+//    }
 
 
 
@@ -155,9 +155,9 @@ public class WmsInventoryMovementController {
     @ApiOperation("根据id查询")
     @ApiImplicitParam(name = "id",value = "主键id",dataType = "int",required = true)
     @GetMapping(value = "/queryById")
-    public BaseResult<WmsInventoryMovement> queryById(@RequestParam(name="id",required=true) int id) {
-        WmsInventoryMovement wmsInventoryMovement = wmsInventoryMovementService.getById(id);
-        return BaseResult.ok(wmsInventoryMovement);
+    public BaseResult<WmsInventoryMovementVO> queryById(@RequestParam(name="id",required=true) Long id) {
+        WmsInventoryMovementVO details = wmsInventoryMovementService.getDetails(id);
+        return BaseResult.ok(details);
     }
 
 

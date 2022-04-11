@@ -58,7 +58,49 @@
     </sql>
 
     <select id="pageList" parameterType="com.jayud.wms.model.bo.WmsInventoryMovementForm"  resultType="com.jayud.wms.model.vo.WmsInventoryMovementVO">
-        <include refid="selects"/>
+           SELECT
+            wim.id,
+            wim.movement_code,
+            wim.STATUS,
+            wim.tenant_code,
+            wim.shifting_parking_time,
+            wim.remark,
+            wim.is_deleted,
+            wim.create_by,
+            wim.create_time,
+            wim.update_by,
+            wim.update_time,
+            group_concat( wimt.warehouse_name ) warehouseNameList
+        FROM
+            wms_inventory_movement wim
+            LEFT JOIN wms_inventory_movement_task wimt ON wim.id = wimt.movement_check_id
+
+        <where>
+            wim.is_deleted=0
+            and wimt.is_deleted=0
+            <if test="wmsInventoryMovement.movementCode != null and wmsInventoryMovement.movementCode != ''">
+                AND wim.movement_code LIKE CONCAT('%',#{wmsInventoryMovement.movementCode},'%')
+            </if>
+
+            <if test="wmsInventoryMovement.status != null ">
+                AND wim.status = ${wmsInventoryMovement.status}
+            </if>
+
+            <if test="wmsInventoryMovement.tenantCode != null and wmsInventoryMovement.tenantCode != ''">
+                AND wim.tenant_code LIKE CONCAT('%',#{wmsInventoryMovement.tenantCode},'%')
+            </if>
+
+            <if test="wmsInventoryMovement.creationTime !=null and wmsInventoryMovement.creationTime.size > 0">
+                and wim.shifting_parking_time between #{wmsInventoryMovement.creationTime[0]} and #{wmsInventoryMovement.creationTime[1]}
+            </if>
+
+            <if test="wmsInventoryMovement.remark != null and wmsInventoryMovement.remark != ''">
+                AND wim.remark LIKE CONCAT('%',#{wmsInventoryMovement.remark},'%')
+            </if>
+
+        </where>
+
+
     </select>
 
     <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.wms.model.po.WmsInventoryMovement">

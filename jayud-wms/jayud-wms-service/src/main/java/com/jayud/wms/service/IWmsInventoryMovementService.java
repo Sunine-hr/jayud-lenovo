@@ -48,7 +48,7 @@ public interface IWmsInventoryMovementService extends IService<WmsInventoryMovem
     List<WmsInventoryMovement> selectList(WmsInventoryMovement wmsInventoryMovement);
 
 
-
+   boolean saveOrUpdateWmsInventoryMovement(WmsInventoryMovementForm wmsInventoryMovement);
     /**
      * @description 物理删除
      * @author  jayud
@@ -79,6 +79,14 @@ public interface IWmsInventoryMovementService extends IService<WmsInventoryMovem
      * @return: java.util.List<java.util.LinkedHashMap<java.lang.String,java.lang.Object>>
      **/
     List<LinkedHashMap<String, Object>> queryWmsInventoryMovementForExcel(Map<String, Object> paramMap);
+
+
+    /**
+     * 根据id查询详情
+     * @param id
+     * @return
+     */
+    WmsInventoryMovementVO getDetails(Long id);
 
 
 }

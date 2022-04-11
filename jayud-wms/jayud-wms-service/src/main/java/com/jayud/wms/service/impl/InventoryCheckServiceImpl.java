@@ -377,18 +377,18 @@ public class InventoryCheckServiceImpl extends ServiceImpl<InventoryCheckMapper,
         }
         Long inventoryCheckId = Long.valueOf(id);
         List<Long> inventoryCheckIds = Arrays.asList(inventoryCheckId);
-        List<Map<String, Object>> detailCountList = inventoryCheckDetailService.queryDetailCountByInventoryCheckIds(inventoryCheckIds);
-        Map<Long, Map<String, Object>> detailCountMap = detailCountList.stream().collect(Collectors.toMap(d -> MapUtil.getLong(d, "inventoryCheckId"), d -> d));
-        Map<String, Object> map = detailCountMap.get(inventoryCheckId);
-        if(ObjectUtil.isNotEmpty(map)){
-            String inventoryCount = MapUtil.getStr(map, "inventoryCount");
-            String checkCount = MapUtil.getStr(map, "checkCount");
-            inventoryCheck.setInventoryCount(new BigDecimal(inventoryCount));
-            inventoryCheck.setCheckCount(new BigDecimal(checkCount));
-        }else{
-            inventoryCheck.setInventoryCount(new BigDecimal("0"));
-            inventoryCheck.setCheckCount(new BigDecimal("0"));
-        }
+//        List<Map<String, Object>> detailCountList = inventoryCheckDetailService.queryDetailCountByInventoryCheckIds(inventoryCheckIds);
+//        Map<Long, Map<String, Object>> detailCountMap = detailCountList.stream().collect(Collectors.toMap(d -> MapUtil.getLong(d, "inventoryCheckId"), d -> d));
+//        Map<String, Object> map = detailCountMap.get(inventoryCheckId);
+//        if(ObjectUtil.isNotEmpty(map)){
+//            String inventoryCount = MapUtil.getStr(map, "inventoryCount");
+//            String checkCount = MapUtil.getStr(map, "checkCount");
+//            inventoryCheck.setInventoryCount(new BigDecimal(inventoryCount));
+//            inventoryCheck.setCheckCount(new BigDecimal(checkCount));
+//        }else{
+//            inventoryCheck.setInventoryCount(new BigDecimal("0"));
+//            inventoryCheck.setCheckCount(new BigDecimal("0"));
+//        }
 
         InventoryCheckVO vo = ConvertUtil.convert(inventoryCheck, InventoryCheckVO.class);
         QueryWrapper<InventoryCheckDetail> detailQueryWrapper = new QueryWrapper<>();

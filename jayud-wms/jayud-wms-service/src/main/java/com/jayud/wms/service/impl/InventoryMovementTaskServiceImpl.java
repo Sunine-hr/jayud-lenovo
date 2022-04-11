@@ -14,13 +14,13 @@ import com.jayud.common.utils.CurrentUserUtil;
 import com.jayud.wms.mapper.InventoryMovementTaskMapper;
 import com.jayud.wms.model.bo.InventoryMovementTaskAppCompletedForm;
 import com.jayud.wms.model.bo.InventoryMovementTaskCompletedForm;
-import com.jayud.wms.model.bo.InventoryMovementTaskForm;
+import com.jayud.wms.model.bo.QualityInventoryMovementTaskForm;
 import com.jayud.wms.model.constant.CodeConStants;
 import com.jayud.wms.model.enums.MovementTypeCodeEnum;
 import com.jayud.wms.model.enums.TaskStatusCodeEnum;
 import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.vo.InventoryMovementTaskAppVO;
-import com.jayud.wms.model.vo.InventoryMovementTaskVO;
+import com.jayud.wms.model.vo.QualityInventoryMovementTaskVO;
 import com.jayud.wms.service.*;
 import com.jayud.wms.utils.CodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +150,7 @@ public class InventoryMovementTaskServiceImpl extends ServiceImpl<InventoryMovem
      * @return
      */
     @Override
-    public InventoryMovementTaskVO generateInventoryMovementTasks(InventoryMovementTaskForm form) {
+    public QualityInventoryMovementTaskVO generateInventoryMovementTasks(QualityInventoryMovementTaskForm form) {
         Integer movementTypeCode = form.getMovementTypeCode();//移库类型代码(1物料移库，2容器移库，3库位移库)
         if(ObjectUtil.isEmpty(movementTypeCode)){
             throw new IllegalArgumentException("移库类型不能为空");
@@ -215,7 +215,7 @@ public class InventoryMovementTaskServiceImpl extends ServiceImpl<InventoryMovem
             }
             movementTasks.add(inventoryMovementTask);
         });
-        InventoryMovementTaskVO vo = ConvertUtil.convert(form, InventoryMovementTaskVO.class);
+        QualityInventoryMovementTaskVO vo = ConvertUtil.convert(form, QualityInventoryMovementTaskVO.class);
         vo.setMovementTasks(movementTasks);//移库任务
         return vo;
     }
@@ -227,7 +227,7 @@ public class InventoryMovementTaskServiceImpl extends ServiceImpl<InventoryMovem
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean inventoryMovementTaskConfirmation(InventoryMovementTaskForm form) {
+    public boolean inventoryMovementTaskConfirmation(QualityInventoryMovementTaskForm form) {
         Integer movementTypeCode = form.getMovementTypeCode();//移库类型代码(1物料移库，2容器移库，3库位移库)
         if(ObjectUtil.isEmpty(movementTypeCode)){
             throw new IllegalArgumentException("移库类型不能为空");
@@ -873,6 +873,11 @@ public class InventoryMovementTaskServiceImpl extends ServiceImpl<InventoryMovem
         InventoryMovementTaskAppVO vo1 = this.queryInventoryMovementTaskByMainCode(mainCode);
 
         return vo1;
+    }
+
+    @Override
+    public List<InventoryMovementTask> getByCondition(InventoryMovementTask condition) {
+        return this.baseMapper.selectList(new QueryWrapper<>(condition));
     }
 
 }

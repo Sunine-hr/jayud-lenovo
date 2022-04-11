@@ -90,6 +90,7 @@ public class CrmCustomerController {
      * @return: com.jayud.common.BaseResult<java.util.List < com.jayud.crm.model.po.CrmCustomer>>
      **/
     @ApiOperation("列表查询数据")
+
     @GetMapping("/selectList")
     public BaseResult<List<CrmCustomerForm>> selectList(CrmCustomerForm crmCustomerForm,
                                                         HttpServletRequest req) {
@@ -101,6 +102,8 @@ public class CrmCustomerController {
         CrmCustomerForm crmCustomerForm1 = new CrmCustomerForm();
         crmCustomerForm1.setCheckStateFlag("Y");
         crmCustomerForm1.setIsDeleted(false);
+        //是否是客户
+        crmCustomerForm1.setIsSupplier(false);
         return BaseResult.ok(crmCustomerService.selectList(crmCustomerForm1));
     }
 

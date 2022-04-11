@@ -51,5 +51,6 @@ public class WmsInventoryMovementForm extends SysBaseEntity {
     @ApiModelProperty(value = "移库完成时间集合")
     private List<String> creationTime;
 
-
+    @ApiModelProperty(value = "库存移动任务集合")
+    private List<InventoryMovementTaskForm> inventoryMovementTaskForms;
 }

@@ -92,5 +92,7 @@ public class QueryReceiptForm extends SysBaseEntity {
     @ApiModelProperty(value = "单据类型")
     private String orderType;
 
+    //仓库id
+    private List<String> warehouseIdList;
 
 }

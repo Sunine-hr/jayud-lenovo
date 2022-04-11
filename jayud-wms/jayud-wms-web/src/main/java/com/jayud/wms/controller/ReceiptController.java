@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.auth.model.po.SysDictItem;
 import com.jayud.common.BaseResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
+import com.jayud.common.aop.annotations.SysWarehousePermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.dto.QueryClientQualityMaterialForm;
 import com.jayud.common.dto.QueryClientReceiptForm;
@@ -73,6 +74,7 @@ public class ReceiptController {
      * @param queryReceiptForm 查询条件
      * @return
      */
+//    @SysWarehousePermission(clazz = QueryReceiptForm.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<IPage<ReceiptVO>> selectPage(@RequestBody QueryReceiptForm queryReceiptForm, HttpServletRequest req) {

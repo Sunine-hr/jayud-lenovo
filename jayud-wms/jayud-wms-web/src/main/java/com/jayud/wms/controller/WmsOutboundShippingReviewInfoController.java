@@ -1,5 +1,6 @@
 package com.jayud.wms.controller;
 
+import com.jayud.common.aop.annotations.SysWarehousePermission;
 import com.jayud.wms.model.bo.DeleteForm;
 import com.jayud.wms.model.po.WmsOutboundShippingReviewInfoToMaterial;
 import com.jayud.wms.model.vo.WmsOutboundShippingReviewInfoVO;
@@ -60,6 +61,7 @@ public class WmsOutboundShippingReviewInfoController {
      * @param: req
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.wms.model.po.WmsOutboundShippingReviewInfo>>
      **/
+    @SysWarehousePermission(clazz = WmsOutboundShippingReviewInfo.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<ListPageRuslt<WmsOutboundShippingReviewInfo>> selectPage(@RequestBody WmsOutboundShippingReviewInfo wmsOutboundShippingReviewInfo,
@@ -78,6 +80,7 @@ public class WmsOutboundShippingReviewInfoController {
     * @param: req
     * @return: com.jayud.common.BaseResult<java.util.List<com.jayud.wms.model.po.WmsOutboundShippingReviewInfo>>
     **/
+    @SysWarehousePermission(clazz = WmsOutboundShippingReviewInfo.class)
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<WmsOutboundShippingReviewInfo>> selectList(WmsOutboundShippingReviewInfo wmsOutboundShippingReviewInfo,

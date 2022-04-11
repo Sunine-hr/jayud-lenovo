@@ -4,10 +4,11 @@ package com.jayud.wms.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jayud.wms.model.bo.InventoryMovementTaskCompletedForm;
-import com.jayud.wms.model.bo.InventoryMovementTaskForm;
+import com.jayud.wms.model.bo.QualityInventoryMovementTaskForm;
 import com.jayud.wms.model.po.InventoryMovementTask;
+import com.jayud.wms.model.po.Material;
 import com.jayud.wms.model.vo.InventoryMovementTaskAppVO;
-import com.jayud.wms.model.vo.InventoryMovementTaskVO;
+import com.jayud.wms.model.vo.QualityInventoryMovementTaskVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
@@ -64,14 +65,14 @@ public interface IInventoryMovementTaskService extends IService<InventoryMovemen
      * @param form
      * @return
      */
-    InventoryMovementTaskVO generateInventoryMovementTasks(InventoryMovementTaskForm form);
+    QualityInventoryMovementTaskVO generateInventoryMovementTasks(QualityInventoryMovementTaskForm form);
 
     /**
      * 库存移动任务确认
      * @param form
      * @return
      */
-    boolean inventoryMovementTaskConfirmation(InventoryMovementTaskForm form);
+    boolean inventoryMovementTaskConfirmation(QualityInventoryMovementTaskForm form);
 
     /**
      * 库存移动任务完成
@@ -104,4 +105,8 @@ public interface IInventoryMovementTaskService extends IService<InventoryMovemen
      * @return
      */
     InventoryMovementTaskAppVO inventoryMovementTaskCompletedByApp(InventoryMovementTaskAppVO inventoryMovementTaskAppVO);
+
+
+    List<InventoryMovementTask> getByCondition(InventoryMovementTask condition);
+
 }

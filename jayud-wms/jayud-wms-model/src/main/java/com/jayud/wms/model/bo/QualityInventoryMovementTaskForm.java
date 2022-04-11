@@ -1,4 +1,4 @@
-package com.jayud.wms.model.vo;
+package com.jayud.wms.model.bo;
 
 import com.jayud.wms.model.po.InventoryDetail;
 import com.jayud.wms.model.po.InventoryMovementTask;
@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class InventoryMovementTaskVO {
+public class QualityInventoryMovementTaskForm {
 
     @ApiModelProperty(value = "移库类型代码(1物料移库，2容器移库，3库位移库)")
     private Integer movementTypeCode;

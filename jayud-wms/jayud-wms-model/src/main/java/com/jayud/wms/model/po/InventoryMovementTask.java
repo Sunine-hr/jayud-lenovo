@@ -47,6 +47,9 @@ public class InventoryMovementTask extends SysBaseEntity {
     @ApiModelProperty(value = "原库存明细ID")
     private Long inventoryDetailId;
 
+    @ApiModelProperty(value = "移库任务主表ID")
+    private Long movementCheckId;
+
     @ApiModelProperty(value = "货主ID")
     private Long owerId;
 

@@ -7,10 +7,10 @@ import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.bo.InventoryMovementTaskCompletedForm;
-import com.jayud.wms.model.bo.InventoryMovementTaskForm;
+import com.jayud.wms.model.bo.QualityInventoryMovementTaskForm;
 import com.jayud.wms.model.po.InventoryMovementTask;
 import com.jayud.wms.model.vo.InventoryMovementTaskAppVO;
-import com.jayud.wms.model.vo.InventoryMovementTaskVO;
+import com.jayud.wms.model.vo.QualityInventoryMovementTaskVO;
 import com.jayud.wms.service.IInventoryMovementTaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -134,8 +134,8 @@ public class InventoryMovementTaskController {
      */
     @ApiOperation("生成库存移动任务")
     @PostMapping("/generateInventoryMovementTasks")
-    public BaseResult<InventoryMovementTaskVO> generateInventoryMovementTasks(@Valid @RequestBody InventoryMovementTaskForm form){
-        InventoryMovementTaskVO vo = inventoryMovementTaskService.generateInventoryMovementTasks(form);
+    public BaseResult<QualityInventoryMovementTaskVO> generateInventoryMovementTasks(@Valid @RequestBody QualityInventoryMovementTaskForm form){
+        QualityInventoryMovementTaskVO vo = inventoryMovementTaskService.generateInventoryMovementTasks(form);
         return BaseResult.ok(vo);
     }
 
@@ -144,7 +144,7 @@ public class InventoryMovementTaskController {
      */
     @ApiOperation("库存移动任务确认")
     @PostMapping("/inventoryMovementTaskConfirmation")
-    public BaseResult inventoryMovementTaskConfirmation(@Valid @RequestBody InventoryMovementTaskForm form){
+    public BaseResult inventoryMovementTaskConfirmation(@Valid @RequestBody QualityInventoryMovementTaskForm form){
         inventoryMovementTaskService.inventoryMovementTaskConfirmation(form);
         return BaseResult.ok();
     }

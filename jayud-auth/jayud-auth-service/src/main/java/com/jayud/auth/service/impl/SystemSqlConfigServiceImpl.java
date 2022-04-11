@@ -350,7 +350,7 @@ public class SystemSqlConfigServiceImpl extends ServiceImpl<SystemSqlConfigMappe
             if(StrUtil.isNotEmpty(countSql)){
                 //汇总sql
                 paraMap.put("countSql", countSql);
-                //汇总数据Map
+                //汇总数据Mapc
                 Map<String, Object> countMap = systemSqlConfigMapper.findCommonCount(paraMap);
                 extendedData.put("countMap", countMap);
             }

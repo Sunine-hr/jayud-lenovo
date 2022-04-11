@@ -125,7 +125,7 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
         }
         boolean isAdd = true;
         if (ObjectUtil.isNull(wmsOutboundNoticeOrderInfoVO.getId())){
-            wmsOutboundNoticeOrderInfoVO.setOrderNumber(codeUtils.getCodeByRule(CodeConStants.OUTBOUND_NOTICE_ORDER_NUMBER));
+            wmsOutboundNoticeOrderInfoVO.setOrderNumber(codeUtils.getOrderNumber(CodeConStants.OUTBOUND_NOTICE_ORDER_NUMBER));
         }else{
             isAdd = false;
             if (wmsOutboundOrderInfoService.isChangeOrder(wmsOutboundNoticeOrderInfoVO.getOrderNumber())){

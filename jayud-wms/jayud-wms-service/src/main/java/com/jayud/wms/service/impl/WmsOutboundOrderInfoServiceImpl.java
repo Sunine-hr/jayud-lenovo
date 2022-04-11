@@ -153,7 +153,7 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
             wmsOutboundOrderInfo.clearUpdate();
             wmsOutboundOrderInfo.setId(null);
             wmsOutboundOrderInfo.setNoticeOrderNumber(wmsOutboundNoticeOrderInfoVos.getOrderNumber());
-            wmsOutboundOrderInfo.setOrderNumber(codeUtils.getCodeByRule(CodeConStants.OUTBOUND_ORDER_NUMBER));
+            wmsOutboundOrderInfo.setOrderNumber(codeUtils.getOrderNumber(CodeConStants.OUTBOUND_ORDER_NUMBER));
             wmsOutboundOrderInfo.setOrderStatusType(null);
             addMaterialList.addAll(changeMaterial(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundNoticeOrderInfoVos.getThisMaterialList()));
             addInfoList.add(wmsOutboundOrderInfo);

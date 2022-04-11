@@ -398,7 +398,7 @@
     <select id="selectMaterialPage" resultType="com.jayud.wms.model.po.InventoryDetail">
         select
             id,ower_id,ower_code,ower_name,warehouse_id,warehouse_code,warehouse_name,material_id,material_code,material_name,material_type_id,material_type,material_specification,ROUND(existing_count, 0) existing_count,ROUND(allocation_count, 0) allocation_count,ROUND(picking_count, 0) picking_count,in_warehouse_number,weight,volume,unit,warehouse_location_id,warehouse_location_code,
-            batch_code, material_production_date, custom_field1, custom_field2, custom_field3
+            batch_code, material_production_date, custom_field1, custom_field2, custom_field3,container_id,container_code
         from wms_inventory_detail
         where is_deleted = 0
         <if test="inventoryDetail.owerId != null ">

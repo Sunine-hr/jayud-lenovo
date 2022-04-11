@@ -216,15 +216,15 @@ public class WmsOutboundNoticeOrderInfoServiceImpl extends ServiceImpl<WmsOutbou
     @Override
     public WmsOutboundNoticeDictVO getDictmsg() {
         WmsOutboundNoticeDictVO wmsOutboundNoticeDictVO = new WmsOutboundNoticeDictVO();
-        BaseResult<List<SysDictItem>> documentResult = authClient.selectItemByDictCode("outboundNoticeDocumentType");
+        BaseResult<List<SysDictItem>> documentResult = authClient.selectItemByDictCode("wms_storage_type_of_document");
         if (documentResult.isSuccess()){
             wmsOutboundNoticeDictVO.setOrderTypeDict(documentResult.getResult());
         }
-        BaseResult<List<SysDictItem>> unitResult = authClient.selectItemByDictCode("outboundNoticeOrderUnitType");
+        BaseResult<List<SysDictItem>> unitResult = authClient.selectItemByDictCode("wms_storage_unit");
         if (unitResult.isSuccess()){
             wmsOutboundNoticeDictVO.setUnitDict(unitResult.getResult());
         }
-        BaseResult<List<SysDictItem>> carTypeResult = authClient.selectItemByDictCode("outboundNoticeOrderCarType");
+        BaseResult<List<SysDictItem>> carTypeResult = authClient.selectItemByDictCode("wms_storage_motorcycle_type");
         if (carTypeResult.isSuccess()){
             wmsOutboundNoticeDictVO.setCarTypeDict(carTypeResult.getResult());
         }

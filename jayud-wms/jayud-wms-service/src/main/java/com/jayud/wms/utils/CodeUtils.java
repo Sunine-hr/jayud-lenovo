@@ -47,7 +47,7 @@ public class CodeUtils {
     public String getOrderNumber(String ruleCode){
         BaseResult baseResult = authClient.getOrderNumber(ruleCode);
         if (baseResult.isSuccess()){
-            return baseResult.getResult().toString();
+            return baseResult.getMsg().toString();
         }
         return null;
     }

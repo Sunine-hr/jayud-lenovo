@@ -1475,7 +1475,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         if (CollUtil.isNotEmpty(detailList)){
             detailList.forEach(detail -> {
                 InventoryBusiness business = ConvertUtil.convert(detail, InventoryBusiness.class);
-                business.setCode(codeUtils.getCodeByRule(CodeConStants.INVENTORY_BUSINESS_CODE));
+                business.setCode(codeUtils.getOrderNumber(CodeConStants.INVENTORY_BUSINESS_CODE));
                 business.setBusinessTypeCode(2);
                 business.setBusinessTypeName("出库");
                 business.setInventoryDetailId(detail.getId());

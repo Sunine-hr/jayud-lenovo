@@ -105,6 +105,10 @@
                 AND remark LIKE CONCAT('%',#{qualityInspection.remark}, '%')
             </if>
 
+            <if test="qualityInspection.yearMonth != null and qualityInspection.yearMonth != ''">
+                AND DATE_FORMAT( update_time, '%Y-%m' ) = DATE_FORMAT(#{qualityInspection.yearMonth}, '%Y-%m')
+            </if>
+
         </where>
     </sql>
     <update id="logicDelByIds">

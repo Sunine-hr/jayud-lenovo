@@ -68,4 +68,14 @@ public interface AuthClient {
      **/
     @GetMapping(value = "/sysUserToWarehouse/selectList")
     public BaseResult<List<SysUserToWarehouse>> getWarehouseByUserId(@RequestParam("userId") Long userId);
+
+    /**
+     * @description 获取编码
+     * @author  ciro
+     * @date   2022/4/11 16:26
+     * @param: code
+     * @return: com.jayud.common.BaseResult
+     **/
+    @GetMapping(value = "/bNoRule/getOrder")
+    public BaseResult getOrderNumber(@RequestParam(name = "code") String code);
 }

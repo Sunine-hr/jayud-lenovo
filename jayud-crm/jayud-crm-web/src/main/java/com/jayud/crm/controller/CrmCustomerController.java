@@ -462,7 +462,7 @@ public class CrmCustomerController {
      * @param: req
      * @return: com.jayud.common.BaseResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.crm.model.po.CrmCustomer>>
      **/
-    @ApiOperation("分页查询数据")
+    @ApiOperation("订单客户查询列表数据")
     @GetMapping("/selectCrmCustomerPage")
     public BaseResult<ListPageRuslt<CrmCustomerVO>> selectCrmCustomerPage(CrmCustomerForm crmCustomerForm,
                                                                           @RequestParam(name="currentPage", defaultValue="1") Integer currentPage,
@@ -471,7 +471,7 @@ public class CrmCustomerController {
         return BaseResult.ok(PaginationBuilder.buildPageResult(crmCustomerService.selectCrmCustomerPage(crmCustomerForm,currentPage,pageSize,req)));
     }
 
-    @ApiOperation("分页查询数据")
+    @ApiOperation("订单客户下拉列表数据")
     @GetMapping("/selectCrmCustomerList")
     public BaseResult<List<CrmCustomerVO>> selectCrmCustomerList(CrmCustomerForm crmCustomerForm) {
         return BaseResult.ok(crmCustomerService.selectCrmCustomerList(crmCustomerForm));

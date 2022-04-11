@@ -28,8 +28,6 @@ import java.util.Map;
 public class CommonController {
 
     @Autowired
-    private OmsClient omsClient;
-    @Autowired
     private AuthClient authClient;
     @Autowired
     private SysDictClient sysDictClient;
@@ -42,7 +40,7 @@ public class CommonController {
     @ApiOperation(value = "币种")
     @PostMapping(value = "/initCostUnit")
     public CommonResult<List<InitComboxStrVO>> initCurrencyInfo() {
-        return CommonResult.success(omsClient.initCurrencyInfo().getData());
+        return CommonResult.success(authClient.initCurrencyInfo().getData());
     }
 
 
@@ -70,7 +68,7 @@ public class CommonController {
     @ApiOperation(value = "获取省市区树结构")
     @PostMapping(value = "/adrrTree")
     public CommonResult<List<TreeNode>> adrrTree() {
-        return CommonResult.success(this.omsClient.adrrTree().getData());
+        return CommonResult.success(this.authClient.adrrTree().getData());
     }
 
     /**

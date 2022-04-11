@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.CurrencyRateMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.CurrencyRate">
+        <id column="id" property="id" />
+        <result column="dcid" property="dcid" />
+        <result column="ocid" property="ocid" />
+        <result column="exchange_rate" property="exchangeRate" />
+        <result column="status" property="status" />
+        <result column="month" property="month" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, dcid, ocid, exchange_rate, status, month, create_by, create_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">currency_rate </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="currencyRate.dcid != null ">
+                AND dcid = ${currencyRate.dcid}
+            </if>
+
+            <if test="currencyRate.ocid != null ">
+                AND ocid = ${currencyRate.ocid}
+            </if>
+
+            <if test="currencyRate.exchangeRate != null ">
+                AND exchange_rate = ${currencyRate.exchangeRate}
+            </if>
+
+            <if test="currencyRate.status != null and currencyRate.status != ''">
+                AND status LIKE CONCAT('%',#{currencyRate.status},'%')
+            </if>
+
+            <if test="currencyRate.month != null and currencyRate.month != ''">
+                AND month LIKE CONCAT('%',#{currencyRate.month},'%')
+            </if>
+
+            <if test="currencyRate.createBy != null and currencyRate.createBy != ''">
+                AND create_by LIKE CONCAT('%',#{currencyRate.createBy},'%')
+            </if>
+
+            <if test="currencyRate.createTime != null ">
+                AND create_time = ${currencyRate.createTime}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CurrencyRate">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CurrencyRate">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  currency_rate WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE currency_rate SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCurrencyRateForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            dcid 'dcid',
+            ocid 'ocid',
+            exchange_rate 'exchangeRate',
+            status 'status',
+            month 'month',
+            created_by 'createdBy',
+            created_time 'createdTime'
+        FROM currency_rate
+        WHERE is_deleted = 0
+                    <if test="dcid != null ">
+                        AND dcid = #{dcid}
+                    </if>
+                    <if test="ocid != null ">
+                        AND ocid = #{ocid}
+                    </if>
+                    <if test="exchangeRate != null ">
+                        AND exchange_rate = #{exchangeRate}
+                    </if>
+                    <if test="status != null and status != ''">
+                        AND status LIKE CONCAT('%',#{status}, '%')
+                    </if>
+                    <if test="month != null and month != ''">
+                        AND month LIKE CONCAT('%',#{month}, '%')
+                    </if>
+                    <if test="createBy != null and createBy != ''">
+                        AND create_by LIKE CONCAT('%',#{createBy}, '%')
+                    </if>
+                    <if test="createTime != null ">
+                        AND create_time = #{createTime}
+                    </if>
+
+    </select>
+
+</mapper>

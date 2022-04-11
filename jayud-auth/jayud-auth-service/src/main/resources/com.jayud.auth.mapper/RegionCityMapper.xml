@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.RegionCityMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.RegionCity">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="parent_id" property="parentId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, name, parent_id
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">region_city </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="regionCity.code != null and regionCity.code != ''">
+                AND code LIKE CONCAT('%',#{regionCity.code},'%')
+            </if>
+
+            <if test="regionCity.name != null and regionCity.name != ''">
+                AND name LIKE CONCAT('%',#{regionCity.name},'%')
+            </if>
+
+            <if test="regionCity.parentid != null ">
+                AND parentId = ${regionCity.parentid}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.RegionCity">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.RegionCity">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  region_city WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE region_city SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryRegionCityForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            name 'name',
+            parent_id 'parentId'
+        FROM region_city
+        WHERE is_deleted = 0
+                    <if test="code != null and code != ''">
+                        AND code LIKE CONCAT('%',#{code}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        AND name LIKE CONCAT('%',#{name}, '%')
+                    </if>
+                    <if test="parentId != null ">
+                        AND parent_id = #{parentId}
+                    </if>
+
+    </select>
+
+</mapper>

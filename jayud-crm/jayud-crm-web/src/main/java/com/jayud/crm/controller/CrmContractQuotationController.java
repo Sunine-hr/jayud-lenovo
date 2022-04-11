@@ -49,8 +49,7 @@ public class CrmContractQuotationController {
 
     @Autowired
     private ICrmContractQuotationService crmContractQuotationService;
-    @Autowired
-    private OmsClient omsClient;
+
     @Autowired
     private AuthClient authClient;
 
@@ -227,18 +226,18 @@ public class CrmContractQuotationController {
     @ApiOperation(value = "初始化车型尺寸,区分车型")
     @PostMapping(value = "/initVehicleSize")
     public CommonResult<List<InitComboxStrVO>> initVehicleSize() {
-        return omsClient.initVehicleSize();
+        return authClient.initVehicleSize();
     }
 
     @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
     @PostMapping(value = "/initCostType")
     public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String, Object> param) {
-        return omsClient.initCostType(param);
+        return authClient.initCostType(param);
     }
 
     @ApiOperation(value = "录入费用:应收/付项目/币种 ")
     @PostMapping(value = "/initCost")
     public CommonResult initCost(@RequestBody Map<String, Object> param) {
-        return omsClient.initCost(param);
+        return authClient.initCost(param);
     }
 }

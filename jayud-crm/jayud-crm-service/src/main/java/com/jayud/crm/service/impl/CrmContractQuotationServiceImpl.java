@@ -48,8 +48,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
     private CrmContractQuotationMapper crmContractQuotationMapper;
     @Autowired
     private ICrmContractQuotationDetailsService crmContractQuotationDetailsService;
-    @Autowired
-    private OmsClient omsClient;
+
     @Autowired
     private ICrmFileService crmFileService;
     @Autowired
@@ -227,7 +226,7 @@ public class CrmContractQuotationServiceImpl extends ServiceImpl<CrmContractQuot
 //        ustomerInfo customerInfo = customerInfoService.getByCode(tmp.getCustomerCode());
 //        tmp.setCustomerId(customerInfo.getId());
         List<CrmContractQuotationDetails> details = this.crmContractQuotationDetailsService.getBaseMapper().selectList(new QueryWrapper<>(new CrmContractQuotationDetails().setIsDeleted(false).setContractQuotationId(id)));
-        Map<String, List<InitComboxVO>> costType = this.omsClient.initCostTypeByCostInfoCode().getData();
+        Map<String, List<InitComboxVO>> costType = this.authClient.initCostTypeByCostInfoCode().getData();
         tmp.assembleDetails(details, costType);
         tmp.setFiles(files);
         return tmp;

@@ -9,8 +9,13 @@ import com.jayud.auth.model.po.SysDepart;
 import com.jayud.auth.model.po.SysRole;
 import com.jayud.auth.model.po.SysUser;
 import com.jayud.auth.model.vo.SysLogVO;
+import com.jayud.common.ApiResult;
 import com.jayud.common.BaseResult;
+import com.jayud.common.CommonResult;
 import com.jayud.common.dto.QuerySysLogForm;
+import com.jayud.common.entity.InitComboxStrVO;
+import com.jayud.common.entity.InitComboxVO;
+import com.jayud.common.entity.TreeNode;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * customs模块消费file模块的接口
@@ -119,4 +125,44 @@ public interface AuthClient {
     @PostMapping("/sysLog/api/selectSysLogPageFeign")
     public BaseResult selectSysLogPageFeign(@RequestBody QuerySysLogForm QuerySysLogForm);
 
+
+
+
+
+    @ApiOperation(value = "获取启用费用名称")
+    @PostMapping(value = "/costInfo/api/getCostInfos")
+    public CommonResult<List<Map<String, Object>>> getCostInfos();
+
+    @ApiOperation(value = "获取启用费用类型")
+    @PostMapping(value = "/costType/api/getCostTypes")
+    public CommonResult<List<Map<String, Object>>> getCostTypes();
+
+
+    @ApiOperation(value = "初始化车型尺寸,区分车型")
+    @PostMapping(value = "/vehicleSizeInfo/api/initVehicleSize")
+    public CommonResult<List<InitComboxStrVO>> initVehicleSize();
+
+    /**
+     * 币种
+     *
+     * @return
+     */
+    @RequestMapping(value = "/currencyInfo/api/initCurrencyInfo")
+    ApiResult<List<InitComboxStrVO>> initCurrencyInfo();
+
+    @ApiOperation(value = "录入费用:应收/付项目/币种 ")
+    @PostMapping(value = "/costInfo/api/initCost")
+    public CommonResult initCost(@RequestBody Map<String, Object> param);
+
+    @ApiOperation(value = "费用类别,idCode=费用名称的隐藏值")
+    @PostMapping(value = "/costType/api/initCostType")
+    public CommonResult<List<InitComboxVO>> initCostType(@RequestBody Map<String, Object> param);
+
+    @ApiOperation(value = "根据费用名称查询费用类型")
+    @PostMapping(value = "/costInfo/api/initCostTypeByCostInfoCode")
+    public CommonResult<Map<String, List<InitComboxVO>>> initCostTypeByCostInfoCode();
+
+    @ApiOperation(value = "获取省市区树结构")
+    @PostMapping(value = "/regionCity/api/adrrTree")
+    public CommonResult<List<TreeNode>> adrrTree();
 }

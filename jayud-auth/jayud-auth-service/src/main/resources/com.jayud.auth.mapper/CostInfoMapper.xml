@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.CostInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.CostInfo">
+        <id column="id" property="id" />
+        <result column="id_code" property="idCode" />
+        <result column="name" property="name" />
+        <result column="status" property="status" />
+        <result column="cids" property="cids" />
+        <result column="remarks" property="remarks" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="types" property="types" />
+        <result column="update_by" property="updateBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_driver_show" property="isDriverShow" />
+        <result column="is_reimbursement" property="isReimbursement" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, id_code, name, status, cids, remarks, create_time, create_by, types, update_by, update_time, is_driver_show, is_reimbursement
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">cost_info </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="costInfo.idCode != null and costInfo.idCode != ''">
+                AND id_code LIKE CONCAT('%',#{costInfo.idCode},'%')
+            </if>
+
+            <if test="costInfo.name != null and costInfo.name != ''">
+                AND name LIKE CONCAT('%',#{costInfo.name},'%')
+            </if>
+
+            <if test="costInfo.status != null and costInfo.status != ''">
+                AND status LIKE CONCAT('%',#{costInfo.status},'%')
+            </if>
+
+            <if test="costInfo.cids != null and costInfo.cids != ''">
+                AND cids LIKE CONCAT('%',#{costInfo.cids},'%')
+            </if>
+
+            <if test="costInfo.remarks != null and costInfo.remarks != ''">
+                AND remarks LIKE CONCAT('%',#{costInfo.remarks},'%')
+            </if>
+
+            <if test="costInfo.types != null ">
+                AND types = ${costInfo.types}
+            </if>
+
+            <if test="costInfo.isDriverShow != null ">
+                AND is_driver_show = ${costInfo.isDriverShow}
+            </if>
+
+            <if test="costInfo.isReimbursement != null ">
+                AND is_reimbursement = ${costInfo.isReimbursement}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostInfo">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  cost_info WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE cost_info SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCostInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            id_code 'idCode',
+            name 'name',
+            status 'status',
+            cids 'cids',
+            remarks 'remarks',
+            create_time 'createTime',
+            create_by 'createBy',
+            types 'types',
+            update_by 'updateBy',
+            update_time 'updateTime',
+            is_driver_show 'isDriverShow',
+            is_reimbursement 'isReimbursement'
+        FROM cost_info
+        WHERE is_deleted = 0
+                    <if test="idCode != null and idCode != ''">
+                        AND id_code LIKE CONCAT('%',#{idCode}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        AND name LIKE CONCAT('%',#{name}, '%')
+                    </if>
+                    <if test="status != null and status != ''">
+                        AND status LIKE CONCAT('%',#{status}, '%')
+                    </if>
+                    <if test="cids != null and cids != ''">
+                        AND cids LIKE CONCAT('%',#{cids}, '%')
+                    </if>
+                    <if test="remarks != null and remarks != ''">
+                        AND remarks LIKE CONCAT('%',#{remarks}, '%')
+                    </if>
+                    <if test="types != null ">
+                        AND types = #{types}
+                    </if>
+                    <if test="isDriverShow != null ">
+                        AND is_driver_show = #{isDriverShow}
+                    </if>
+                    <if test="isReimbursement != null ">
+                        AND is_reimbursement = #{isReimbursement}
+                    </if>
+
+    </select>
+
+</mapper>

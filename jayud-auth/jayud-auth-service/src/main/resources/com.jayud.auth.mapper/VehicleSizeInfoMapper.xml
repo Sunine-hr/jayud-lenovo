@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.VehicleSizeInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.VehicleSizeInfo">
+        <id column="id" property="id" />
+        <result column="vehicle_size" property="vehicleSize" />
+        <result column="vehicle_type" property="vehicleType" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, vehicle_size, vehicle_type, created_by, created_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">vehicle_size_info </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="vehicleSizeInfo.vehicleSize != null and vehicleSizeInfo.vehicleSize != ''">
+                AND vehicle_size LIKE CONCAT('%',#{vehicleSizeInfo.vehicleSize},'%')
+            </if>
+
+            <if test="vehicleSizeInfo.vehicleType != null ">
+                AND vehicle_type = ${vehicleSizeInfo.vehicleType}
+            </if>
+
+            <if test="vehicleSizeInfo.createBy != null and vehicleSizeInfo.createBy != ''">
+                AND create_by LIKE CONCAT('%',#{vehicleSizeInfo.createBy},'%')
+            </if>
+
+            <if test="vehicleSizeInfo.createTime != null ">
+                AND created_time = ${vehicleSizeInfo.createTime}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.VehicleSizeInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.VehicleSizeInfo">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  vehicle_size_info WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE vehicle_size_info SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryVehicleSizeInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            vehicle_size 'vehicleSize',
+            vehicle_type 'vehicleType',
+            created_by 'createdBy',
+            created_time 'createdTime'
+        FROM vehicle_size_info
+        WHERE is_deleted = 0
+                    <if test="vehicleSize != null and vehicleSize != ''">
+                        AND vehicle_size LIKE CONCAT('%',#{vehicleSize}, '%')
+                    </if>
+                    <if test="vehicleType != null ">
+                        AND vehicle_type = #{vehicleType}
+                    </if>
+                    <if test="createBy != null and createBy != ''">
+                        AND create_by LIKE CONCAT('%',#{createdBy}, '%')
+                    </if>
+                    <if test="createTime != null ">
+                        AND create_time = #{createdTime}
+                    </if>
+
+    </select>
+
+    <select id="findVehicleSize" resultType="com.jayud.auth.model.po.VehicleSizeInfo">
+        SELECT v.id,v.vehicle_size vehicleSize,v.vehicle_type vehicleType FROM vehicle_size_info v
+    </select>
+
+</mapper>

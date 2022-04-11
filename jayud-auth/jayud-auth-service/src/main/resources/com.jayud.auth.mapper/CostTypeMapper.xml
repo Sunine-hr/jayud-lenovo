@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.CostTypeMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.CostType">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="code_name" property="codeName" />
+        <result column="is_pay_collection" property="isPayCollection" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_by" property="updateBy" />
+        <result column="remarks" property="remarks" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, code_name, is_pay_collection, status, create_time, create_by, update_time, update_by, remarks
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">cost_type </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="costType.code != null and costType.code != ''">
+                AND code LIKE CONCAT('%',#{costType.code},'%')
+            </if>
+
+            <if test="costType.codeName != null and costType.codeName != ''">
+                AND code_name LIKE CONCAT('%',#{costType.codeName},'%')
+            </if>
+
+            <if test="costType.isPayCollection != null ">
+                AND is_pay_collection = ${costType.isPayCollection}
+            </if>
+
+            <if test="costType.status != null and costType.status != ''">
+                AND status LIKE CONCAT('%',#{costType.status},'%')
+            </if>
+
+            <if test="costType.createBy != null and costType.createBy != ''">
+                AND create_by LIKE CONCAT('%',#{costType.createBy},'%')
+            </if>
+
+            <if test="costType.remarks != null and costType.remarks != ''">
+                AND remarks LIKE CONCAT('%',#{costType.remarks},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostType">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostType">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  cost_type WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE cost_type SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCostTypeForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            code_name 'codeName',
+            is_pay_collection 'isPayCollection',
+            status 'status',
+            create_time 'createTime',
+            created_by 'createdBy',
+            update_time 'updateTime',
+            update_by 'updateBy',
+            remarks 'remarks'
+        FROM cost_type
+        WHERE is_deleted = 0
+                    <if test="code != null and code != ''">
+                        AND code LIKE CONCAT('%',#{code}, '%')
+                    </if>
+                    <if test="codeName != null and codeName != ''">
+                        AND code_name LIKE CONCAT('%',#{codeName}, '%')
+                    </if>
+                    <if test="isPayCollection != null ">
+                        AND is_pay_collection = #{isPayCollection}
+                    </if>
+                    <if test="status != null and status != ''">
+                        AND status LIKE CONCAT('%',#{status}, '%')
+                    </if>
+                    <if test="createBy != null and createBy != ''">
+                        AND create_by LIKE CONCAT('%',#{createBy}, '%')
+                    </if>
+                    <if test="remarks != null and remarks != ''">
+                        AND remarks LIKE CONCAT('%',#{remarks}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

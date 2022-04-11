@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.CostGenreTaxRateMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.CostGenreTaxRate">
+        <id column="id" property="id" />
+        <result column="cost_genre_id" property="costGenreId" />
+        <result column="cost_type_id" property="costTypeId" />
+        <result column="tax_rate" property="taxRate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, cost_genre_id, cost_type_id, tax_rate
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">cost_genre_tax_rate </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="costGenreTaxRate.costGenreId != null ">
+                AND cost_genre_id = ${costGenreTaxRate.costGenreId}
+            </if>
+
+            <if test="costGenreTaxRate.costTypeId != null ">
+                AND cost_type_id = ${costGenreTaxRate.costTypeId}
+            </if>
+
+            <if test="costGenreTaxRate.taxRate != null ">
+                AND tax_rate = ${costGenreTaxRate.taxRate}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostGenreTaxRate">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostGenreTaxRate">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  cost_genre_tax_rate WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE cost_genre_tax_rate SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCostGenreTaxRateForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            cost_genre_id 'costGenreId',
+            cost_type_id 'costTypeId',
+            tax_rate 'taxRate'
+        FROM cost_genre_tax_rate
+        WHERE is_deleted = 0
+                    <if test="costGenreId != null ">
+                        AND cost_genre_id = #{costGenreId}
+                    </if>
+                    <if test="costTypeId != null ">
+                        AND cost_type_id = #{costTypeId}
+                    </if>
+                    <if test="taxRate != null ">
+                        AND tax_rate = #{taxRate}
+                    </if>
+
+    </select>
+
+</mapper>

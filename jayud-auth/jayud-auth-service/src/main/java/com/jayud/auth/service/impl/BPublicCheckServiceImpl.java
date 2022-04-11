@@ -113,7 +113,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         }
 
         if(sLevel <= sStep){
-            return BaseResult.error(444,"该订单已审核完成");
+            return BaseResult.error(444,"已审核完成,不能在审核");
         }
         //当前用户不为管理员，判断该用户的审核权限
         int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getCode());
@@ -148,7 +148,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
                 update = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,new Date(),systemUserByName.getName());
             }
             if(update <= 0){
-                return BaseResult.error(444,"审核失败，修改订单审核状态失败");
+                return BaseResult.error(444,"审核失败，修改审核状态失败");
             }
 
 
@@ -245,7 +245,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
         }
 
         if(sStep == 0){
-            return BaseResult.error(444,"该订单还未审核，无法反审");
+            return BaseResult.error(444,"未审核，无法反审");
         }
         //当前用户不为管理员，判断该用户的审核权限
         int count = sysUserRoleService.getCountByUserNameAndRoleName(systemUserByName.getName(),"super_admin",systemUserByName.getCode());
@@ -279,7 +279,7 @@ public class BPublicCheckServiceImpl extends ServiceImpl<BPublicCheckMapper, BPu
             update   = bPublicCheckMapper.updateCheckData(checkForm.getRecordId(),checkTable,bNoRule.getCheckDatabase(),newStep,checkFlag,new Date(),systemUserByName.getName());
         }
         if(update <= 0){
-            return BaseResult.error(444,"反审核失败，修改订单审核状态失败");
+            return BaseResult.error(444,"反审核失败，修改审核状态失败");
         }
 
         //添加反审核记录

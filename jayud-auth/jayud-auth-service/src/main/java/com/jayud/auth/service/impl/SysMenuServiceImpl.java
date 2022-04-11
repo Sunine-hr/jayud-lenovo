@@ -152,7 +152,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
             sysMenu.setCreateBy(CurrentUserUtil.getUsername());
             sysMenu.setCreateTime(new Date());
-            sysMenu.setCode(CurrentUserUtil.getUserTenantCode());
+//            sysMenu.setCode(CurrentUserUtil.getUserTenantCode());
 
         }else{
             //修改

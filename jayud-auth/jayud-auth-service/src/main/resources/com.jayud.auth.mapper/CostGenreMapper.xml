@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.CostGenreMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.CostGenre">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="tax_rate" property="taxRate" />
+        <result column="remarks" property="remarks" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_by" property="updateBy" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, name, tax_rate, remarks, status, create_time, create_by, update_time, update_by
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">cost_genre </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="costGenre.code != null and costGenre.code != ''">
+                AND code LIKE CONCAT('%',#{costGenre.code},'%')
+            </if>
+
+            <if test="costGenre.name != null and costGenre.name != ''">
+                AND name LIKE CONCAT('%',#{costGenre.name},'%')
+            </if>
+
+            <if test="costGenre.taxRate != null ">
+                AND tax_rate = ${costGenre.taxRate}
+            </if>
+
+            <if test="costGenre.remarks != null and costGenre.remarks != ''">
+                AND remarks LIKE CONCAT('%',#{costGenre.remarks},'%')
+            </if>
+
+            <if test="costGenre.status != null and costGenre.status != ''">
+                AND status LIKE CONCAT('%',#{costGenre.status},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostGenre">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CostGenre">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  cost_genre WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE cost_genre SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCostGenreForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            name 'name',
+            tax_rate 'taxRate',
+            remarks 'remarks',
+            status 'status',
+            create_time 'createTime',
+            create_by 'createBy',
+            update_time 'updateTime',
+            update_by 'updateBy'
+        FROM cost_genre
+        WHERE is_deleted = 0
+                    <if test="code != null and code != ''">
+                        AND code LIKE CONCAT('%',#{code}, '%')
+                    </if>
+                    <if test="name != null and name != ''">
+                        AND name LIKE CONCAT('%',#{name}, '%')
+                    </if>
+                    <if test="taxRate != null ">
+                        AND tax_rate = #{taxRate}
+                    </if>
+                    <if test="remarks != null and remarks != ''">
+                        AND remarks LIKE CONCAT('%',#{remarks}, '%')
+                    </if>
+                    <if test="status != null and status != ''">
+                        AND status LIKE CONCAT('%',#{status}, '%')
+                    </if>
+
+    </select>
+
+</mapper>

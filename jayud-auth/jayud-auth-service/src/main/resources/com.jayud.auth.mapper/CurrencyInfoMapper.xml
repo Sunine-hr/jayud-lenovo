@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jayud.auth.mapper.CurrencyInfoMapper">
+
+    <!-- 通用查询映射结果ss -->
+    <resultMap id="BaseResultMap" type="com.jayud.auth.model.po.CurrencyInfo">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="currency_code" property="currencyCode" />
+        <result column="currency_name" property="currencyName" />
+        <result column="status" property="status" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+            id, code, currency_code, currency_name, status, create_by, create_time
+    </sql>
+
+    <!-- 表名 -->
+    <sql id="tname">currency_info </sql>
+
+    <sql id="selects">
+        SELECT <include refid="Base_Column_List"/>
+        FROM <include refid="tname"/>
+        <where>
+            is_deleted = 0
+            <if test="currencyInfo.code != null and currencyInfo.code != ''">
+                AND code LIKE CONCAT('%',#{currencyInfo.code},'%')
+            </if>
+
+            <if test="currencyInfo.currencyCode != null and currencyInfo.currencyCode != ''">
+                AND currency_code LIKE CONCAT('%',#{currencyInfo.currencyCode},'%')
+            </if>
+
+            <if test="currencyInfo.currencyName != null and currencyInfo.currencyName != ''">
+                AND currency_name LIKE CONCAT('%',#{currencyInfo.currencyName},'%')
+            </if>
+
+            <if test="currencyInfo.status != null and currencyInfo.status != ''">
+                AND status LIKE CONCAT('%',#{currencyInfo.status},'%')
+            </if>
+
+            <if test="currencyInfo.createBy != null and currencyInfo.createBy != ''">
+                AND create_by LIKE CONCAT('%',#{currencyInfo.createBy},'%')
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="pageList" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CurrencyInfo">
+        <include refid="selects"/>
+    </select>
+
+    <select id="list" resultMap="BaseResultMap" parameterType="com.jayud.auth.model.po.CurrencyInfo">
+        <include refid="selects"/>
+    </select>
+
+
+
+
+    <delete id="phyDelById">
+        DELETE FROM  currency_info WHERE id = ${id}
+    </delete>
+
+    <update id="logicDel">
+        UPDATE currency_info SET is_deleted = 1 ,update_by = #{username}, update_time = now()
+        WHERE id = ${id} AND is_deleted = 0
+    </update>
+
+    <select id="queryCurrencyInfoForExcel" resultType="java.util.LinkedHashMap">
+        SELECT
+            id 'id',
+            code 'code',
+            currency_code 'currencyCode',
+            currency_name 'currencyName',
+            status 'status',
+            created_by 'createBy',
+            create_time 'createTime'
+        FROM currency_info
+        WHERE is_deleted = 0
+                    <if test="code != null and code != ''">
+                        AND code LIKE CONCAT('%',#{code}, '%')
+                    </if>
+                    <if test="currencyCode != null and currencyCode != ''">
+                        AND currency_code LIKE CONCAT('%',#{currencyCode}, '%')
+                    </if>
+                    <if test="currencyName != null and currencyName != ''">
+                        AND currency_name LIKE CONCAT('%',#{currencyName}, '%')
+                    </if>
+                    <if test="status != null and status != ''">
+                        AND status LIKE CONCAT('%',#{status}, '%')
+                    </if>
+                    <if test="createBy != null and createBy != ''">
+                        AND create_by LIKE CONCAT('%',#{createBy}, '%')
+                    </if>
+
+    </select>
+
+    <select id="findCurrencyInfo" resultType="com.jayud.auth.model.po.CurrencyInfo">
+        SELECT
+            ci.`currency_name` currencyName,
+            ci.`currency_code` currencyCode,
+            t1.exchange_rate exchangeRate
+        FROM
+            currency_info ci
+            LEFT JOIN currency_rate t1 ON ci.`id` = t1.`ocid`
+            AND t1.dcid = ( SELECT t.id FROM currency_info t WHERE t.currency_code = 'CNY' )
+        WHERE
+            ci.`status` = 1
+            AND t1.`status` = 1
+            and t1.`month` = #{createdTimeStr}
+    </select>
+
+</mapper>

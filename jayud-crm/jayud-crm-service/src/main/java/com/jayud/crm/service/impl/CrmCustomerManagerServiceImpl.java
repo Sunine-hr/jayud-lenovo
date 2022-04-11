@@ -253,6 +253,8 @@ public class CrmCustomerManagerServiceImpl extends ServiceImpl<CrmCustomerManage
                     }
 
                 });
+            }else{
+                addList.add(comCustomerForm.getChangerUserId());
             }
             if (CollUtil.isNotEmpty(delList)){
                 delChargerManager(delList);

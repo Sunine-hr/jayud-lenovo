@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
+import com.jayud.common.aop.annotations.SysWarehousePermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.bo.DeleteForm;
@@ -50,6 +51,7 @@ public class WmsOutboundOrderInfoController {
      * @param wmsOutboundOrderInfoVO   查询条件
      * @return
      */
+    @SysWarehousePermission(clazz = WmsOutboundOrderInfoVO.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<CommonPageResult<IPage<WmsOutboundOrderInfoVO>>> selectPage(@RequestBody WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO,
@@ -65,6 +67,7 @@ public class WmsOutboundOrderInfoController {
      * @param wmsOutboundOrderInfoVO   查询条件
      * @return
      */
+    @SysWarehousePermission(clazz = WmsOutboundOrderInfoVO.class)
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<WmsOutboundOrderInfoVO>> selectList(WmsOutboundOrderInfoVO wmsOutboundOrderInfoVO,

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jayud.common.BaseResult;
 import com.jayud.common.CommonPageResult;
 import com.jayud.common.aop.annotations.SysDataPermission;
+import com.jayud.common.aop.annotations.SysWarehousePermission;
 import com.jayud.common.constant.SysTips;
 import com.jayud.common.utils.ExcelUtils;
 import com.jayud.wms.model.po.WmsOutboundNoticeOrderInfo;
@@ -54,7 +55,7 @@ public class WmsOutboundNoticeOrderInfoController {
      * @param: req
      * @return: com.jyd.component.commons.result.Result<com.jyd.component.commons.utils.CommonPageResult<com.baomidou.mybatisplus.core.metadata.IPage<com.jayud.model.vo.WmsOutboundNoticeOrderInfoVO>>>
      **/
-//    @SysDataPermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
+    @SysWarehousePermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("分页查询数据")
     @PostMapping("/selectPage")
     public BaseResult<CommonPageResult<WmsOutboundNoticeOrderInfoVO>> selectPage(@RequestBody WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,
@@ -72,7 +73,7 @@ public class WmsOutboundNoticeOrderInfoController {
      * @param wmsOutboundNoticeOrderInfoVO   查询条件
      * @return
      */
-    @SysDataPermission
+    @SysWarehousePermission(clazz = WmsOutboundNoticeOrderInfoVO.class)
     @ApiOperation("列表查询数据")
     @GetMapping("/selectList")
     public BaseResult<List<WmsOutboundNoticeOrderInfoVO>> selectList(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO,

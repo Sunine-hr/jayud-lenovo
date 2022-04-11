@@ -172,4 +172,8 @@ public class WmsOutboundShippingReviewInfo extends SysBaseEntity {
     @ApiModelProperty(value = "作业人员id集合")
     private List<Long> operatorsIds;
 
+    @TableField(exist = false)
+    @ApiModelProperty(value = "仓库id集合")
+    private List<String> warehouseIdList;
+
 }

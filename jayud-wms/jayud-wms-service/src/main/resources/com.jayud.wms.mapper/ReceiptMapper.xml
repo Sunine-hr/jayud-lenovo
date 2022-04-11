@@ -351,6 +351,11 @@
                     #{id}
                 </foreach>
             </if>
+
+            <if test="receipt.yearMonth != null and receipt.yearMonth != ''">
+                AND DATE_FORMAT( r.update_time, '%Y-%m' ) = DATE_FORMAT(#{receipt.yearMonth}, '%Y-%m')
+            </if>
+
         </where>
 
         ORDER BY r.create_time DESC

@@ -154,4 +154,9 @@ public class Receipt extends SysBaseEntity {
     @ApiModelProperty(value = "单据类型")
     private String orderType;
 
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "年月：yyyy-mm")
+    private String yearMonth;
+
 }

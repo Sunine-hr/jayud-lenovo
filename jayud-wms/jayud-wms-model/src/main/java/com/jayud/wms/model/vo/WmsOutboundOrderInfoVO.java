@@ -65,4 +65,7 @@ public class WmsOutboundOrderInfoVO extends WmsOutboundOrderInfo {
     @ApiModelProperty(value = "作业人员id集合")
     private List<Long> operatorsIds;
 
+    @ApiModelProperty(value = "年月：yyyy-mm")
+    private String yearMonth;
+
 }

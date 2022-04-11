@@ -104,4 +104,9 @@ public class QualityInspection extends SysBaseEntity {
 
     @ApiModelProperty(value = "总数量")
     private Double totalNum;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "年月：yyyy-mm")
+    private String yearMonth;
+
 }

@@ -34,6 +34,16 @@ public interface AuthClient {
     @PostMapping(value = "/sysDepart/selectChilderListById")
     List<Map> selectChilderListById(@RequestParam(name = "id", required = true) String id);
 
+    /**
+     * @description 根据用户查询仓库
+     * @author  ciro
+     * @date   2022/4/11 9:26
+     * @param: userId
+     * @return: com.jayud.common.BaseResult<java.util.List<java.util.Map>>
+     **/
+    @GetMapping(value = "/sysUserToWarehouse/selectList")
+    public BaseResult<List<Map>> getWarehouseByUserId(@RequestParam("userId") Long userId);
+
 
 
 

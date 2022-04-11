@@ -1,7 +1,10 @@
 package com.jayud.common.aop;
 
+import cn.hutool.core.collection.CollUtil;
+import com.jayud.common.BaseResult;
 import com.jayud.common.aop.annotations.SysWarehousePermission;
 import com.jayud.common.dto.AuthUserDetail;
+import com.jayud.common.fegin.AuthClient;
 import com.jayud.common.fegin.WmsClient;
 import com.jayud.common.utils.CurrentUserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author ciro
@@ -33,6 +37,8 @@ public class SysWarehousePermissionAspect {
 
     @Resource
     private WmsClient wmsClient;
+    @Resource
+    private AuthClient authClient;
 
 
     @Pointcut("@annotation(com.jayud.common.aop.annotations.SysWarehousePermission)")
@@ -54,8 +60,11 @@ public class SysWarehousePermissionAspect {
         if (Objects.nonNull(sysWarehousePermission)) {
             AuthUserDetail userDetail = CurrentUserUtil.getUserDetail();
             for (Object param : args) {
-                List<String> warehouseIdList = wmsClient.getWarehouseIdByUserId(String.valueOf(userDetail.getId()));
-                setField(param, sysWarehousePermission.warehouseIdListField(), warehouseIdList);
+                BaseResult<List<Map>> warehouseResult = authClient.getWarehouseByUserId(CurrentUserUtil.getUserId());
+                if (CollUtil.isNotEmpty(warehouseResult.getResult())){
+                    List<String> warehouseIdList = warehouseResult.getResult().stream().map(x->String.valueOf(x.get("warehouseId"))).collect(Collectors.toList());
+                    setField(param, sysWarehousePermission.warehouseIdListField(), warehouseIdList);
+                }
             }
         }
     }

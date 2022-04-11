@@ -200,6 +200,14 @@
             <if test="wmsOutboundShippingReviewInfo.remark != null and wmsOutboundShippingReviewInfo.remark != ''">
                 AND remark LIKE CONCAT('%',#{wmsOutboundShippingReviewInfo.remark},'%')
             </if>
+
+            <if test="wmsOutboundShippingReviewInfo.warehouseIdList != null and wmsOutboundShippingReviewInfo.warehouseIdList.size > 0 ">
+                AND warehouse_id IN
+                <foreach item="id" collection="wmsOutboundShippingReviewInfo.warehouseIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
             <if test="wmsOutboundShippingReviewInfo.theDeliveryTime !=null and wmsOutboundShippingReviewInfo.theDeliveryTime.size > 0">
                 AND  DATE_FORMAT( comfirm_time, '%Y-%m-%d' ) &gt;= #{wmsOutboundShippingReviewInfo.theDeliveryTime[0]}
                 AND DATE_FORMAT( comfirm_time, '%Y-%m-%d' ) &lt;= #{wmsOutboundShippingReviewInfo.theDeliveryTime[1]}

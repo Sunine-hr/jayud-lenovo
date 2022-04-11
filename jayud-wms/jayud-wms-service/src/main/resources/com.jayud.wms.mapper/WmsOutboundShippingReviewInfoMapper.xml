@@ -59,7 +59,7 @@
 
     <sql id="selects">
         SELECT <include refid="Base_Column_List"/>,
-        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeDocumentType' AND document_type = sdi.item_value) documentType_text,
+        (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'wms_storage_type_of_document' AND document_type = sdi.item_value) documentType_text,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeOrderSourceType' AND order_source_type = sdi.item_value) orderSourceType_text,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'shippingReviewOrderStatusType' AND order_status_type = sdi.item_value) orderStatusType_text
         FROM <include refid="tname"/>

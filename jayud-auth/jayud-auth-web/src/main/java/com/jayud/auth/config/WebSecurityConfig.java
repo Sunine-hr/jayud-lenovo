@@ -59,6 +59,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/deviceAuthorization/getActivationInfo",
                 "/deviceAuthorization/getDeviceStatus", "/deviceAuthorization/activate",
                 "/deviceAuthorization/license/generateCode",
+                "/sysUser/captcha",
+                "/sysUser/verify",
                 "/swagger-ui.html", "/swagger-resources/**", "/swagger/**",
                 "/**/v2/api-docs", "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.ico", "/ doc.html");
     }

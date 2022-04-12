@@ -102,8 +102,8 @@ public class CrmCustomerController {
         CrmCustomerForm crmCustomerForm1 = new CrmCustomerForm();
         crmCustomerForm1.setCheckStateFlag("Y");
         crmCustomerForm1.setIsDeleted(false);
-        //是否是客户
-        crmCustomerForm1.setIsSupplier(false);
+        //是否是普通用户
+        crmCustomerForm1.setIsCust(false);
         return BaseResult.ok(crmCustomerService.selectList(crmCustomerForm1));
     }
 

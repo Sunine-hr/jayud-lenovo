@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jayud.common.entity.SysBaseEntity;
 import com.jayud.wms.model.bo.InventoryMovementTaskForm;
+import com.jayud.wms.model.enums.InventoryMovementEnum;
 import com.jayud.wms.model.enums.ReceiptStatusEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -62,7 +63,7 @@ public class WmsInventoryMovementVO extends SysBaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
-        this.statusDetails = ReceiptStatusEnum.getDesc(status);
+        this.statusDetails = InventoryMovementEnum.getDesc(status);
     }
 
 

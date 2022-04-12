@@ -19,6 +19,7 @@ import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.enums.MaterialStatusEnum;
 import com.jayud.wms.mapper.MaterialMapper;
 import com.jayud.wms.model.vo.WarehouseAreaVO;
+import com.jayud.wms.model.vo.WarehouseLocationVO;
 import com.jayud.wms.service.*;
 import com.jayud.common.utils.ConvertUtil;
 import com.jayud.common.utils.CurrentUserUtil;
@@ -59,6 +60,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Autowired
     public IWarehouseService warehouseService;
+
 
     @Override
     public IPage<Material> selectPage(Material material,
@@ -278,6 +280,8 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         for (int i = 0; i < materialForms.size(); i++) {
             Material materials = ConvertUtil.convert(materialForms.get(i), Material.class);
             materials.setWarehouseLocationCode(materialForms.get(i).getWarehouseLocationCode());
+            //库位校验
+            checkLocation(materials);
             this.updateById(materials);
         }
         List<Long> collect = materialForms.stream().map(MaterialForm::getId).collect(Collectors.toList());
@@ -468,5 +472,25 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         }
     }
 
+
+    //库位校验
+    public  BaseResult checkLocation(Material materials){
+        if(materials.getWarehouseLocationCode()!=null) {
+            //拿到主订单信息
+            Receipt byId = receiptService.getById(materials.getOrderId());
+            //库位编号
+            LambdaQueryWrapper<WarehouseLocation> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(WarehouseLocation::getCode, materials.getWarehouseLocationCode());
+            lambdaQueryWrapper.eq(WarehouseLocation::getIsDeleted, 0);
+            lambdaQueryWrapper.eq(WarehouseLocation::getStatus, 1);
+            lambdaQueryWrapper.eq(WarehouseLocation::getWarehouseId, byId.getWarehouseId());
+
+            WarehouseLocation one = warehouseLocationService.getOne(lambdaQueryWrapper);
+            if (one == null) {
+                return BaseResult.error(SysTips.STORAGE_LOCATION_INEXISTENCE_EXIST);
+            }
+        }
+        return BaseResult.error(SysTips.STORAGE_LOCATION_INEXISTENCE_EXIST);
+    }
 
 }

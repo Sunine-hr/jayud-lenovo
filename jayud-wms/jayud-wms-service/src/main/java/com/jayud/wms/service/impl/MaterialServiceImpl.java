@@ -459,8 +459,8 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
                 detailForm.setVolume(material.getVolume());
             }
             detailForm.setUnit(material.getUnit());
-            //数量
-            detailForm.setOperationCount(new BigDecimal(material.getNum()));
+            //数量 实际收货数量
+            detailForm.setOperationCount(new BigDecimal(material.getActualNum()));
             inventoryDetailForms.add(detailForm);
         });
         if (CollUtil.isNotEmpty(inventoryDetailForms)) {

@@ -3,6 +3,8 @@ package com.jayud.wms.model.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * @author ciro
  * @date 2022/4/11 13:34
@@ -17,5 +19,14 @@ public enum InboundQualityStatusEnum {
 
     private Integer code;
     private String desc;
+
+    public static String getDesc(Integer code) {
+        for (InboundQualityStatusEnum value : values()) {
+            if (Objects.equals(code, value.getCode())) {
+                return value.getDesc();
+            }
+        }
+        return "";
+    }
 
 }

@@ -37,4 +37,7 @@ public class OrderMsgVO {
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+    @ApiModelProperty(value = "通知单编码")
+    private String noticeNumber;
+
 }

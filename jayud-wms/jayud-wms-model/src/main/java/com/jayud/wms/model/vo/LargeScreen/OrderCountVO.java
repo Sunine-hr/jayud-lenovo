@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author ciro
  * @date 2022/4/11 11:02
@@ -48,6 +50,9 @@ public class OrderCountVO {
 
     @ApiModelProperty(value = "出库发运复核单未完成数量")
     private int outBoundShippingReviewUnFinishCount;
+
+    @ApiModelProperty(value = "工单数据")
+    List<OrderMsgVO> msgList;
 
 
 }

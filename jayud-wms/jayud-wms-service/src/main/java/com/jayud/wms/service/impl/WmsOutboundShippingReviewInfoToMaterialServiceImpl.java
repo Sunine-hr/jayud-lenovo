@@ -127,7 +127,7 @@ public class WmsOutboundShippingReviewInfoToMaterialServiceImpl extends ServiceI
         }
         String errMsg = "";
         if (CollUtil.isNotEmpty(nullBoxList)){
-            errMsg += StringUtils.join(nullBoxList, StrUtil.C_COMMA) + " 箱数为空！ ";
+            errMsg += StringUtils.join(nullBoxList, StrUtil.C_COMMA) + " 箱号为空！ ";
         }
         if (CollUtil.isNotEmpty(errList)){
             errMsg += StringUtils.join(errList, StrUtil.C_COMMA) + " 已确认复核，请勿重复确认！ ";

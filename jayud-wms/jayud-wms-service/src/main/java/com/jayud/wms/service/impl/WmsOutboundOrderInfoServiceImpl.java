@@ -862,6 +862,15 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
                 materialList.add(materials);
             });
         }
+        if (CollUtil.isNotEmpty(wmsOutboundOrderInfoVO.getThisMaterialList())){
+            List<WmsOutboundOrderInfoToMaterial> materialList = new ArrayList<>();
+            wmsOutboundOrderInfoVO.getThisMaterialList().forEach(material -> {
+                WmsOutboundOrderInfoToMaterial materials = new WmsOutboundOrderInfoToMaterial();
+                BeanUtils.copyProperties(material,materials);
+                materialList.add(materials);
+            });
+            wmsOutboundOrderInfoToMaterialService.updateBatchById(materialList);
+        }
         wmsOutboundOrderInfoToServiceService.saveService(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundOrderInfoVO.getServiceList());
         allOut(wmsOutboundOrderInfo);
         if (CollUtil.isNotEmpty(wmsOutboundOrderInfoVO.getOperatorsIds())){

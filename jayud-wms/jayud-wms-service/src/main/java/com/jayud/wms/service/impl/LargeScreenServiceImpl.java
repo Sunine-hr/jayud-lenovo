@@ -2,10 +2,8 @@ package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.jayud.wms.model.bo.LargeScreen.WarehouseForm;
-import com.jayud.wms.model.enums.InboundQualityStatusEnum;
-import com.jayud.wms.model.enums.OutboundOrdertSatus;
-import com.jayud.wms.model.enums.OutboundShippingReviewSatusEnum;
-import com.jayud.wms.model.enums.ReceiptStatusEnum;
+import com.jayud.wms.model.enums.*;
+import com.jayud.wms.model.enums.LargeScreen.OrderTypeEnum;
 import com.jayud.wms.model.po.*;
 import com.jayud.wms.model.vo.LargeScreen.OrderCountVO;
 import com.jayud.wms.model.vo.LargeScreen.OrderMsgVO;
@@ -108,25 +106,21 @@ public class LargeScreenServiceImpl implements LargeScreenService {
         OrderCountVO orderCount = new OrderCountVO();
         warehouseForm.setIsFinish(true);
         getInBoundFinishOrderCount(warehouseForm,orderCount);
-        getInBoundQualityCount(warehouseForm,orderCount);
+        getInBoundQualityMsg(warehouseForm,orderCount);
         getOutBoundFinishOrderCount(warehouseForm,orderCount);
-        getOutBoundReviewCount(warehouseForm,orderCount);
+        getOutBoundReviewMsg(warehouseForm,orderCount);
         return orderCount;
     }
 
+
     @Override
-    public OrderCountVO getUnFinishOrderCount(WarehouseForm warehouseForm) {
+    public OrderCountVO getUnfinsihOrderMsg(WarehouseForm warehouseForm) {
         OrderCountVO orderCount = new OrderCountVO();
-        warehouseForm.setIsFinish(false);
-        getInBoundUnFinishOrderCount(warehouseForm,orderCount);
-        getInBoundQualityCount(warehouseForm,orderCount);
-        getOutBoundUnFinishOrderCount(warehouseForm,orderCount);
-        getOutBoundReviewCount(warehouseForm,orderCount);
-        return orderCount;
-    }
-
-    @Override
-    public List<OrderMsgVO> getOrderMsg(WarehouseForm warehouseForm) {
+        orderCount.setMsgList(new ArrayList<>());
+        getInBoundUnFinishOrderMsg(warehouseForm,orderCount);
+        getInBoundQualityMsg(warehouseForm,orderCount);
+        getOutBoundUnFinishOrderMsg(warehouseForm,orderCount);
+        getOutBoundFinishOrderCount(warehouseForm,orderCount);
         return null;
     }
 
@@ -140,52 +134,88 @@ public class LargeScreenServiceImpl implements LargeScreenService {
      * @return: void
      **/
     private void getInBoundFinishOrderCount(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
-        List<Receipt> receiptList = getReciptList(warehouseForm);
-        int finishCount = 0;
-        if (CollUtil.isEmpty(receiptList)){
-            finishCount = receiptList.stream().filter(x->x.getStatus().equals(ReceiptStatusEnum.THREE.getCode())).collect(Collectors.toList()).size();
-        }
+        int finishCount = getFinishReceiptList(warehouseForm).size();
         orderCountVO.setInBoundNoticeOrderFinishCount(finishCount);
         orderCountVO.setInBoundNoticeOrderFinishCount(finishCount);
     }
 
     /**
-     * @description 获取入库通知单、入库单未完成数量
+     * @description 获取入库通知单、入库单未完成数据
      * @author  ciro
      * @date   2022/4/11 15:04
      * @param: warehouseForm
      * @param: orderCountVO
      * @return: void
      **/
-    private void getInBoundUnFinishOrderCount(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
+    private void getInBoundUnFinishOrderMsg(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
         List<ReceiptNotice> noticeList = getReciptNoticeList(warehouseForm);
         List<Receipt> receiptList = getReciptList(warehouseForm);
-        //未完成入库通知单数量
-        int unfinishNoticeOrderCount = 0;
-        //未完成入库单数量
-        int unfinishOrderCount = 0;
+        //未完成入库通知单信息
+        List<ReceiptNotice> unfinishNoticeList = new ArrayList<>();
+        //未完成入库单信息
+        List<Receipt> unfinishOrderList = new ArrayList<>();
         List<String> finishNoticeList = new ArrayList<>();
         if (CollUtil.isEmpty(receiptList)){
-            finishNoticeList = receiptList.stream().filter(x->x.getStatus().equals(ReceiptStatusEnum.THREE.getCode())).map(x->x.getReceiptNum()).collect(Collectors.toList());
-            unfinishOrderCount = receiptList.stream().filter(x->!x.getStatus().equals(ReceiptStatusEnum.THREE.getCode())).map(x->x.getReceiptNum()).collect(Collectors.toList()).size();
+            for (Receipt receipt:receiptList){
+                if (receipt.getStatus().equals(ReceiptStatusEnum.THREE.getCode())){
+                    finishNoticeList.add(receipt.getReceiptNoticeNum());
+                } else {
+                    unfinishOrderList.add(receipt);
+                }
+            }
         }
         if (CollUtil.isNotEmpty(noticeList)){
-            List<String> finalFinishNoticeList = finishNoticeList;
-            unfinishNoticeOrderCount = noticeList.stream().filter(x-> !finalFinishNoticeList.contains(x.getReceiptNoticeNum())).collect(Collectors.toList()).size();
+            unfinishNoticeList = getUnFinishnoticeList(noticeList,finishNoticeList);
         }
-        orderCountVO.setInBoundOrderUnFinishCount(unfinishOrderCount);
-        orderCountVO.setInBoundNoticeOrderUnFinishCount(unfinishNoticeOrderCount);
+        orderCountVO.setInBoundNoticeOrderUnFinishCount(unfinishNoticeList.size());
+        orderCountVO.setInBoundOrderUnFinishCount(unfinishOrderList.size());
+        List<OrderMsgVO> receiptMsgLists = initReceiptoOrderMsg(unfinishOrderList);
+        List<OrderMsgVO> noticeMsgList = initReceiptNoticeToOrderMsg(unfinishNoticeList,receiptMsgLists);
+        orderCountVO.getMsgList().addAll(noticeMsgList);
+        orderCountVO.getMsgList().addAll(receiptMsgLists);
     }
 
     /**
-     * @description 获取入库-质检完成数量
+     * @description 获取完成入库单数据
+     * @author  ciro
+     * @date   2022/4/11 17:56
+     * @param: warehouseForm
+     * @return: java.util.List<com.jayud.wms.model.po.Receipt>
+     **/
+    private List<Receipt> getFinishReceiptList(WarehouseForm warehouseForm){
+        List<Receipt> receiptList = getReciptList(warehouseForm);
+        List<Receipt> finishList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(receiptList)){
+            finishList = receiptList.stream().filter(x->x.getStatus().equals(ReceiptStatusEnum.THREE.getCode())).collect(Collectors.toList());
+        }
+        return finishList;
+    }
+
+    /**
+     * @description 获取未完成入库通知单数据
+     * @author  ciro
+     * @date   2022/4/11 17:50
+     * @param: noticeList
+     * @param: finishNoticeList
+     * @return: java.util.List<com.jayud.wms.model.po.ReceiptNotice>
+     **/
+    private List<ReceiptNotice> getUnFinishnoticeList(List<ReceiptNotice> noticeList,List<String> finishNoticeList){
+        List<ReceiptNotice> successNoticeList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(finishNoticeList)){
+            successNoticeList = noticeList.stream().filter(x->!finishNoticeList.contains(x.getReceiptNoticeNum())).collect(Collectors.toList());
+        }
+        return successNoticeList;
+    }
+
+    /**
+     * @description 获取入库-质检数据
      * @author  ciro
      * @date   2022/4/11 13:32
      * @param: warehouseForm
      * @param: orderCountVO
      * @return: void
      **/
-    private void getInBoundQualityCount(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
+    private void getInBoundQualityMsg(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
         List<QualityInspection> qualityInspectionList = getQualityList(warehouseForm);
         int qualityFinishCount = 0;
         int qualityUnFinishCount = 0;
@@ -193,7 +223,9 @@ public class LargeScreenServiceImpl implements LargeScreenService {
             if (warehouseForm.getIsFinish()) {
                 qualityFinishCount = qualityInspectionList.stream().filter(x -> x.getStatus().equals(InboundQualityStatusEnum.FINISH.getCode())).collect(Collectors.toList()).size();
             }else {
-                qualityUnFinishCount = qualityInspectionList.stream().filter(x -> !x.getStatus().equals(InboundQualityStatusEnum.FINISH.getCode())).collect(Collectors.toList()).size();
+                qualityInspectionList = qualityInspectionList.stream().filter(x -> !x.getStatus().equals(InboundQualityStatusEnum.FINISH.getCode())).collect(Collectors.toList());
+                qualityUnFinishCount = qualityInspectionList.size();
+                orderCountVO.getMsgList().addAll(initQualityOrderMsg(qualityInspectionList));
             }
         }
         orderCountVO.setInBoundQualityFinishCount(qualityFinishCount);
@@ -219,36 +251,41 @@ public class LargeScreenServiceImpl implements LargeScreenService {
     }
 
     /**
-     * @description 获取未完成出库通知单、出库单数量
+     * @description 获取未完成出库通知单、出库单数据
      * @author  ciro
      * @date   2022/4/11 14:44
      * @param: warehouseForm
      * @param: orderCountVO
      * @return: void
      **/
-    private void getOutBoundUnFinishOrderCount(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
+    private void getOutBoundUnFinishOrderMsg(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
         List<WmsOutboundNoticeOrderInfoVO> noticeList = getOutboundNoticeList(warehouseForm);
         List<WmsOutboundOrderInfoVO> infoList = getOutboundOrderList(warehouseForm);
-        //未完成出库通知单数量
-        int unfinishNoticeCount = 0;
-        //未完成出库单数量
-        int unfinishOrderCount = 0;
+        //未完成出库通知单数据
+        List<WmsOutboundNoticeOrderInfoVO> unfinishNoticeList = new ArrayList<>();
+        //未完成出库单数据
+        List<WmsOutboundOrderInfoVO> unfinishOrderList = new ArrayList<>();
         //完成出库通知单集合
         List<String> finishNoticeList = new ArrayList<>();
         if (CollUtil.isNotEmpty(infoList)){
             finishNoticeList = infoList.stream().filter(x->x.getOrderStatusType().equals(OutboundOrdertSatus.ISSUED)).map(x->x.getNoticeOrderNumber()).collect(Collectors.toList());
-            unfinishOrderCount = infoList.stream().filter(x->!x.getOrderStatusType().equals(OutboundOrdertSatus.ISSUED)).collect(Collectors.toList()).size();
+            unfinishOrderList = infoList.stream().filter(x->!x.getOrderStatusType().equals(OutboundOrdertSatus.ISSUED)).collect(Collectors.toList());
         }
         if (CollUtil.isNotEmpty(noticeList)){
             List<String> finalFinishNoticeList = finishNoticeList;
             if (CollUtil.isNotEmpty(finishNoticeList)) {
-                unfinishNoticeCount = noticeList.stream().filter(x -> !finalFinishNoticeList.contains(x.getOrderNumber())).collect(Collectors.toList()).size();
+                unfinishNoticeList = noticeList.stream().filter(x -> !finalFinishNoticeList.contains(x.getOrderNumber())).collect(Collectors.toList());
             }else {
-                unfinishNoticeCount = noticeList.size();
+                unfinishNoticeList = noticeList;
             }
         }
-        orderCountVO.setOutBoundOrderUnFinishCount(unfinishOrderCount);
-        orderCountVO.setOutoundNoticeOrderUnFinishCount(unfinishNoticeCount);
+        orderCountVO.setOutBoundOrderUnFinishCount(unfinishOrderList.size());
+        orderCountVO.setOutoundNoticeOrderUnFinishCount(unfinishNoticeList.size());
+        List<OrderMsgVO> orderMsgList = initOutboundOrderMsg(unfinishOrderList);
+        List<OrderMsgVO> noticeMsgList = initOutboundNoticeOrderMsg(unfinishNoticeList,orderMsgList);
+        orderCountVO.getMsgList().addAll(noticeMsgList);
+        orderCountVO.getMsgList().addAll(orderMsgList);
+
     }
 
 
@@ -260,7 +297,7 @@ public class LargeScreenServiceImpl implements LargeScreenService {
      * @param: orderCountVO
      * @return: void
      **/
-    private void getOutBoundReviewCount(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
+    private void getOutBoundReviewMsg(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
         List<WmsOutboundShippingReviewInfo> infoList = getOutboundReviewList(warehouseForm);
         int reviewFinishCount = 0;
         int reviewUnFinishCount = 0;
@@ -268,7 +305,9 @@ public class LargeScreenServiceImpl implements LargeScreenService {
             if (warehouseForm.getIsFinish()) {
                 reviewFinishCount = infoList.stream().filter(x -> x.getOrderStatusType().equals(OutboundShippingReviewSatusEnum.REVIEWED.getStatus())).collect(Collectors.toList()).size();
             }else {
-                reviewUnFinishCount = infoList.stream().filter(x -> !x.getOrderStatusType().equals(OutboundShippingReviewSatusEnum.REVIEWED.getStatus())).collect(Collectors.toList()).size();
+                infoList = infoList.stream().filter(x -> !x.getOrderStatusType().equals(OutboundShippingReviewSatusEnum.REVIEWED.getStatus())).collect(Collectors.toList());
+                reviewUnFinishCount = infoList.size();
+                orderCountVO.getMsgList().addAll(initShippingReviewOrderMsg(infoList));
             }
         }
         orderCountVO.setOutBoundShippingReviewFinishCount(reviewFinishCount);
@@ -357,6 +396,175 @@ public class LargeScreenServiceImpl implements LargeScreenService {
         BeanUtils.copyProperties(warehouseForm,info);
         List<WmsOutboundShippingReviewInfo> infoList = wmsOutboundShippingReviewInfoService.selectList(info);
         return infoList;
+    }
+
+    /**
+     * @description 初始化入仓通知单数据
+     * @author  ciro
+     * @date   2022/4/12 10:10
+     * @param: noticeList
+     * @return: java.util.List<com.jayud.wms.model.vo.LargeScreen.OrderMsgVO>
+     **/
+    private List<OrderMsgVO> initReceiptNoticeToOrderMsg(List<ReceiptNotice> noticeList,List<OrderMsgVO> receiptList){
+        List<OrderMsgVO> orderList = new ArrayList<>();
+        Map<String,OrderMsgVO> receiptMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(receiptList)){
+            receiptMap = receiptList.stream().collect(Collectors.toMap(x->x.getNoticeNumber(),x->x));
+        }
+        if (CollUtil.isNotEmpty(noticeList)){
+            for (ReceiptNotice notice:noticeList){
+                OrderMsgVO msg = new OrderMsgVO();
+                msg.setOrderNumber(notice.getReceiptNoticeNum());
+                msg.setOrderType(OrderTypeEnum.RECEIPT_NOTICE.getType());
+                msg.setOrderType_text(OrderTypeEnum.RECEIPT_NOTICE.getDesc());
+                //已转出库单状态
+                if (receiptMap.containsKey(notice.getReceiptNoticeNum())){
+                    OrderMsgVO recipt = receiptMap.get(notice.getReceiptNoticeNum());
+                    msg.setOrderStatus(recipt.getOrderStatus());
+                    msg.setOrderStatus_text(recipt.getOrderStatus_text());
+                }else {
+                    msg.setOrderStatus(notice.getStatus());
+                    msg.setOrderStatus_text(ReceiptNoticeStatusEnum.getIntegerDesc(notice.getStatus()));
+                }
+                msg.setCreateTime(notice.getCreateTime());
+                orderList.add(msg);
+            }
+        }
+        return orderList;
+    }
+
+    /**
+     * @description 初始化入库单数据
+     * @author  ciro
+     * @date   2022/4/12 10:11
+     * @param: receiptList
+     * @return: java.util.List<com.jayud.wms.model.vo.LargeScreen.OrderMsgVO>
+     **/
+    private List<OrderMsgVO> initReceiptoOrderMsg(List<Receipt> receiptList){
+        List<OrderMsgVO> orderList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(receiptList)){
+            receiptList.forEach(receipt->{
+                OrderMsgVO msg = new OrderMsgVO();
+                msg.setOrderNumber(receipt.getReceiptNum());
+                msg.setOrderType(OrderTypeEnum.RECEIPT.getType());
+                msg.setOrderType_text(OrderTypeEnum.RECEIPT.getDesc());
+                msg.setOrderStatus(receipt.getStatus());
+                msg.setOrderStatus_text(ReceiptStatusEnum.getDesc(receipt.getStatus()));
+                msg.setCreateTime(receipt.getCreateTime());
+                msg.setNoticeNumber(receipt.getReceiptNoticeNum());
+                orderList.add(msg);
+            });
+        }
+        return orderList;
+    }
+
+    /**
+     * @description 初始化质检单数据
+     * @author  ciro
+     * @date   2022/4/12 10:14
+     * @param: qualityList
+     * @return: java.util.List<com.jayud.wms.model.vo.LargeScreen.OrderMsgVO>
+     **/
+    private List<OrderMsgVO> initQualityOrderMsg(List<QualityInspection> qualityList){
+        List<OrderMsgVO> orderList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(qualityList)){
+            qualityList.forEach(quality->{
+                OrderMsgVO msg = new OrderMsgVO();
+                msg.setOrderNumber(quality.getQcNo());
+                msg.setOrderType(OrderTypeEnum.QUALITY.getType());
+                msg.setOrderType_text(OrderTypeEnum.QUALITY.getDesc());
+                msg.setOrderStatus(quality.getStatus());
+                msg.setOrderStatus_text(InboundQualityStatusEnum.getDesc(quality.getStatus()));
+                msg.setCreateTime(quality.getCreateTime());
+                orderList.add(msg);
+            });
+        }
+        return orderList;
+    }
+
+    /**
+     * @description 初始化出库通知单数据
+     * @author  ciro
+     * @date   2022/4/12 10:59
+     * @param: noticeList
+     * @param: infoList
+     * @return: java.util.List<com.jayud.wms.model.vo.LargeScreen.OrderMsgVO>
+     **/
+    private List<OrderMsgVO> initOutboundNoticeOrderMsg(List<WmsOutboundNoticeOrderInfoVO> noticeList,List<OrderMsgVO> infoList){
+        List<OrderMsgVO> orderList = new ArrayList<>();
+        Map<String,OrderMsgVO> infoMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(infoList)){
+            infoMap = infoList.stream().collect(Collectors.toMap(x->x.getNoticeNumber(),x->x));
+        }
+        if (CollUtil.isNotEmpty(noticeList)){
+            for (WmsOutboundNoticeOrderInfoVO notice:noticeList){
+                OrderMsgVO msg = new OrderMsgVO();
+                msg.setOrderNumber(notice.getOrderNumber());
+                msg.setOrderType(OrderTypeEnum.OUTBOUND_NOTICE.getType());
+                msg.setOrderType_text(OrderTypeEnum.OUTBOUND_NOTICE.getDesc());
+                if (infoMap.containsKey(notice.getOrderNumber())){
+                    OrderMsgVO orders = infoMap.get(notice.getOrderNumber());
+                    msg.setOrderStatus(orders.getOrderStatus());
+                    msg.setOrderStatus_text(orders.getOrderStatus_text());
+                }else {
+                    msg.setOrderStatus(Integer.parseInt(notice.getOrderStatusType()));
+                    msg.setOrderStatus_text(OutboundNoticeOrdertSatus.getMsg(Integer.parseInt(notice.getOrderStatusType())));
+                }
+                msg.setCreateTime(notice.getCreateTime());
+                orderList.add(msg);
+            }
+        }
+        return orderList;
+    }
+
+   /**
+    * @description 初始化出库单数据
+    * @author  ciro
+    * @date   2022/4/12 10:59
+    * @param: infoList
+    * @return: java.util.List<com.jayud.wms.model.vo.LargeScreen.OrderMsgVO>
+    **/
+    private List<OrderMsgVO> initOutboundOrderMsg(List<WmsOutboundOrderInfoVO> infoList){
+        List<OrderMsgVO> orderList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(infoList)){
+            infoList.forEach(info->{
+                OrderMsgVO msg = new OrderMsgVO();
+                msg.setOrderNumber(info.getOrderNumber());
+                msg.setOrderType(OrderTypeEnum.OUTBOUND_ORDER.getType());
+                msg.setOrderType_text(OrderTypeEnum.OUTBOUND_ORDER.getDesc());
+                msg.setOrderStatus(Integer.parseInt(info.getOrderStatusType()));
+                msg.setOrderStatus_text(OutboundOrdertSatus.getMsg(Integer.parseInt(info.getOrderStatusType())));
+                msg.setCreateTime(info.getCreateTime());
+                msg.setNoticeNumber(info.getNoticeOrderNumber());
+                orderList.add(msg);
+            });
+        }
+        return orderList;
+    }
+
+
+    /**
+     * @description 初始化发运复核数据
+     * @author  ciro
+     * @date   2022/4/12 11:03
+     * @param: infoList
+     * @return: java.util.List<com.jayud.wms.model.vo.LargeScreen.OrderMsgVO>
+     **/
+    private List<OrderMsgVO> initShippingReviewOrderMsg(List<WmsOutboundShippingReviewInfo> infoList){
+        List<OrderMsgVO> orderList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(infoList)){
+            infoList.forEach(info->{
+                OrderMsgVO msg = new OrderMsgVO();
+                msg.setOrderNumber(info.getShippingReviewOrderNumber());
+                msg.setOrderType(OrderTypeEnum.SHIPPING_REVIEW.getType());
+                msg.setOrderType_text(OrderTypeEnum.SHIPPING_REVIEW.getDesc());
+                msg.setOrderStatus(Integer.parseInt(info.getOrderStatusType()));
+                msg.setOrderStatus_text(OutboundShippingReviewSatusEnum.getDesc(Integer.parseInt(info.getOrderStatusType())));
+                msg.setCreateTime(info.getCreateTime());
+                orderList.add(msg);
+            });
+        }
+        return orderList;
     }
 
 }

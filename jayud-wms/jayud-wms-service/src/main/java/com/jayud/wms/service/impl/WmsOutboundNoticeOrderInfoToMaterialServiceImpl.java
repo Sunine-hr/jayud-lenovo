@@ -240,7 +240,7 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         lambdaQueryWrapper.eq(WmsOutboundNoticeOrderInfoToMaterial::getOrderNumber,orderNumber);
         List<WmsOutboundNoticeOrderInfoToMaterial> materialList = this.list(lambdaQueryWrapper);
         if (CollUtil.isNotEmpty(materialList)){
-            List<String> numberList = materialList.stream().filter(x->StringUtils.isNotBlank(x.getInWarehouseNumber())).map(x->x.getInWarehouseNumber()).collect(Collectors.toList());
+            List<String> numberList = materialList.stream().filter(x->StringUtils.isNotBlank(x.getInWarehouseNumber())).map(x->x.getInWarehouseNumber()).distinct().collect(Collectors.toList());
             return StringUtils.join(numberList, StrUtil.C_COMMA);
         }
         return null;

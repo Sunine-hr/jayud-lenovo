@@ -48,4 +48,14 @@ public interface LargeScreenService {
     OrderCountVO getUnfinsihOrderMsg(WarehouseForm warehouseForm);
 
 
+    /**
+     * @description 获取订单曲线图
+     * @author  ciro
+     * @date   2022/4/12 14:55
+     * @param: warehouseForm
+     * @return: com.jayud.wms.model.vo.LargeScreen.OrderCountVO
+     **/
+    OrderCountVO getOrderLineMsg(WarehouseForm warehouseForm);
+
+
 }

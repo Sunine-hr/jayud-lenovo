@@ -873,11 +873,6 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         }
         wmsOutboundOrderInfoToServiceService.saveService(wmsOutboundOrderInfo.getOrderNumber(),wmsOutboundOrderInfoVO.getServiceList());
         allOut(wmsOutboundOrderInfo);
-        if (CollUtil.isNotEmpty(wmsOutboundOrderInfoVO.getOperatorsIds())){
-            wmsOutboundOrderInfo.setOperatorsId(StringUtils.join(wmsOutboundOrderInfoVO.getOperatorsIds(),StrUtil.C_COMMA));
-        }else {
-            wmsOutboundOrderInfo.setOperatorsId(null);
-        }
         this.updateById(wmsOutboundOrderInfo);
         return BaseResult.ok(SysTips.EDIT_SUCCESS);
     }
@@ -1034,6 +1029,15 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
                 }
             }
         }
+        LocalDateTime realDeliveryTime = wmsOutboundOrderInfoVO.getRealDeliveryTime();
+        WmsOutboundOrderInfo wmsOutboundOrderInfo = this.baseMapper.selectById(wmsOutboundOrderInfoVO.getId());
+        BeanUtils.copyProperties(wmsOutboundOrderInfo,wmsOutboundOrderInfoVO);
+        if (CollUtil.isNotEmpty(wmsOutboundOrderInfoVO.getOperatorsIds())){
+            wmsOutboundOrderInfoVO.setOperatorsId(StringUtils.join(wmsOutboundOrderInfoVO.getOperatorsIds(),StrUtil.C_COMMA));
+        }else {
+            wmsOutboundOrderInfoVO.setOperatorsId(null);
+        }
+        wmsOutboundOrderInfoVO.setRealDeliveryTime(realDeliveryTime);
     }
 
     /**

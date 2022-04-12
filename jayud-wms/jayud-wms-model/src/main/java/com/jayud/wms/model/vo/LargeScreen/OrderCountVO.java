@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ciro
@@ -53,6 +54,30 @@ public class OrderCountVO {
 
     @ApiModelProperty(value = "工单数据")
     List<OrderMsgVO> msgList;
+
+    @ApiModelProperty(value = "工单数量")
+    List<Map> coutList;
+
+    @ApiModelProperty(value = "日期集合")
+    List<String> unfinishDateList;
+
+    @ApiModelProperty(value = "入仓通知单数据")
+    List<Integer> inBoundNoticeCountList;
+
+    @ApiModelProperty(value = "入库单数据")
+    List<Integer> inBoundOrderCountList;
+
+    @ApiModelProperty(value = "质检单数据")
+    List<Integer> inBoundQualityCountList;
+
+    @ApiModelProperty(value = "出仓通知单数据")
+    List<Integer> outBoundNoticeCountList;
+
+    @ApiModelProperty(value = "出库单数据")
+    List<Integer> outBoundOrderCountList;
+
+    @ApiModelProperty(value = "发运复核单数据")
+    List<Integer> shippingReviewCountList;
 
 
 }

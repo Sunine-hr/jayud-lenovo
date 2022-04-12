@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,4 +114,15 @@ public interface WmsOutboundOrderInfoMapper extends BaseMapper<WmsOutboundOrderI
      * @return: int
      **/
     int logicDelById(@Param("id") Long id,@Param("username") String username);
+
+    /**
+     * @description 根据时间获取完成数量
+     * @author  ciro
+     * @date   2022/4/12 13:59
+     * @param: tenantCode
+     * @param: yearAndMonth
+     * @return: java.util.LinkedList<java.util.LinkedHashMap>
+     **/
+    LinkedList<LinkedHashMap> selectFinishCountByTime(@Param("tenantCode") String tenantCode, @Param("yearAndMonth") String yearAndMonth);
+
 }

@@ -1,6 +1,13 @@
 package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
+import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.wms.mapper.QualityInspectionMapper;
+import com.jayud.wms.mapper.ReceiptMapper;
+import com.jayud.wms.mapper.WmsOutboundOrderInfoMapper;
+import com.jayud.wms.mapper.WmsOutboundShippingReviewInfoMapper;
 import com.jayud.wms.model.bo.LargeScreen.WarehouseForm;
 import com.jayud.wms.model.enums.*;
 import com.jayud.wms.model.enums.LargeScreen.OrderTypeEnum;
@@ -17,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +58,18 @@ public class LargeScreenServiceImpl implements LargeScreenService {
 
     @Autowired
     private IWmsOutboundShippingReviewInfoService wmsOutboundShippingReviewInfoService;
+
+    @Autowired
+    private ReceiptMapper receiptMapper;
+
+    @Autowired
+    private QualityInspectionMapper qualityInspectionMapper;
+
+    @Autowired
+    private WmsOutboundOrderInfoMapper wmsOutboundOrderInfoMapper;
+
+    @Autowired
+    private WmsOutboundShippingReviewInfoMapper wmsOutboundShippingReviewInfoMapper;
 
 
 
@@ -105,6 +121,7 @@ public class LargeScreenServiceImpl implements LargeScreenService {
     public OrderCountVO getFinishOrderCount(WarehouseForm warehouseForm) {
         OrderCountVO orderCount = new OrderCountVO();
         warehouseForm.setIsFinish(true);
+        orderCount.setCoutList(new ArrayList<>());
         getInBoundFinishOrderCount(warehouseForm,orderCount);
         getInBoundQualityMsg(warehouseForm,orderCount);
         getOutBoundFinishOrderCount(warehouseForm,orderCount);
@@ -117,11 +134,24 @@ public class LargeScreenServiceImpl implements LargeScreenService {
     public OrderCountVO getUnfinsihOrderMsg(WarehouseForm warehouseForm) {
         OrderCountVO orderCount = new OrderCountVO();
         orderCount.setMsgList(new ArrayList<>());
+        orderCount.setCoutList(new ArrayList<>());
         getInBoundUnFinishOrderMsg(warehouseForm,orderCount);
         getInBoundQualityMsg(warehouseForm,orderCount);
         getOutBoundUnFinishOrderMsg(warehouseForm,orderCount);
         getOutBoundFinishOrderCount(warehouseForm,orderCount);
-        return null;
+        return orderCount;
+    }
+
+    @Override
+    public OrderCountVO getOrderLineMsg(WarehouseForm warehouseForm) {
+        OrderCountVO orderCountVO = new OrderCountVO();
+        int lastDay = DateUtil.dayOfMonth(Convert.toDate(warehouseForm.getYearMonth()+"-01"));
+        orderCountVO.setUnfinishDateList(initLineDate(lastDay));
+        orderCountVO.setInBoundOrderCountList(intiLineDataList(receiptMapper.selectFinishCountByTime(CurrentUserUtil.getUserTenantCode(),warehouseForm.getYearMonth()),orderCountVO.getUnfinishDateList().size()));
+        orderCountVO.setInBoundQualityCountList(intiLineDataList(qualityInspectionMapper.selectFinishCountByTime(CurrentUserUtil.getUserTenantCode(),warehouseForm.getYearMonth()),orderCountVO.getUnfinishDateList().size()));
+        orderCountVO.setOutBoundOrderCountList(intiLineDataList(wmsOutboundOrderInfoMapper.selectFinishCountByTime(CurrentUserUtil.getUserTenantCode(),warehouseForm.getYearMonth()),orderCountVO.getUnfinishDateList().size()));
+        orderCountVO.setShippingReviewCountList(intiLineDataList(wmsOutboundShippingReviewInfoMapper.selectFinishCountByTime(CurrentUserUtil.getUserTenantCode(),warehouseForm.getYearMonth()),orderCountVO.getUnfinishDateList().size()));
+        return orderCountVO;
     }
 
 
@@ -135,8 +165,8 @@ public class LargeScreenServiceImpl implements LargeScreenService {
      **/
     private void getInBoundFinishOrderCount(WarehouseForm warehouseForm,OrderCountVO orderCountVO){
         int finishCount = getFinishReceiptList(warehouseForm).size();
-        orderCountVO.setInBoundNoticeOrderFinishCount(finishCount);
-        orderCountVO.setInBoundNoticeOrderFinishCount(finishCount);
+        initOrderCoutList(orderCountVO,OrderTypeEnum.RECEIPT_NOTICE.getDesc()+"完成总量",finishCount);
+        initOrderCoutList(orderCountVO,OrderTypeEnum.RECEIPT.getDesc()+"完成总量",finishCount);
     }
 
     /**
@@ -157,7 +187,7 @@ public class LargeScreenServiceImpl implements LargeScreenService {
         List<String> finishNoticeList = new ArrayList<>();
         if (CollUtil.isEmpty(receiptList)){
             for (Receipt receipt:receiptList){
-                if (receipt.getStatus().equals(ReceiptStatusEnum.THREE.getCode())){
+                if (receipt.getStatus().equals(ReceiptStatusEnum.SIX.getCode())){
                     finishNoticeList.add(receipt.getReceiptNoticeNum());
                 } else {
                     unfinishOrderList.add(receipt);
@@ -169,6 +199,8 @@ public class LargeScreenServiceImpl implements LargeScreenService {
         }
         orderCountVO.setInBoundNoticeOrderUnFinishCount(unfinishNoticeList.size());
         orderCountVO.setInBoundOrderUnFinishCount(unfinishOrderList.size());
+        initOrderCoutList(orderCountVO,OrderTypeEnum.RECEIPT_NOTICE.getDesc(),unfinishNoticeList.size());
+        initOrderCoutList(orderCountVO,OrderTypeEnum.RECEIPT.getDesc(),unfinishOrderList.size());
         List<OrderMsgVO> receiptMsgLists = initReceiptoOrderMsg(unfinishOrderList);
         List<OrderMsgVO> noticeMsgList = initReceiptNoticeToOrderMsg(unfinishNoticeList,receiptMsgLists);
         orderCountVO.getMsgList().addAll(noticeMsgList);
@@ -228,8 +260,12 @@ public class LargeScreenServiceImpl implements LargeScreenService {
                 orderCountVO.getMsgList().addAll(initQualityOrderMsg(qualityInspectionList));
             }
         }
-        orderCountVO.setInBoundQualityFinishCount(qualityFinishCount);
-        orderCountVO.setInBoundQualityUnFinishCount(qualityUnFinishCount);
+        if (warehouseForm.getIsFinish()){
+            initOrderCoutList(orderCountVO,OrderTypeEnum.QUALITY.getDesc()+"完成总量",qualityFinishCount);
+        }else {
+            initOrderCoutList(orderCountVO,OrderTypeEnum.QUALITY.getDesc(),qualityUnFinishCount);
+        }
+
     }
 
     /**
@@ -246,8 +282,8 @@ public class LargeScreenServiceImpl implements LargeScreenService {
         if (CollUtil.isNotEmpty(infoList)){
             orderFinishCount = infoList.stream().filter(x->x.getOrderStatusType().equals(OutboundOrdertSatus.ISSUED.getType())).collect(Collectors.toList()).size();
         }
-        orderCountVO.setOutoundNoticeOrderFinishCount(orderFinishCount);
-        orderCountVO.setOutBoundOrderFinishCount(orderFinishCount);
+        initOrderCoutList(orderCountVO,OrderTypeEnum.OUTBOUND_NOTICE.getDesc()+"完成总数",orderFinishCount);
+        initOrderCoutList(orderCountVO,OrderTypeEnum.OUTBOUND_ORDER.getDesc()+"完成总数",orderFinishCount);
     }
 
     /**
@@ -279,8 +315,8 @@ public class LargeScreenServiceImpl implements LargeScreenService {
                 unfinishNoticeList = noticeList;
             }
         }
-        orderCountVO.setOutBoundOrderUnFinishCount(unfinishOrderList.size());
-        orderCountVO.setOutoundNoticeOrderUnFinishCount(unfinishNoticeList.size());
+        initOrderCoutList(orderCountVO,OrderTypeEnum.OUTBOUND_NOTICE.getDesc(),unfinishNoticeList.size());
+        initOrderCoutList(orderCountVO,OrderTypeEnum.OUTBOUND_ORDER.getDesc(),unfinishOrderList.size());
         List<OrderMsgVO> orderMsgList = initOutboundOrderMsg(unfinishOrderList);
         List<OrderMsgVO> noticeMsgList = initOutboundNoticeOrderMsg(unfinishNoticeList,orderMsgList);
         orderCountVO.getMsgList().addAll(noticeMsgList);
@@ -310,8 +346,11 @@ public class LargeScreenServiceImpl implements LargeScreenService {
                 orderCountVO.getMsgList().addAll(initShippingReviewOrderMsg(infoList));
             }
         }
-        orderCountVO.setOutBoundShippingReviewFinishCount(reviewFinishCount);
-        orderCountVO.setOutBoundShippingReviewUnFinishCount(reviewUnFinishCount);
+        if (warehouseForm.getIsFinish()) {
+            initOrderCoutList(orderCountVO,OrderTypeEnum.SHIPPING_REVIEW.getDesc()+"完成总数",reviewFinishCount);
+        }else {
+            initOrderCoutList(orderCountVO,OrderTypeEnum.SHIPPING_REVIEW.getDesc(),reviewFinishCount);
+        }
     }
 
     /**
@@ -565,6 +604,58 @@ public class LargeScreenServiceImpl implements LargeScreenService {
             });
         }
         return orderList;
+    }
+
+    /**
+     * @description 初始化数量信息
+     * @author  ciro
+     * @date   2022/4/12 14:34
+     * @param: orderCount
+     * @param: typeName
+     * @param: counts
+     * @return: void
+     **/
+    private void initOrderCoutList(OrderCountVO orderCount,String typeName,Integer counts){
+        Map msgMap = new HashMap();
+        msgMap.put("name",typeName);
+        msgMap.put("value",counts);
+        orderCount.getCoutList().add(msgMap);
+    }
+
+    /**
+     * @description 初始化曲线日期
+     * @author  ciro
+     * @date   2022/4/12 15:14
+     * @param: lastDay
+     * @return: java.util.List<java.lang.String>
+     **/
+    private List<String> initLineDate(int lastDay){
+        List<String> dateList = new ArrayList<>();
+        for (int i=1;i<=lastDay;i++){
+            dateList.add(i+"日");
+        }
+        return dateList;
+    }
+
+    /**
+     * @description 初始化曲线数据
+     * @author  ciro
+     * @date   2022/4/12 15:22
+     * @param: lineList
+     * @param: dateCount
+     * @return: java.util.List<java.lang.Integer>
+     **/
+    private List<Integer> intiLineDataList(LinkedList<LinkedHashMap> lineList,int dateCount){
+        List<Integer> dataList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(lineList)){
+            for (int i=0;i<dateCount;i++) {
+                dataList.add(0);
+            }
+            for (LinkedHashMap dataMap : lineList){
+                dataList.set(Integer.parseInt(dataMap.get("months").toString()),Integer.parseInt(dataMap.get("countNumber").toString()));
+            }
+        }
+        return dataList;
     }
 
 }

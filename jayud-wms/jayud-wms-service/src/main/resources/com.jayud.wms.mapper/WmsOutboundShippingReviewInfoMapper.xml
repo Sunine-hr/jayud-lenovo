@@ -398,4 +398,22 @@
 
     </select>
 
+    <select id="selectFinishCountByTime" resultType="java.util.LinkedHashMap">
+        SELECT
+            DISTINCT DATE_FORMAT( update_time, '%d' ) months,
+            COUNT( id ) countNumber
+        FROM
+            wms_outbound_shipping_review_info
+        WHERE
+            is_deleted = 0
+          AND order_status_type = 3
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+          AND update_time IS NOT NULL
+          AND DATE_FORMAT( update_time, '%Y-%m' ) = #{yearAndMonth}
+        GROUP BY
+            DATE_FORMAT( update_time, '%y-%m-%d' )
+    </select>
+
 </mapper>

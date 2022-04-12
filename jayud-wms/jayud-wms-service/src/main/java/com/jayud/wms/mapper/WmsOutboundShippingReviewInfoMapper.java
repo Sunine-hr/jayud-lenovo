@@ -8,10 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * wms-出库发运复核 Mapper 接口
@@ -91,4 +88,14 @@ public interface WmsOutboundShippingReviewInfoMapper extends BaseMapper<WmsOutbo
      * @return: int
      **/
     int delByOrderNumbers(@Param("numbers") List<String> numbers,@Param("username") String username);
+
+    /**
+     * @description 根据时间获取完成数量
+     * @author  ciro
+     * @date   2022/4/12 13:59
+     * @param: tenantCode
+     * @param: yearAndMonth
+     * @return: java.util.LinkedList<java.util.LinkedHashMap>
+     **/
+    LinkedList<LinkedHashMap> selectFinishCountByTime(@Param("tenantCode") String tenantCode, @Param("yearAndMonth") String yearAndMonth);
 }

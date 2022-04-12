@@ -28,6 +28,7 @@ import com.jayud.wms.model.vo.MaterialVO;
 import com.jayud.wms.model.vo.ReceiptVO;
 import com.jayud.wms.model.vo.WmsReceiptAppendVO;
 import com.jayud.wms.service.*;
+import com.jayud.wms.utils.CodeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +87,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
 
     @Autowired
     private IWmsReceiptAppendService wmsReceiptAppendService;
+
+    @Autowired
+    private CodeUtils codeUtils;
 
 
     @Override
@@ -747,10 +751,9 @@ public class ReceiptServiceImpl extends ServiceImpl<ReceiptMapper, Receipt> impl
         for (Receipt receipt : receiptList){
             QualityInspection qualityInspection = new QualityInspection();
             BeanUtils.copyProperties(receipt,qualityInspection);
-            BaseResult  baseResult = authClient.getOrderFeign("quality_inspection", new Date());
-            HashMap data = (HashMap)baseResult.getResult();
-            qualityInspection.setQcNo(data.get("order").toString());
-            receipt.setQcNo(data.get("order").toString());
+            String orderNUmber = codeUtils.getOrderNumber("quality_inspection");
+            qualityInspection.setQcNo(orderNUmber);
+            receipt.setQcNo(orderNUmber);
             qualityInspection.setId(null);
             qualityInspection.setUpdateBy("");
             qualityInspection.setUpdateTime(null);

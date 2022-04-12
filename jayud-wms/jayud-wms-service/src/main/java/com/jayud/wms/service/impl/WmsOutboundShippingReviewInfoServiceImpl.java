@@ -159,12 +159,13 @@ public class WmsOutboundShippingReviewInfoServiceImpl extends ServiceImpl<WmsOut
 
     @Override
     public void edit(WmsOutboundShippingReviewInfo info) {
+        WmsOutboundShippingReviewInfo infos = this.baseMapper.selectById(info.getId());
         if (CollUtil.isNotEmpty(info.getOperatorsIds())){
-            info.setOperatorsId(StringUtils.join(info.getOperatorsIds(),StrUtil.C_COMMA));
+            infos.setOperatorsId(StringUtils.join(info.getOperatorsIds(),StrUtil.C_COMMA));
         }else {
-            info.setOperatorsId(null);
+            infos.setOperatorsId(null);
         }
-        this.updateById(info);
+        this.updateById(infos);
     }
 
     /**

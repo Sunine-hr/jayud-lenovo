@@ -394,6 +394,23 @@
         ORDER BY
         wooi.create_time DESC
     </select>
+    <select id="selectFinishCountByTime" resultType="java.util.LinkedHashMap">
+        SELECT
+            DISTINCT DATE_FORMAT( update_time, '%d' ) months,
+            COUNT( id ) countNumber
+        FROM
+            wms_outbound_order_info
+        WHERE
+            is_deleted = 0
+            AND order_status_type = 2
+        <if test="tenantCode != null and tenantCode != ''">
+            AND tenant_code = #{tenantCode}
+        </if>
+            AND update_time IS NOT NULL
+            AND DATE_FORMAT( update_time, '%Y-%m' ) = #{yearAndMonth}
+        GROUP BY
+            DATE_FORMAT( update_time, '%y-%m-%d' )
+    </select>
 
     <delete id="phyDelById">
         DELETE FROM  wms_outbound_order_info WHERE id = ${id}

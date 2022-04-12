@@ -199,8 +199,8 @@ public class WmsOutboundOrderInfoToMaterialServiceImpl extends ServiceImpl<WmsOu
         String orderNumber = "";
         if (CollUtil.isNotEmpty(materialList)){
             orderNumber = materialList.get(0).getOrderNumber();
-            List<WmsOutboundOrderInfoToMaterial> successList = materialList.stream().filter(x->x.getStatusType()!=4).collect(Collectors.toList());
-            errList = materialList.stream().filter(x->x.getStatusType()==4).map(x->x.getMaterialCode()).collect(Collectors.toList());
+            List<WmsOutboundOrderInfoToMaterial> successList = materialList.stream().filter(x->x.getStatusType()!=2).collect(Collectors.toList());
+            errList = materialList.stream().filter(x->x.getStatusType()==2).map(x->x.getMaterialCode()).collect(Collectors.toList());
             Map<Long,BigDecimal> msg = successList.stream().collect(Collectors.toMap(x->x.getInventoryDetailId(),x->x.getRequirementAccount()));
             BaseResult baseResult = inventoryDetailService.outputByMsg(msg);
             if (baseResult.isSuccess()){

@@ -13,7 +13,7 @@ import java.util.Date;
  * @description:    工单数据
  */
 @Data
-@ApiModel(value = "工单数量", description = "工单数量")
+@ApiModel(value = "工单数据", description = "工单数据")
 public class OrderMsgVO {
 
     @ApiModelProperty(value = "主键id")

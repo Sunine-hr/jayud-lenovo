@@ -9,7 +9,9 @@ import com.jayud.auth.model.po.SysUserToWarehouse;
 import com.jayud.auth.model.vo.SysUserVO;
 import com.jayud.auth.service.ISysUserToWarehouseService;
 import com.jayud.common.constant.CommonConstant;
+import com.jayud.common.utils.Captcha;
 import com.jayud.common.utils.CurrentUserUtil;
+import com.jayud.common.utils.StringUtils;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +22,23 @@ import com.jayud.common.BaseResult;
 import com.jayud.auth.service.ISysUserService;
 import com.jayud.auth.model.po.SysUser;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * 后台用户表 控制类
@@ -242,9 +252,9 @@ public class SysUserController {
         SysUserToWarehouse warehouse = new SysUserToWarehouse();
         warehouse.setUserId(sysUserIdOne.getId());
         List<SysUserToWarehouse> warehouseList = sysUserToWarehouseService.selectList(warehouse);
-        if (CollUtil.isNotEmpty(warehouseList)){
+        if (CollUtil.isNotEmpty(warehouseList)) {
             sysUserIdOne.setWarehouseList(warehouseList);
-        }else {
+        } else {
             sysUserIdOne.setWarehouseList(new ArrayList<>());
         }
         return BaseResult.ok(sysUserIdOne);
@@ -284,8 +294,92 @@ public class SysUserController {
 
     @ApiOperation("根据仓库查询用户")
     @GetMapping("/getUserByWarehouse")
-    public BaseResult<List<SysUser>> getUserByWarehouse(SysUserToWarehouse sysUserToWarehouse){
+    public BaseResult<List<SysUser>> getUserByWarehouse(SysUserToWarehouse sysUserToWarehouse) {
         return BaseResult.ok(sysUserService.getUserByWarehouse(sysUserToWarehouse));
     }
 
+    /**
+     * 调取获得验证码  获取验证码不重复 传时间戳
+     * http://localhost:8001/jayudAuth/sysUser/captcha?date=12312
+     * @param request
+     * @param response
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation("调取获得验证码")
+    @GetMapping(value = "/captcha")
+    public BaseResult imagecode(HttpServletRequest request, HttpServletResponse response, @RequestParam(required = false) String username) throws Exception {
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("image/jpeg");
+
+        OutputStream os = response.getOutputStream();
+        //返回验证码和图片的map
+        Map<String, Object> map = Captcha.getImageCode(86, 37, os);
+        String simpleCaptcha = "simpleCaptcha";
+        request.getSession().setAttribute(simpleCaptcha, map.get("strEnsure").toString().toLowerCase());
+        request.getSession().setAttribute("codeTime", System.currentTimeMillis());
+
+        try {
+            ImageIO.write((BufferedImage) map.get("image"), "jpg", os);
+        } catch (IOException e) {
+            return BaseResult.error();
+        } finally {
+            if (os != null) {
+                os.flush();
+                os.close();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param checkCode 前端用户输入返回的验证码
+     *                  参数若需要，自行添加
+     */
+    @ApiOperation("前端用户输入返回的验证码")
+    @GetMapping(value = "/verify")
+    public BaseResult checkcode(HttpServletRequest request,
+                                HttpSession session,
+                                @RequestParam String checkCode) throws Exception {
+
+        // 获得验证码对象
+        Object cko = session.getAttribute("simpleCaptcha");
+        if (cko == null) {
+            request.setAttribute("errorMsg", "请输入验证码！");
+            return BaseResult.ok("请输入验证码！");
+        }
+        String captcha = cko.toString();
+        // 判断验证码输入是否正确
+        //验证码创建时间
+        String codeTime1 = session.getAttribute("codeTime") + "";
+        System.out.println("时间戳：" + codeTime1);
+        Long aLong = Long.valueOf(codeTime1);
+        //当前时间
+        long l = System.currentTimeMillis();
+        System.out.println("当前时间戳：" + l);
+        long l1 = l - aLong;
+        // 验证码有效时长为1分钟
+        if (l1 / 1000 / 60 > 0.2) {
+
+            System.out.println("进入到方法！超时时间");
+            request.setAttribute("errorMsg", "验证码已失效，请重新输入！");
+            return BaseResult.error("验证码已失效，请重新输入！");
+
+        } else {
+            if (StringUtils.isEmpty(checkCode) || captcha == null || !(checkCode.equalsIgnoreCase(captcha))) {
+                request.setAttribute("errorMsg", "验证码错误！");
+                System.out.println("进入到方法！验证码是否错误！");
+                return BaseResult.error("验证码错误，请重新输入！");
+
+            } else {
+                // 在这里可以处理自己需要的事务，比如验证登陆等
+
+                return BaseResult.ok("验证通过！");
+            }
+        }
+    }
 }

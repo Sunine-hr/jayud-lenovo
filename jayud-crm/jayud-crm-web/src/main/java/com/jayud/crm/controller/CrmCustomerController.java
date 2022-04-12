@@ -103,7 +103,7 @@ public class CrmCustomerController {
         crmCustomerForm1.setCheckStateFlag("Y");
         crmCustomerForm1.setIsDeleted(false);
         //是否是普通用户
-        crmCustomerForm1.setIsCust(false);
+        crmCustomerForm1.setIsCust(true);
         return BaseResult.ok(crmCustomerService.selectList(crmCustomerForm1));
     }
 

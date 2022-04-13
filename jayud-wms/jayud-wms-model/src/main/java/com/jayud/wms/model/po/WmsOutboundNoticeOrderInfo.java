@@ -166,6 +166,11 @@ public class WmsOutboundNoticeOrderInfo extends SysBaseEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date planSendTime;
 
+    @ApiModelProperty(value = "结算单位编码")
+    private String settlementCode;
+
+    @ApiModelProperty(value = "结算单位名称")
+    private String settlementName;
 
 
 }

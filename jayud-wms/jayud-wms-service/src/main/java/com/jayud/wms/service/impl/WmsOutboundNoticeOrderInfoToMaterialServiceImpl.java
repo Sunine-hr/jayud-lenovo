@@ -1,6 +1,7 @@
 package com.jayud.wms.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -76,39 +77,15 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BaseResult saveMaterial(WmsOutboundNoticeOrderInfoVO wmsOutboundNoticeOrderInfoVO) {
-        WmsOutboundNoticeOrderInfoToMaterialVO materialVO = new WmsOutboundNoticeOrderInfoToMaterialVO();
-        materialVO.setOrderNumber(wmsOutboundNoticeOrderInfoVO.getOrderNumber());
-        List<WmsOutboundNoticeOrderInfoToMaterialVO> materialList = selectList(materialVO);
-
         //本次货品id
         List<String> detailIdList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().map(x->String.valueOf(x.getInventoryDetailId())).distinct().collect(Collectors.toList());
-        List<String> finalIdList = detailIdList.stream().distinct().collect(Collectors.toList());
-        if (detailIdList.size() != finalIdList.size()){
+        if (detailIdList.size() != wmsOutboundNoticeOrderInfoVO.getThisMaterialList().size()){
             return BaseResult.error("存在重复货品，请检查后提交！");
         }
-        List<String> thisIdList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().filter(x->x.getId() != null).map(x->String.valueOf(x.getId())).collect(Collectors.toList());
-        List<String> lastIdList = materialList.stream().map(x->String.valueOf(x.getId())).collect(Collectors.toList());
-        //删除
-        List<String> delLists = ListUtils.getDiff(thisIdList,lastIdList);
-        if (CollUtil.isNotEmpty(delLists)) {
-            wmsOutboundNoticeOrderInfoToMaterialMapper.delteByOrderNumberAndMaterialCode(null, null, delLists, CurrentUserUtil.getUsername());
-        }
-        //修改
-        List<WmsOutboundNoticeOrderInfoToMaterialVO> updateMaterialList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().filter(x->x.getId()!=null).collect(Collectors.toList());
-        if (CollUtil.isNotEmpty(updateMaterialList)){
-            List<WmsOutboundNoticeOrderInfoToMaterial> updateList = new ArrayList<>();
-            updateMaterialList.forEach(materials->{
-                WmsOutboundNoticeOrderInfoToMaterial material = new WmsOutboundNoticeOrderInfoToMaterial();
-                BeanUtils.copyProperties(materials,material);
-                updateList.add(material);
-            });
-            this.updateBatchById(updateList);
-        }
-        //新增
-        List<WmsOutboundNoticeOrderInfoToMaterialVO> saveMaterialList = wmsOutboundNoticeOrderInfoVO.getThisMaterialList().stream().filter(x->x.getId()==null).collect(Collectors.toList());
-        if (CollUtil.isNotEmpty(saveMaterialList)){
+        wmsOutboundNoticeOrderInfoToMaterialMapper.delteByOrderNumberAndMaterialCode(wmsOutboundNoticeOrderInfoVO.getOrderNumber(), null, null, CurrentUserUtil.getUsername());
+        if (CollUtil.isNotEmpty( wmsOutboundNoticeOrderInfoVO.getThisMaterialList())){
             List<WmsOutboundNoticeOrderInfoToMaterial> saveList = new ArrayList<>();
-            saveMaterialList.forEach(materials->{
+            wmsOutboundNoticeOrderInfoVO.getThisMaterialList().forEach(materials->{
                 WmsOutboundNoticeOrderInfoToMaterial material = new WmsOutboundNoticeOrderInfoToMaterial();
                 BeanUtils.copyProperties(materials,material);
                 material.clearCreate();
@@ -188,7 +165,7 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         if (CollUtil.isNotEmpty(inventoryDetailList)){
             List<WmsOutboundNoticeOrderInfoToMaterialVO> materialList = new ArrayList<>();
             for (InventoryDetail inventoryDetails:inventoryDetailList){
-                if (inventoryDetails.getUsableCount().compareTo(BigDecimal.ZERO)>0){
+                if (inventoryDetails.getUsableCount().compareTo(BigDecimal.ZERO)<=0){
                     continue;
                 }
                 WmsOutboundNoticeOrderInfoToMaterialVO materialVO = new WmsOutboundNoticeOrderInfoToMaterialVO();

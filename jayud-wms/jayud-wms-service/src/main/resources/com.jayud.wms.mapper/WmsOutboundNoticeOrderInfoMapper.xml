@@ -51,7 +51,8 @@
         <result column="legal_name" property="legalName" />
         <result column="depart_id" property="departId" />
         <result column="depart_name" property="departName" />
-
+        <result column="settlement_code" property="settlementCode" />
+        <result column="settlement_name" property="settlementName" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

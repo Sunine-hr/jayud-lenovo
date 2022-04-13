@@ -187,7 +187,10 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
         List<InventoryDetail> inventoryDetailList = iPage.getRecords();
         if (CollUtil.isNotEmpty(inventoryDetailList)){
             List<WmsOutboundNoticeOrderInfoToMaterialVO> materialList = new ArrayList<>();
-            inventoryDetailList.forEach(inventoryDetails -> {
+            for (InventoryDetail inventoryDetails:inventoryDetailList){
+                if (inventoryDetails.getUsableCount().compareTo(BigDecimal.ZERO)>0){
+                    continue;
+                }
                 WmsOutboundNoticeOrderInfoToMaterialVO materialVO = new WmsOutboundNoticeOrderInfoToMaterialVO();
                 materialVO.setOrderNumber(material.getOrderNumber());
                 materialVO.setInventoryDetailId(inventoryDetails.getId());
@@ -226,7 +229,7 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
                 }
                 materialVO.setInWarehouseTime(inventoryDetails.getInWarehouseTime());
                 materialList.add(materialVO);
-            });
+            }
             if (CollUtil.isNotEmpty(materialList)){
                 basePage.setRecords(materialList);
             }

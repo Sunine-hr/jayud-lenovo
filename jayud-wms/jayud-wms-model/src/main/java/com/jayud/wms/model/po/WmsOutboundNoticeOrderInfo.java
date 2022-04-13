@@ -130,6 +130,22 @@ public class WmsOutboundNoticeOrderInfo extends SysBaseEntity {
     @ApiModelProperty(value = "单位")
     private String unit;
 
+    @ApiModelProperty(value = "单位编码")
+    private String unitCode;
+
+    @ApiModelProperty(value = "法人主体id")
+    private String legalId;
+
+    @ApiModelProperty(value = "法人主体名称")
+    private String legalName;
+
+    @ApiModelProperty(value = "部门id")
+    private String departId;
+
+    @ApiModelProperty(value = "部门名称")
+    private String departName;
+
+
     @ApiModelProperty(value = "车牌号")
     private String carBarnd;
 

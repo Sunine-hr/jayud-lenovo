@@ -46,6 +46,11 @@
         <result column="orderStatusType_text" property="orderStatusType_text" />
         <result column="main_order" property="mainOrder" />
         <result column="plan_send_time" property="planSendTime" />
+        <result column="unit_code" property="unitCode" />
+        <result column="legal_id" property="legalId" />
+        <result column="legal_name" property="legalName" />
+        <result column="depart_id" property="departId" />
+        <result column="depart_name" property="departName" />
 
     </resultMap>
 
@@ -53,6 +58,7 @@
     <sql id="Base_Column_List">
         wonoi.id, wonoi.order_number, wonoi.warehouse_id, wonoi.warehouse_code, wonoi.warehouse_name, wonoi.ower_id, wonoi.ower_code, wonoi.ower_name, wonoi.document_type, wonoi.order_source_type, wonoi.external_order_number_first, wonoi.external_order_number_second, wonoi.customer_id,wonoi.customer_code, wonoi.customer_name, wonoi.plan_delivery_time, wonoi.column_one, wonoi.column_two, wonoi.all_count, wonoi.all_height, wonoi.all_volume, wonoi.confirm_by, wonoi.confirm_time, wonoi.order_status_type, wonoi.real_delivery_time, wonoi.tenant_code, wonoi.remark, wonoi.is_deleted, wonoi.create_by, wonoi.create_time, wonoi.update_by, wonoi.update_time,
         wonoi.unit,wonoi.car_barnd, wonoi.car_model,wonoi.car_driver,wonoi.car_relation,wonoi.main_order,wonoi.plan_send_time,
+        wonoi.unit_code,wonoi.legal_id,wonoi.legal_name,wonoi.depart_id,wonoi.depart_name,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'wms_storage_type_of_document' AND wonoi.document_type = sdi.item_value) documentType_text,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeOrderSourceType' AND wonoi.order_source_type = sdi.item_value) orderSourceType_text,
         (SELECT  sdi.item_text FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sd.is_deleted = 0 AND sd.id = sdi.dict_id WHERE sdi.is_deleted = 0 AND sdi.`status` = 1 AND sd.dict_code = 'outboundNoticeOrderStatusType' AND wonoi.order_status_type = sdi.item_value) orderStatusType_text

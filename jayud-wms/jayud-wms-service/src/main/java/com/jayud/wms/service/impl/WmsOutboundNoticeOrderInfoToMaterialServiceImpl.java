@@ -224,6 +224,7 @@ public class WmsOutboundNoticeOrderInfoToMaterialServiceImpl extends ServiceImpl
                 }else {
                     materialVO.setInWarehouseTime(inventoryDetails.getUpdateTime());
                 }
+                materialVO.setInWarehouseTime(inventoryDetails.getInWarehouseTime());
                 materialList.add(materialVO);
             });
             if (CollUtil.isNotEmpty(materialList)){

@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -18,6 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -200,6 +202,13 @@ public class InventoryDetail extends SysBaseEntity {
     @TableField(exist = false)
     @ApiModelProperty(value = "创建时间集合")
     private List<String> creationTime;
+
+    @TableField(exist = false)
+    @JsonProperty(value = "inWarehouseTime")
+    @ApiModelProperty(value = "上架时间")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date inWarehouseTime;
 
     /**
      * 可用量(计算字段),可用量=现有量-分配量-拣货量，数据库不存在此字段

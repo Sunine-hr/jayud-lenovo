@@ -1056,13 +1056,13 @@ public class WmsOutboundOrderInfoServiceImpl extends ServiceImpl<WmsOutboundOrde
         Map<Long,BigDecimal> msg = new HashMap<>();
         for (WmsOutboundOrderInfoToMaterial material : materialList){
             msg.put(material.getInventoryDetailId(),material.getRequirementAccount());
-            if(material.getStatusType() != 4){
+            if(material.getStatusType() != 2){
                 isAll = false;
                 break;
             }
         }
         if (isAll){
-            info.setOrderStatusType("4");
+            info.setOrderStatusType("2");
         }
     }
 
